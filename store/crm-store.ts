@@ -4,6 +4,36 @@ import { create } from "zustand";
 import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof } from "@/types";
 import { seedData } from "@/lib/data";
 
+const STORAGE_KEY = "achariya_crm_store_v2";
+
+function saveLocalData(data: {
+  members: TeamMember[];
+  projects: Project[];
+  milestones: Milestone[];
+  tasks: Task[];
+  meetings: Meeting[];
+  activities: Activity[];
+  attendance: AttendanceRecord[];
+}) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn("Error saving to localStorage:", err);
+  }
+}
+
+function getLocalData() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 interface CRMStore {
   members: TeamMember[];
   projects: Project[];
@@ -44,45 +74,97 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   attendance: [],
 
   load: async () => {
+    // 1. Initial hydration from localStorage if present
+    const cached = getLocalData();
+    if (cached) {
+      set({
+        members: cached.members?.length ? cached.members : seedData.members,
+        projects: cached.projects?.length ? cached.projects : seedData.projects,
+        milestones: cached.milestones?.length ? cached.milestones : seedData.milestones,
+        tasks: cached.tasks?.length ? cached.tasks : seedData.tasks,
+        meetings: cached.meetings?.length ? cached.meetings : seedData.meetings,
+        activities: cached.activities?.length ? cached.activities : seedData.activities,
+        attendance: cached.attendance || [],
+      });
+    }
+
     try {
       const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes] = await Promise.all([
-        fetch("/api/members").then((r) => r.ok ? r.json() : seedData.members).catch(() => seedData.members),
-        fetch("/api/projects").then((r) => r.ok ? r.json() : seedData.projects).then((projects) => (Array.isArray(projects) && projects.length > 0 ? projects : seedData.projects).map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] }))).catch(() => seedData.projects),
-        fetch("/api/milestones").then((r) => r.ok ? r.json() : seedData.milestones).catch(() => seedData.milestones),
-        fetch("/api/tasks").then((r) => r.ok ? r.json() : seedData.tasks).catch(() => seedData.tasks),
-        fetch("/api/meetings").then((r) => r.ok ? r.json() : seedData.meetings).then((meetings) => (Array.isArray(meetings) ? meetings : seedData.meetings).map((m: any) => ({ ...m, attendeeIds: m.attendees?.map((a: any) => a.userId) || m.attendeeIds || [] }))).catch(() => seedData.meetings),
-        fetch("/api/activities").then((r) => r.ok ? r.json() : seedData.activities).catch(() => seedData.activities),
-        fetch("/api/attendance").then((r) => r.ok ? r.json() : []).catch(() => []),
+        fetch("/api/members").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/projects").then((r) => r.ok ? r.json() : null).then((projects) => (Array.isArray(projects) ? projects.map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] })) : null)).catch(() => null),
+        fetch("/api/milestones").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/tasks").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/meetings").then((r) => r.ok ? r.json() : null).then((meetings) => (Array.isArray(meetings) ? meetings.map((m: any) => ({ ...m, attendeeIds: m.attendees?.map((a: any) => a.userId) || m.attendeeIds || [] })) : null)).catch(() => null),
+        fetch("/api/activities").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/attendance").then((r) => r.ok ? r.json() : null).catch(() => null),
       ]);
 
-      set({
-        members: Array.isArray(membersRes) && membersRes.length > 0 ? membersRes : seedData.members,
-        projects: Array.isArray(projectsRes) && projectsRes.length > 0 ? projectsRes : seedData.projects,
-        milestones: Array.isArray(milestonesRes) && milestonesRes.length > 0 ? milestonesRes : seedData.milestones,
-        tasks: Array.isArray(tasksRes) && tasksRes.length > 0 ? tasksRes : seedData.tasks,
-        meetings: Array.isArray(meetingsRes) ? meetingsRes : seedData.meetings,
-        activities: Array.isArray(activitiesRes) ? activitiesRes : seedData.activities,
-        attendance: Array.isArray(attendanceRes) ? attendanceRes : [],
-      });
+      const cur = get();
+
+      // Merge function that overlays API data on current state without discarding user edits
+      const merge = <T extends { id: string }>(apiList: T[] | null, currentList: T[], seedList: T[]) => {
+        if (!apiList || apiList.length === 0) return currentList.length > 0 ? currentList : seedList;
+        const apiMap = new Map(apiList.map((item) => [item.id, item]));
+        const merged = [...apiList];
+        for (const item of currentList) {
+          if (!apiMap.has(item.id)) {
+            merged.push(item);
+          }
+        }
+        return merged;
+      };
+
+      const finalMembers = merge(membersRes, cur.members, seedData.members);
+      const finalProjects = merge(projectsRes, cur.projects, seedData.projects);
+      const finalMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
+      const finalTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+      const finalMeetings = Array.isArray(meetingsRes) ? meetingsRes : cur.meetings;
+      const finalActivities = Array.isArray(activitiesRes) ? activitiesRes : cur.activities;
+      const finalAttendance = Array.isArray(attendanceRes) ? attendanceRes : cur.attendance;
+
+      const newState = {
+        members: finalMembers,
+        projects: finalProjects,
+        milestones: finalMilestones,
+        tasks: finalTasks,
+        meetings: finalMeetings,
+        activities: finalActivities,
+        attendance: finalAttendance,
+      };
+
+      set(newState);
+      saveLocalData(newState);
     } catch (err) {
-      console.warn("Store load error, preserving seedData fallback:", err);
+      console.warn("Store load sync warning:", err);
     }
   },
 
   addMember: async (member) => {
+    const newMember: TeamMember = { ...member, id: `u-${Date.now()}` };
+    set((s) => {
+      const next = { ...s, members: [newMember, ...s.members] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/members", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(member) }).catch(() => {});
-    await get().load();
   },
 
   updateMember: async (id, updates) => {
+    set((s) => {
+      const next = { ...s, members: s.members.map((m) => (m.id === id ? { ...m, ...updates } : m)) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/members/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) }).catch(() => {});
-    await get().load();
   },
 
   deleteMember: async (id) => {
-    set((s) => ({ members: s.members.filter((m) => m.id !== id) }));
+    set((s) => {
+      const next = { ...s, members: s.members.filter((m) => m.id !== id) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/members/${id}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   checkInOut: async (action, userId) => {
@@ -104,23 +186,30 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       progress: project.progress || 0,
       createdAt: new Date().toISOString(),
     };
-    set((s) => ({ projects: [newProj, ...s.projects] }));
+    set((s) => {
+      const next = { ...s, projects: [newProj, ...s.projects] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(project) }).catch(() => {});
-    await get().load();
   },
 
   updateProject: async (id, updates) => {
-    set((s) => ({
-      projects: s.projects.map((p) => (p.id === id ? { ...p, ...updates } : p)),
-    }));
+    set((s) => {
+      const next = { ...s, projects: s.projects.map((p) => (p.id === id ? { ...p, ...updates } : p)) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/projects/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) }).catch(() => {});
-    await get().load();
   },
 
   deleteProject: async (id) => {
-    set((s) => ({ projects: s.projects.filter((p) => p.id !== id) }));
+    set((s) => {
+      const next = { ...s, projects: s.projects.filter((p) => p.id !== id) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/projects/${id}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   addMilestone: async (milestone) => {
@@ -128,23 +217,30 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       ...milestone,
       id: `m-${Date.now()}`,
     };
-    set((s) => ({ milestones: [...s.milestones, newMs] }));
+    set((s) => {
+      const next = { ...s, milestones: [...s.milestones, newMs] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/milestones", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(milestone) }).catch(() => {});
-    await get().load();
   },
 
   updateMilestone: async (id, updates) => {
-    set((s) => ({
-      milestones: s.milestones.map((m) => (m.id === id ? { ...m, ...updates } : m)),
-    }));
+    set((s) => {
+      const next = { ...s, milestones: s.milestones.map((m) => (m.id === id ? { ...m, ...updates } : m)) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/milestones/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) }).catch(() => {});
-    await get().load();
   },
 
   deleteMilestone: async (id) => {
-    set((s) => ({ milestones: s.milestones.filter((m) => m.id !== id) }));
+    set((s) => {
+      const next = { ...s, milestones: s.milestones.filter((m) => m.id !== id) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/milestones/${id}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   addTask: async (task) => {
@@ -155,56 +251,98 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       proofs: [],
       createdAt: new Date().toISOString(),
     };
-    // Optimistic store update
-    set((s) => ({ tasks: [newTask, ...s.tasks] }));
+    set((s) => {
+      const next = { ...s, tasks: [newTask, ...s.tasks] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(task) }).catch(() => {});
-    await get().load();
   },
 
   updateTask: async (id, updates) => {
-    // Optimistic store update
-    set((s) => ({
-      tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
-    }));
+    set((s) => {
+      const next = { ...s, tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/tasks/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) }).catch(() => {});
-    await get().load();
   },
 
   deleteTask: async (id) => {
-    // Optimistic store update
-    set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }));
+    set((s) => {
+      const next = { ...s, tasks: s.tasks.filter((t) => t.id !== id) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/tasks/${id}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   addTaskProof: async (taskId, proof) => {
+    const newProof: TaskProof = {
+      ...proof,
+      id: `proof-${Date.now()}`,
+      taskId,
+      createdAt: new Date().toISOString(),
+    };
+    set((s) => {
+      const next = {
+        ...s,
+        tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, proofs: [...(t.proofs || []), newProof] } : t)),
+      };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/tasks/${taskId}/proofs`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(proof) }).catch(() => {});
-    await get().load();
   },
 
   removeTaskProof: async (taskId, proofId) => {
+    set((s) => {
+      const next = {
+        ...s,
+        tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, proofs: (t.proofs || []).filter((p) => p.id !== proofId) } : t)),
+      };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/tasks/${taskId}/proofs/${proofId}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   addMeeting: async (meeting) => {
+    const newM: Meeting = { ...meeting, id: `meet-${Date.now()}`, roomName: `room-${Date.now()}` };
+    set((s) => {
+      const next = { ...s, meetings: [newM, ...s.meetings] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/meetings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(meeting) }).catch(() => {});
-    await get().load();
   },
 
   updateMeeting: async (id, updates) => {
+    set((s) => {
+      const next = { ...s, meetings: s.meetings.map((m) => (m.id === id ? { ...m, ...updates } : m)) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/meetings/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) }).catch(() => {});
-    await get().load();
   },
 
   deleteMeeting: async (id) => {
+    set((s) => {
+      const next = { ...s, meetings: s.meetings.filter((m) => m.id !== id) };
+      saveLocalData(next);
+      return next;
+    });
     await fetch(`/api/meetings/${id}`, { method: "DELETE" }).catch(() => {});
-    await get().load();
   },
 
   addActivity: async (activity) => {
+    const newAct: Activity = { ...activity, id: `act-${Date.now()}`, createdAt: new Date().toISOString() };
+    set((s) => {
+      const next = { ...s, activities: [newAct, ...s.activities] };
+      saveLocalData(next);
+      return next;
+    });
     await fetch("/api/activities", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(activity) }).catch(() => {});
-    await get().load();
   },
 }));
 
