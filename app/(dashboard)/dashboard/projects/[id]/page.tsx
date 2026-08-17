@@ -16,8 +16,9 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate, initials } from "@/lib/utils";
 import { Milestone, Priority, TaskStatus } from "@/types";
-import { Plus, ArrowLeft, Calendar, CheckCircle2, Circle, Clock, AlertTriangle } from "lucide-react";
+import { Plus, ArrowLeft, Calendar, CheckCircle2, Circle, Clock, AlertTriangle, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
@@ -40,14 +41,18 @@ const taskStatusColors: Record<TaskStatus, string> = {
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const router = useRouter();
   const { user } = useAuth();
   const projects = useCRMStore((s) => s.projects);
   const milestones = useCRMStore((s) => s.milestones);
   const tasks = useCRMStore((s) => s.tasks);
   const members = useCRMStore((s) => s.members);
   const addMilestone = useCRMStore((s) => s.addMilestone);
+  const deleteMilestone = useCRMStore((s) => s.deleteMilestone);
   const addTask = useCRMStore((s) => s.addTask);
   const updateTask = useCRMStore((s) => s.updateTask);
+  const deleteTask = useCRMStore((s) => s.deleteTask);
+  const deleteProject = useCRMStore((s) => s.deleteProject);
   const load = useCRMStore((s) => s.load);
   useEffect(() => { load(); }, [load]);
 
@@ -99,6 +104,25 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setTForm({ title: "", description: "", milestoneId: "", priority: "medium", assigneeId: "", dueDate: "" });
   }
 
+  function handleDeleteProject() {
+    if (confirm(`Delete project "${project?.name}"? All associated tasks and milestones will also be removed.`)) {
+      deleteProject(id);
+      router.push("/dashboard/projects");
+    }
+  }
+
+  function handleDeleteMilestone(mId: string, title: string) {
+    if (confirm(`Delete milestone "${title}"?`)) {
+      deleteMilestone(mId);
+    }
+  }
+
+  function handleDeleteTask(tId: string, title: string) {
+    if (confirm(`Delete task "${title}"?`)) {
+      deleteTask(tId);
+    }
+  }
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <motion.div variants={item}>
@@ -113,7 +137,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               <p className="text-slate-500 mt-1 max-w-2xl">{project.description}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Dialog open={milestoneOpen} onOpenChange={setMilestoneOpen}>
               <DialogTrigger render={<Button variant="outline" size="sm" />}>
                 <Plus className="h-4 w-4 mr-1" />Milestone
@@ -176,6 +200,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 </div>
               </DialogContent>
             </Dialog>
+            {isElevated && (
+              <Button onClick={handleDeleteProject} variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+                <Trash2 className="h-4 w-4 mr-1" />Delete Project
+              </Button>
+            )}
           </div>
         </div>
       </motion.div>
@@ -214,6 +243,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                       <Badge variant="secondary" className="text-[10px]">{ms.status}</Badge>
                     </div>
                   </div>
+                  {isElevated && (
+                    <button onClick={() => handleDeleteMilestone(ms.id, ms.title)} className="rounded-lg p-1 text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete Milestone">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
               ))}
             </CardContent>
@@ -238,6 +272,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                     <Badge variant="secondary" className={`text-[10px] ${taskStatusColors[task.status]}`}>{task.status}</Badge>
                     {assignee && <Avatar className="h-6 w-6"><AvatarImage src={assignee.avatar} /><AvatarFallback className="text-[9px]">{initials(assignee.name)}</AvatarFallback></Avatar>}
+                    {isElevated && (
+                      <button onClick={() => handleDeleteTask(task.id, task.title)} className="rounded-lg p-1 text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete Task">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                 );
               })}

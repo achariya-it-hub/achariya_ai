@@ -17,7 +17,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Icon3D } from "@/components/icon-3d";
 import { formatDate, initials } from "@/lib/utils";
 import { Project, ProjectStatus, Priority } from "@/types";
-import { Plus, Search, FolderKanban, ArrowUpRight, Users, Check } from "lucide-react";
+import { Plus, Search, FolderKanban, ArrowUpRight, Users, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
 import ProjectScatter from "@/components/project-scatter";
 
@@ -47,6 +47,7 @@ export default function ProjectsPage() {
   const tasks = useCRMStore((s) => s.tasks);
   const milestones = useCRMStore((s) => s.milestones);
   const addProject = useCRMStore((s) => s.addProject);
+  const deleteProject = useCRMStore((s) => s.deleteProject);
   const load = useCRMStore((s) => s.load);
   useEffect(() => { load(); }, [load]);
   const [search, setSearch] = useState("");
@@ -59,6 +60,14 @@ export default function ProjectsPage() {
 
   const role = user?.role || "trainee";
   const isElevated = role === "admin" || role === "manager";
+
+  function handleDeleteProject(e: React.MouseEvent, id: string, name: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete project "${name}"? All associated tasks and milestones will also be removed.`)) {
+      deleteProject(id);
+    }
+  }
 
   const userEngagedProjects = projects.filter((p) => {
     if (isElevated) return true;
@@ -229,7 +238,18 @@ export default function ProjectsPage() {
                           <p className="text-xs text-slate-400 mt-0.5">Ends {formatDate(project.endDate)}</p>
                         </div>
                       </div>
-                      <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                      <div className="flex items-center gap-1">
+                        {isElevated && (
+                          <button
+                            onClick={(e) => handleDeleteProject(e, project.id, project.name)}
+                            className="rounded-lg p-1 text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            title="Delete Project"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                        <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                      </div>
                     </div>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-4">{project.description}</p>
                     <div className="flex items-center gap-2 mb-3">

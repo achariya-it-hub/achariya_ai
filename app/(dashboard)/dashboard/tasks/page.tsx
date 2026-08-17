@@ -688,6 +688,7 @@ export default function TasksPage() {
   const members = useCRMStore((s) => s.members);
   const updateTask = useCRMStore((s) => s.updateTask);
   const addTask = useCRMStore((s) => s.addTask);
+  const deleteTask = useCRMStore((s) => s.deleteTask);
   const addTaskProof = useCRMStore((s) => s.addTaskProof);
   const removeTaskProof = useCRMStore((s) => s.removeTaskProof);
   const load = useCRMStore((s) => s.load);
@@ -1210,7 +1211,25 @@ export default function TasksPage() {
                 </div>
               </div>
 
-              {saveMsg && <p className="text-sm font-medium text-emerald-600">{saveMsg}</p>}
+              {isElevated ? (
+                <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (confirm(`Delete task "${proofTask.title}"?`)) {
+                        deleteTask(proofTask.id);
+                        setProofTask(null);
+                      }
+                    }}
+                    className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 text-xs"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete Task
+                  </Button>
+                  {saveMsg && <p className="text-sm font-medium text-emerald-600">{saveMsg}</p>}
+                </div>
+              ) : (
+                saveMsg && <p className="text-sm font-medium text-emerald-600">{saveMsg}</p>
+              )}
             </div>
           )}
         </DialogContent>
