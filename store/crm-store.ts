@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof } from "@/types";
 import { seedData } from "@/lib/data";
 
-const STORAGE_KEY = "achariya_crm_store_v2";
+const STORAGE_KEY = "achariya_crm_store_v3";
 
 function saveLocalData(data: {
   members: TeamMember[];
@@ -64,6 +64,9 @@ interface CRMStore {
   addActivity: (activity: Omit<Activity, "id" | "createdAt">) => Promise<void>;
 }
 
+let isSyncing = false;
+let lastSyncTime = 0;
+
 export const useCRMStore = create<CRMStore>()((set, get) => ({
   members: seedData.members,
   projects: seedData.projects,
@@ -73,7 +76,13 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   activities: seedData.activities,
   attendance: [],
 
-  load: async () => {
+  load: async (force?: boolean) => {
+    const now = Date.now();
+    if (isSyncing || (!force && now - lastSyncTime < 5000)) {
+      return;
+    }
+    isSyncing = true;
+
     // 1. Initial hydration from localStorage if present
     const cached = getLocalData();
     if (cached) {
@@ -136,6 +145,9 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       saveLocalData(newState);
     } catch (err) {
       console.warn("Store load sync warning:", err);
+    } finally {
+      isSyncing = false;
+      lastSyncTime = Date.now();
     }
   },
 

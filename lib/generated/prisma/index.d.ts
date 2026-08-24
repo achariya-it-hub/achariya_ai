@@ -63,6 +63,16 @@ export type Activity = $Result.DefaultSelection<Prisma.$ActivityPayload>
  * 
  */
 export type Attendance = $Result.DefaultSelection<Prisma.$AttendancePayload>
+/**
+ * Model WhatsappConfig
+ * 
+ */
+export type WhatsappConfig = $Result.DefaultSelection<Prisma.$WhatsappConfigPayload>
+/**
+ * Model WhatsappMessageLog
+ * 
+ */
+export type WhatsappMessageLog = $Result.DefaultSelection<Prisma.$WhatsappMessageLogPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -284,6 +294,26 @@ export class PrismaClient<
     * ```
     */
   get attendance(): Prisma.AttendanceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.whatsappConfig`: Exposes CRUD operations for the **WhatsappConfig** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WhatsappConfigs
+    * const whatsappConfigs = await prisma.whatsappConfig.findMany()
+    * ```
+    */
+  get whatsappConfig(): Prisma.WhatsappConfigDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.whatsappMessageLog`: Exposes CRUD operations for the **WhatsappMessageLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WhatsappMessageLogs
+    * const whatsappMessageLogs = await prisma.whatsappMessageLog.findMany()
+    * ```
+    */
+  get whatsappMessageLog(): Prisma.WhatsappMessageLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -727,7 +757,9 @@ export namespace Prisma {
     Meeting: 'Meeting',
     MeetingAttendee: 'MeetingAttendee',
     Activity: 'Activity',
-    Attendance: 'Attendance'
+    Attendance: 'Attendance',
+    WhatsappConfig: 'WhatsappConfig',
+    WhatsappMessageLog: 'WhatsappMessageLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -743,7 +775,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "project" | "projectMember" | "milestone" | "task" | "taskProof" | "meeting" | "meetingAttendee" | "activity" | "attendance"
+      modelProps: "user" | "project" | "projectMember" | "milestone" | "task" | "taskProof" | "meeting" | "meetingAttendee" | "activity" | "attendance" | "whatsappConfig" | "whatsappMessageLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1487,6 +1519,154 @@ export namespace Prisma {
           }
         }
       }
+      WhatsappConfig: {
+        payload: Prisma.$WhatsappConfigPayload<ExtArgs>
+        fields: Prisma.WhatsappConfigFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WhatsappConfigFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WhatsappConfigFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          findFirst: {
+            args: Prisma.WhatsappConfigFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WhatsappConfigFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          findMany: {
+            args: Prisma.WhatsappConfigFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>[]
+          }
+          create: {
+            args: Prisma.WhatsappConfigCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          createMany: {
+            args: Prisma.WhatsappConfigCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WhatsappConfigCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>[]
+          }
+          delete: {
+            args: Prisma.WhatsappConfigDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          update: {
+            args: Prisma.WhatsappConfigUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          deleteMany: {
+            args: Prisma.WhatsappConfigDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WhatsappConfigUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WhatsappConfigUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>[]
+          }
+          upsert: {
+            args: Prisma.WhatsappConfigUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappConfigPayload>
+          }
+          aggregate: {
+            args: Prisma.WhatsappConfigAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWhatsappConfig>
+          }
+          groupBy: {
+            args: Prisma.WhatsappConfigGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WhatsappConfigGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WhatsappConfigCountArgs<ExtArgs>
+            result: $Utils.Optional<WhatsappConfigCountAggregateOutputType> | number
+          }
+        }
+      }
+      WhatsappMessageLog: {
+        payload: Prisma.$WhatsappMessageLogPayload<ExtArgs>
+        fields: Prisma.WhatsappMessageLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WhatsappMessageLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WhatsappMessageLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          findFirst: {
+            args: Prisma.WhatsappMessageLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WhatsappMessageLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          findMany: {
+            args: Prisma.WhatsappMessageLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>[]
+          }
+          create: {
+            args: Prisma.WhatsappMessageLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          createMany: {
+            args: Prisma.WhatsappMessageLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WhatsappMessageLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>[]
+          }
+          delete: {
+            args: Prisma.WhatsappMessageLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          update: {
+            args: Prisma.WhatsappMessageLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.WhatsappMessageLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WhatsappMessageLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WhatsappMessageLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.WhatsappMessageLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WhatsappMessageLogPayload>
+          }
+          aggregate: {
+            args: Prisma.WhatsappMessageLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWhatsappMessageLog>
+          }
+          groupBy: {
+            args: Prisma.WhatsappMessageLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WhatsappMessageLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WhatsappMessageLogCountArgs<ExtArgs>
+            result: $Utils.Optional<WhatsappMessageLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1605,6 +1785,8 @@ export namespace Prisma {
     meetingAttendee?: MeetingAttendeeOmit
     activity?: ActivityOmit
     attendance?: AttendanceOmit
+    whatsappConfig?: WhatsappConfigOmit
+    whatsappMessageLog?: WhatsappMessageLogOmit
   }
 
   /* Types for Logging */
@@ -13319,6 +13501,2093 @@ export namespace Prisma {
 
 
   /**
+   * Model WhatsappConfig
+   */
+
+  export type AggregateWhatsappConfig = {
+    _count: WhatsappConfigCountAggregateOutputType | null
+    _min: WhatsappConfigMinAggregateOutputType | null
+    _max: WhatsappConfigMaxAggregateOutputType | null
+  }
+
+  export type WhatsappConfigMinAggregateOutputType = {
+    id: string | null
+    phoneNumberId: string | null
+    groupId: string | null
+    webhookToken: string | null
+    defaultProjectId: string | null
+    enabled: boolean | null
+    updatedAt: Date | null
+  }
+
+  export type WhatsappConfigMaxAggregateOutputType = {
+    id: string | null
+    phoneNumberId: string | null
+    groupId: string | null
+    webhookToken: string | null
+    defaultProjectId: string | null
+    enabled: boolean | null
+    updatedAt: Date | null
+  }
+
+  export type WhatsappConfigCountAggregateOutputType = {
+    id: number
+    phoneNumberId: number
+    groupId: number
+    webhookToken: number
+    defaultProjectId: number
+    enabled: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WhatsappConfigMinAggregateInputType = {
+    id?: true
+    phoneNumberId?: true
+    groupId?: true
+    webhookToken?: true
+    defaultProjectId?: true
+    enabled?: true
+    updatedAt?: true
+  }
+
+  export type WhatsappConfigMaxAggregateInputType = {
+    id?: true
+    phoneNumberId?: true
+    groupId?: true
+    webhookToken?: true
+    defaultProjectId?: true
+    enabled?: true
+    updatedAt?: true
+  }
+
+  export type WhatsappConfigCountAggregateInputType = {
+    id?: true
+    phoneNumberId?: true
+    groupId?: true
+    webhookToken?: true
+    defaultProjectId?: true
+    enabled?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WhatsappConfigAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WhatsappConfig to aggregate.
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappConfigs to fetch.
+     */
+    orderBy?: WhatsappConfigOrderByWithRelationInput | WhatsappConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WhatsappConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WhatsappConfigs
+    **/
+    _count?: true | WhatsappConfigCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WhatsappConfigMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WhatsappConfigMaxAggregateInputType
+  }
+
+  export type GetWhatsappConfigAggregateType<T extends WhatsappConfigAggregateArgs> = {
+        [P in keyof T & keyof AggregateWhatsappConfig]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWhatsappConfig[P]>
+      : GetScalarType<T[P], AggregateWhatsappConfig[P]>
+  }
+
+
+
+
+  export type WhatsappConfigGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WhatsappConfigWhereInput
+    orderBy?: WhatsappConfigOrderByWithAggregationInput | WhatsappConfigOrderByWithAggregationInput[]
+    by: WhatsappConfigScalarFieldEnum[] | WhatsappConfigScalarFieldEnum
+    having?: WhatsappConfigScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WhatsappConfigCountAggregateInputType | true
+    _min?: WhatsappConfigMinAggregateInputType
+    _max?: WhatsappConfigMaxAggregateInputType
+  }
+
+  export type WhatsappConfigGroupByOutputType = {
+    id: string
+    phoneNumberId: string | null
+    groupId: string | null
+    webhookToken: string | null
+    defaultProjectId: string | null
+    enabled: boolean
+    updatedAt: Date
+    _count: WhatsappConfigCountAggregateOutputType | null
+    _min: WhatsappConfigMinAggregateOutputType | null
+    _max: WhatsappConfigMaxAggregateOutputType | null
+  }
+
+  type GetWhatsappConfigGroupByPayload<T extends WhatsappConfigGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WhatsappConfigGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WhatsappConfigGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WhatsappConfigGroupByOutputType[P]>
+            : GetScalarType<T[P], WhatsappConfigGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WhatsappConfigSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    phoneNumberId?: boolean
+    groupId?: boolean
+    webhookToken?: boolean
+    defaultProjectId?: boolean
+    enabled?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["whatsappConfig"]>
+
+  export type WhatsappConfigSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    phoneNumberId?: boolean
+    groupId?: boolean
+    webhookToken?: boolean
+    defaultProjectId?: boolean
+    enabled?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["whatsappConfig"]>
+
+  export type WhatsappConfigSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    phoneNumberId?: boolean
+    groupId?: boolean
+    webhookToken?: boolean
+    defaultProjectId?: boolean
+    enabled?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["whatsappConfig"]>
+
+  export type WhatsappConfigSelectScalar = {
+    id?: boolean
+    phoneNumberId?: boolean
+    groupId?: boolean
+    webhookToken?: boolean
+    defaultProjectId?: boolean
+    enabled?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WhatsappConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "phoneNumberId" | "groupId" | "webhookToken" | "defaultProjectId" | "enabled" | "updatedAt", ExtArgs["result"]["whatsappConfig"]>
+
+  export type $WhatsappConfigPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WhatsappConfig"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      phoneNumberId: string | null
+      groupId: string | null
+      webhookToken: string | null
+      defaultProjectId: string | null
+      enabled: boolean
+      updatedAt: Date
+    }, ExtArgs["result"]["whatsappConfig"]>
+    composites: {}
+  }
+
+  type WhatsappConfigGetPayload<S extends boolean | null | undefined | WhatsappConfigDefaultArgs> = $Result.GetResult<Prisma.$WhatsappConfigPayload, S>
+
+  type WhatsappConfigCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WhatsappConfigFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WhatsappConfigCountAggregateInputType | true
+    }
+
+  export interface WhatsappConfigDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WhatsappConfig'], meta: { name: 'WhatsappConfig' } }
+    /**
+     * Find zero or one WhatsappConfig that matches the filter.
+     * @param {WhatsappConfigFindUniqueArgs} args - Arguments to find a WhatsappConfig
+     * @example
+     * // Get one WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WhatsappConfigFindUniqueArgs>(args: SelectSubset<T, WhatsappConfigFindUniqueArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WhatsappConfig that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WhatsappConfigFindUniqueOrThrowArgs} args - Arguments to find a WhatsappConfig
+     * @example
+     * // Get one WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WhatsappConfigFindUniqueOrThrowArgs>(args: SelectSubset<T, WhatsappConfigFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WhatsappConfig that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigFindFirstArgs} args - Arguments to find a WhatsappConfig
+     * @example
+     * // Get one WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WhatsappConfigFindFirstArgs>(args?: SelectSubset<T, WhatsappConfigFindFirstArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WhatsappConfig that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigFindFirstOrThrowArgs} args - Arguments to find a WhatsappConfig
+     * @example
+     * // Get one WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WhatsappConfigFindFirstOrThrowArgs>(args?: SelectSubset<T, WhatsappConfigFindFirstOrThrowArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WhatsappConfigs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WhatsappConfigs
+     * const whatsappConfigs = await prisma.whatsappConfig.findMany()
+     * 
+     * // Get first 10 WhatsappConfigs
+     * const whatsappConfigs = await prisma.whatsappConfig.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const whatsappConfigWithIdOnly = await prisma.whatsappConfig.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WhatsappConfigFindManyArgs>(args?: SelectSubset<T, WhatsappConfigFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WhatsappConfig.
+     * @param {WhatsappConfigCreateArgs} args - Arguments to create a WhatsappConfig.
+     * @example
+     * // Create one WhatsappConfig
+     * const WhatsappConfig = await prisma.whatsappConfig.create({
+     *   data: {
+     *     // ... data to create a WhatsappConfig
+     *   }
+     * })
+     * 
+     */
+    create<T extends WhatsappConfigCreateArgs>(args: SelectSubset<T, WhatsappConfigCreateArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WhatsappConfigs.
+     * @param {WhatsappConfigCreateManyArgs} args - Arguments to create many WhatsappConfigs.
+     * @example
+     * // Create many WhatsappConfigs
+     * const whatsappConfig = await prisma.whatsappConfig.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WhatsappConfigCreateManyArgs>(args?: SelectSubset<T, WhatsappConfigCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WhatsappConfigs and returns the data saved in the database.
+     * @param {WhatsappConfigCreateManyAndReturnArgs} args - Arguments to create many WhatsappConfigs.
+     * @example
+     * // Create many WhatsappConfigs
+     * const whatsappConfig = await prisma.whatsappConfig.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WhatsappConfigs and only return the `id`
+     * const whatsappConfigWithIdOnly = await prisma.whatsappConfig.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WhatsappConfigCreateManyAndReturnArgs>(args?: SelectSubset<T, WhatsappConfigCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WhatsappConfig.
+     * @param {WhatsappConfigDeleteArgs} args - Arguments to delete one WhatsappConfig.
+     * @example
+     * // Delete one WhatsappConfig
+     * const WhatsappConfig = await prisma.whatsappConfig.delete({
+     *   where: {
+     *     // ... filter to delete one WhatsappConfig
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WhatsappConfigDeleteArgs>(args: SelectSubset<T, WhatsappConfigDeleteArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WhatsappConfig.
+     * @param {WhatsappConfigUpdateArgs} args - Arguments to update one WhatsappConfig.
+     * @example
+     * // Update one WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WhatsappConfigUpdateArgs>(args: SelectSubset<T, WhatsappConfigUpdateArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WhatsappConfigs.
+     * @param {WhatsappConfigDeleteManyArgs} args - Arguments to filter WhatsappConfigs to delete.
+     * @example
+     * // Delete a few WhatsappConfigs
+     * const { count } = await prisma.whatsappConfig.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WhatsappConfigDeleteManyArgs>(args?: SelectSubset<T, WhatsappConfigDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WhatsappConfigs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WhatsappConfigs
+     * const whatsappConfig = await prisma.whatsappConfig.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WhatsappConfigUpdateManyArgs>(args: SelectSubset<T, WhatsappConfigUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WhatsappConfigs and returns the data updated in the database.
+     * @param {WhatsappConfigUpdateManyAndReturnArgs} args - Arguments to update many WhatsappConfigs.
+     * @example
+     * // Update many WhatsappConfigs
+     * const whatsappConfig = await prisma.whatsappConfig.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WhatsappConfigs and only return the `id`
+     * const whatsappConfigWithIdOnly = await prisma.whatsappConfig.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WhatsappConfigUpdateManyAndReturnArgs>(args: SelectSubset<T, WhatsappConfigUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WhatsappConfig.
+     * @param {WhatsappConfigUpsertArgs} args - Arguments to update or create a WhatsappConfig.
+     * @example
+     * // Update or create a WhatsappConfig
+     * const whatsappConfig = await prisma.whatsappConfig.upsert({
+     *   create: {
+     *     // ... data to create a WhatsappConfig
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WhatsappConfig we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WhatsappConfigUpsertArgs>(args: SelectSubset<T, WhatsappConfigUpsertArgs<ExtArgs>>): Prisma__WhatsappConfigClient<$Result.GetResult<Prisma.$WhatsappConfigPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WhatsappConfigs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigCountArgs} args - Arguments to filter WhatsappConfigs to count.
+     * @example
+     * // Count the number of WhatsappConfigs
+     * const count = await prisma.whatsappConfig.count({
+     *   where: {
+     *     // ... the filter for the WhatsappConfigs we want to count
+     *   }
+     * })
+    **/
+    count<T extends WhatsappConfigCountArgs>(
+      args?: Subset<T, WhatsappConfigCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WhatsappConfigCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WhatsappConfig.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WhatsappConfigAggregateArgs>(args: Subset<T, WhatsappConfigAggregateArgs>): Prisma.PrismaPromise<GetWhatsappConfigAggregateType<T>>
+
+    /**
+     * Group by WhatsappConfig.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappConfigGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WhatsappConfigGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WhatsappConfigGroupByArgs['orderBy'] }
+        : { orderBy?: WhatsappConfigGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WhatsappConfigGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWhatsappConfigGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WhatsappConfig model
+   */
+  readonly fields: WhatsappConfigFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WhatsappConfig.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WhatsappConfigClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WhatsappConfig model
+   */
+  interface WhatsappConfigFieldRefs {
+    readonly id: FieldRef<"WhatsappConfig", 'String'>
+    readonly phoneNumberId: FieldRef<"WhatsappConfig", 'String'>
+    readonly groupId: FieldRef<"WhatsappConfig", 'String'>
+    readonly webhookToken: FieldRef<"WhatsappConfig", 'String'>
+    readonly defaultProjectId: FieldRef<"WhatsappConfig", 'String'>
+    readonly enabled: FieldRef<"WhatsappConfig", 'Boolean'>
+    readonly updatedAt: FieldRef<"WhatsappConfig", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WhatsappConfig findUnique
+   */
+  export type WhatsappConfigFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappConfig to fetch.
+     */
+    where: WhatsappConfigWhereUniqueInput
+  }
+
+  /**
+   * WhatsappConfig findUniqueOrThrow
+   */
+  export type WhatsappConfigFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappConfig to fetch.
+     */
+    where: WhatsappConfigWhereUniqueInput
+  }
+
+  /**
+   * WhatsappConfig findFirst
+   */
+  export type WhatsappConfigFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappConfig to fetch.
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappConfigs to fetch.
+     */
+    orderBy?: WhatsappConfigOrderByWithRelationInput | WhatsappConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WhatsappConfigs.
+     */
+    cursor?: WhatsappConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappConfigs.
+     */
+    distinct?: WhatsappConfigScalarFieldEnum | WhatsappConfigScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappConfig findFirstOrThrow
+   */
+  export type WhatsappConfigFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappConfig to fetch.
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappConfigs to fetch.
+     */
+    orderBy?: WhatsappConfigOrderByWithRelationInput | WhatsappConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WhatsappConfigs.
+     */
+    cursor?: WhatsappConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappConfigs.
+     */
+    distinct?: WhatsappConfigScalarFieldEnum | WhatsappConfigScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappConfig findMany
+   */
+  export type WhatsappConfigFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappConfigs to fetch.
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappConfigs to fetch.
+     */
+    orderBy?: WhatsappConfigOrderByWithRelationInput | WhatsappConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WhatsappConfigs.
+     */
+    cursor?: WhatsappConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappConfigs.
+     */
+    distinct?: WhatsappConfigScalarFieldEnum | WhatsappConfigScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappConfig create
+   */
+  export type WhatsappConfigCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * The data needed to create a WhatsappConfig.
+     */
+    data?: XOR<WhatsappConfigCreateInput, WhatsappConfigUncheckedCreateInput>
+  }
+
+  /**
+   * WhatsappConfig createMany
+   */
+  export type WhatsappConfigCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WhatsappConfigs.
+     */
+    data: WhatsappConfigCreateManyInput | WhatsappConfigCreateManyInput[]
+  }
+
+  /**
+   * WhatsappConfig createManyAndReturn
+   */
+  export type WhatsappConfigCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * The data used to create many WhatsappConfigs.
+     */
+    data: WhatsappConfigCreateManyInput | WhatsappConfigCreateManyInput[]
+  }
+
+  /**
+   * WhatsappConfig update
+   */
+  export type WhatsappConfigUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * The data needed to update a WhatsappConfig.
+     */
+    data: XOR<WhatsappConfigUpdateInput, WhatsappConfigUncheckedUpdateInput>
+    /**
+     * Choose, which WhatsappConfig to update.
+     */
+    where: WhatsappConfigWhereUniqueInput
+  }
+
+  /**
+   * WhatsappConfig updateMany
+   */
+  export type WhatsappConfigUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WhatsappConfigs.
+     */
+    data: XOR<WhatsappConfigUpdateManyMutationInput, WhatsappConfigUncheckedUpdateManyInput>
+    /**
+     * Filter which WhatsappConfigs to update
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * Limit how many WhatsappConfigs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappConfig updateManyAndReturn
+   */
+  export type WhatsappConfigUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * The data used to update WhatsappConfigs.
+     */
+    data: XOR<WhatsappConfigUpdateManyMutationInput, WhatsappConfigUncheckedUpdateManyInput>
+    /**
+     * Filter which WhatsappConfigs to update
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * Limit how many WhatsappConfigs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappConfig upsert
+   */
+  export type WhatsappConfigUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * The filter to search for the WhatsappConfig to update in case it exists.
+     */
+    where: WhatsappConfigWhereUniqueInput
+    /**
+     * In case the WhatsappConfig found by the `where` argument doesn't exist, create a new WhatsappConfig with this data.
+     */
+    create: XOR<WhatsappConfigCreateInput, WhatsappConfigUncheckedCreateInput>
+    /**
+     * In case the WhatsappConfig was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WhatsappConfigUpdateInput, WhatsappConfigUncheckedUpdateInput>
+  }
+
+  /**
+   * WhatsappConfig delete
+   */
+  export type WhatsappConfigDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+    /**
+     * Filter which WhatsappConfig to delete.
+     */
+    where: WhatsappConfigWhereUniqueInput
+  }
+
+  /**
+   * WhatsappConfig deleteMany
+   */
+  export type WhatsappConfigDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WhatsappConfigs to delete
+     */
+    where?: WhatsappConfigWhereInput
+    /**
+     * Limit how many WhatsappConfigs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappConfig without action
+   */
+  export type WhatsappConfigDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappConfig
+     */
+    select?: WhatsappConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappConfig
+     */
+    omit?: WhatsappConfigOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WhatsappMessageLog
+   */
+
+  export type AggregateWhatsappMessageLog = {
+    _count: WhatsappMessageLogCountAggregateOutputType | null
+    _min: WhatsappMessageLogMinAggregateOutputType | null
+    _max: WhatsappMessageLogMaxAggregateOutputType | null
+  }
+
+  export type WhatsappMessageLogMinAggregateOutputType = {
+    id: string | null
+    senderPhone: string | null
+    senderName: string | null
+    groupId: string | null
+    rawMessage: string | null
+    parsedAction: string | null
+    status: string | null
+    taskId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type WhatsappMessageLogMaxAggregateOutputType = {
+    id: string | null
+    senderPhone: string | null
+    senderName: string | null
+    groupId: string | null
+    rawMessage: string | null
+    parsedAction: string | null
+    status: string | null
+    taskId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type WhatsappMessageLogCountAggregateOutputType = {
+    id: number
+    senderPhone: number
+    senderName: number
+    groupId: number
+    rawMessage: number
+    parsedAction: number
+    status: number
+    taskId: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WhatsappMessageLogMinAggregateInputType = {
+    id?: true
+    senderPhone?: true
+    senderName?: true
+    groupId?: true
+    rawMessage?: true
+    parsedAction?: true
+    status?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type WhatsappMessageLogMaxAggregateInputType = {
+    id?: true
+    senderPhone?: true
+    senderName?: true
+    groupId?: true
+    rawMessage?: true
+    parsedAction?: true
+    status?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type WhatsappMessageLogCountAggregateInputType = {
+    id?: true
+    senderPhone?: true
+    senderName?: true
+    groupId?: true
+    rawMessage?: true
+    parsedAction?: true
+    status?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WhatsappMessageLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WhatsappMessageLog to aggregate.
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappMessageLogs to fetch.
+     */
+    orderBy?: WhatsappMessageLogOrderByWithRelationInput | WhatsappMessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WhatsappMessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappMessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappMessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WhatsappMessageLogs
+    **/
+    _count?: true | WhatsappMessageLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WhatsappMessageLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WhatsappMessageLogMaxAggregateInputType
+  }
+
+  export type GetWhatsappMessageLogAggregateType<T extends WhatsappMessageLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateWhatsappMessageLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWhatsappMessageLog[P]>
+      : GetScalarType<T[P], AggregateWhatsappMessageLog[P]>
+  }
+
+
+
+
+  export type WhatsappMessageLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WhatsappMessageLogWhereInput
+    orderBy?: WhatsappMessageLogOrderByWithAggregationInput | WhatsappMessageLogOrderByWithAggregationInput[]
+    by: WhatsappMessageLogScalarFieldEnum[] | WhatsappMessageLogScalarFieldEnum
+    having?: WhatsappMessageLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WhatsappMessageLogCountAggregateInputType | true
+    _min?: WhatsappMessageLogMinAggregateInputType
+    _max?: WhatsappMessageLogMaxAggregateInputType
+  }
+
+  export type WhatsappMessageLogGroupByOutputType = {
+    id: string
+    senderPhone: string
+    senderName: string | null
+    groupId: string | null
+    rawMessage: string
+    parsedAction: string | null
+    status: string
+    taskId: string | null
+    userId: string | null
+    createdAt: Date
+    _count: WhatsappMessageLogCountAggregateOutputType | null
+    _min: WhatsappMessageLogMinAggregateOutputType | null
+    _max: WhatsappMessageLogMaxAggregateOutputType | null
+  }
+
+  type GetWhatsappMessageLogGroupByPayload<T extends WhatsappMessageLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WhatsappMessageLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WhatsappMessageLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WhatsappMessageLogGroupByOutputType[P]>
+            : GetScalarType<T[P], WhatsappMessageLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WhatsappMessageLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    senderPhone?: boolean
+    senderName?: boolean
+    groupId?: boolean
+    rawMessage?: boolean
+    parsedAction?: boolean
+    status?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["whatsappMessageLog"]>
+
+  export type WhatsappMessageLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    senderPhone?: boolean
+    senderName?: boolean
+    groupId?: boolean
+    rawMessage?: boolean
+    parsedAction?: boolean
+    status?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["whatsappMessageLog"]>
+
+  export type WhatsappMessageLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    senderPhone?: boolean
+    senderName?: boolean
+    groupId?: boolean
+    rawMessage?: boolean
+    parsedAction?: boolean
+    status?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["whatsappMessageLog"]>
+
+  export type WhatsappMessageLogSelectScalar = {
+    id?: boolean
+    senderPhone?: boolean
+    senderName?: boolean
+    groupId?: boolean
+    rawMessage?: boolean
+    parsedAction?: boolean
+    status?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type WhatsappMessageLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "senderPhone" | "senderName" | "groupId" | "rawMessage" | "parsedAction" | "status" | "taskId" | "userId" | "createdAt", ExtArgs["result"]["whatsappMessageLog"]>
+
+  export type $WhatsappMessageLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WhatsappMessageLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      senderPhone: string
+      senderName: string | null
+      groupId: string | null
+      rawMessage: string
+      parsedAction: string | null
+      status: string
+      taskId: string | null
+      userId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["whatsappMessageLog"]>
+    composites: {}
+  }
+
+  type WhatsappMessageLogGetPayload<S extends boolean | null | undefined | WhatsappMessageLogDefaultArgs> = $Result.GetResult<Prisma.$WhatsappMessageLogPayload, S>
+
+  type WhatsappMessageLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WhatsappMessageLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WhatsappMessageLogCountAggregateInputType | true
+    }
+
+  export interface WhatsappMessageLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WhatsappMessageLog'], meta: { name: 'WhatsappMessageLog' } }
+    /**
+     * Find zero or one WhatsappMessageLog that matches the filter.
+     * @param {WhatsappMessageLogFindUniqueArgs} args - Arguments to find a WhatsappMessageLog
+     * @example
+     * // Get one WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WhatsappMessageLogFindUniqueArgs>(args: SelectSubset<T, WhatsappMessageLogFindUniqueArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WhatsappMessageLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WhatsappMessageLogFindUniqueOrThrowArgs} args - Arguments to find a WhatsappMessageLog
+     * @example
+     * // Get one WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WhatsappMessageLogFindUniqueOrThrowArgs>(args: SelectSubset<T, WhatsappMessageLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WhatsappMessageLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogFindFirstArgs} args - Arguments to find a WhatsappMessageLog
+     * @example
+     * // Get one WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WhatsappMessageLogFindFirstArgs>(args?: SelectSubset<T, WhatsappMessageLogFindFirstArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WhatsappMessageLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogFindFirstOrThrowArgs} args - Arguments to find a WhatsappMessageLog
+     * @example
+     * // Get one WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WhatsappMessageLogFindFirstOrThrowArgs>(args?: SelectSubset<T, WhatsappMessageLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WhatsappMessageLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WhatsappMessageLogs
+     * const whatsappMessageLogs = await prisma.whatsappMessageLog.findMany()
+     * 
+     * // Get first 10 WhatsappMessageLogs
+     * const whatsappMessageLogs = await prisma.whatsappMessageLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const whatsappMessageLogWithIdOnly = await prisma.whatsappMessageLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WhatsappMessageLogFindManyArgs>(args?: SelectSubset<T, WhatsappMessageLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WhatsappMessageLog.
+     * @param {WhatsappMessageLogCreateArgs} args - Arguments to create a WhatsappMessageLog.
+     * @example
+     * // Create one WhatsappMessageLog
+     * const WhatsappMessageLog = await prisma.whatsappMessageLog.create({
+     *   data: {
+     *     // ... data to create a WhatsappMessageLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends WhatsappMessageLogCreateArgs>(args: SelectSubset<T, WhatsappMessageLogCreateArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WhatsappMessageLogs.
+     * @param {WhatsappMessageLogCreateManyArgs} args - Arguments to create many WhatsappMessageLogs.
+     * @example
+     * // Create many WhatsappMessageLogs
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WhatsappMessageLogCreateManyArgs>(args?: SelectSubset<T, WhatsappMessageLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WhatsappMessageLogs and returns the data saved in the database.
+     * @param {WhatsappMessageLogCreateManyAndReturnArgs} args - Arguments to create many WhatsappMessageLogs.
+     * @example
+     * // Create many WhatsappMessageLogs
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WhatsappMessageLogs and only return the `id`
+     * const whatsappMessageLogWithIdOnly = await prisma.whatsappMessageLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WhatsappMessageLogCreateManyAndReturnArgs>(args?: SelectSubset<T, WhatsappMessageLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WhatsappMessageLog.
+     * @param {WhatsappMessageLogDeleteArgs} args - Arguments to delete one WhatsappMessageLog.
+     * @example
+     * // Delete one WhatsappMessageLog
+     * const WhatsappMessageLog = await prisma.whatsappMessageLog.delete({
+     *   where: {
+     *     // ... filter to delete one WhatsappMessageLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WhatsappMessageLogDeleteArgs>(args: SelectSubset<T, WhatsappMessageLogDeleteArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WhatsappMessageLog.
+     * @param {WhatsappMessageLogUpdateArgs} args - Arguments to update one WhatsappMessageLog.
+     * @example
+     * // Update one WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WhatsappMessageLogUpdateArgs>(args: SelectSubset<T, WhatsappMessageLogUpdateArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WhatsappMessageLogs.
+     * @param {WhatsappMessageLogDeleteManyArgs} args - Arguments to filter WhatsappMessageLogs to delete.
+     * @example
+     * // Delete a few WhatsappMessageLogs
+     * const { count } = await prisma.whatsappMessageLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WhatsappMessageLogDeleteManyArgs>(args?: SelectSubset<T, WhatsappMessageLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WhatsappMessageLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WhatsappMessageLogs
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WhatsappMessageLogUpdateManyArgs>(args: SelectSubset<T, WhatsappMessageLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WhatsappMessageLogs and returns the data updated in the database.
+     * @param {WhatsappMessageLogUpdateManyAndReturnArgs} args - Arguments to update many WhatsappMessageLogs.
+     * @example
+     * // Update many WhatsappMessageLogs
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WhatsappMessageLogs and only return the `id`
+     * const whatsappMessageLogWithIdOnly = await prisma.whatsappMessageLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WhatsappMessageLogUpdateManyAndReturnArgs>(args: SelectSubset<T, WhatsappMessageLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WhatsappMessageLog.
+     * @param {WhatsappMessageLogUpsertArgs} args - Arguments to update or create a WhatsappMessageLog.
+     * @example
+     * // Update or create a WhatsappMessageLog
+     * const whatsappMessageLog = await prisma.whatsappMessageLog.upsert({
+     *   create: {
+     *     // ... data to create a WhatsappMessageLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WhatsappMessageLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WhatsappMessageLogUpsertArgs>(args: SelectSubset<T, WhatsappMessageLogUpsertArgs<ExtArgs>>): Prisma__WhatsappMessageLogClient<$Result.GetResult<Prisma.$WhatsappMessageLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WhatsappMessageLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogCountArgs} args - Arguments to filter WhatsappMessageLogs to count.
+     * @example
+     * // Count the number of WhatsappMessageLogs
+     * const count = await prisma.whatsappMessageLog.count({
+     *   where: {
+     *     // ... the filter for the WhatsappMessageLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends WhatsappMessageLogCountArgs>(
+      args?: Subset<T, WhatsappMessageLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WhatsappMessageLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WhatsappMessageLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WhatsappMessageLogAggregateArgs>(args: Subset<T, WhatsappMessageLogAggregateArgs>): Prisma.PrismaPromise<GetWhatsappMessageLogAggregateType<T>>
+
+    /**
+     * Group by WhatsappMessageLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WhatsappMessageLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WhatsappMessageLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WhatsappMessageLogGroupByArgs['orderBy'] }
+        : { orderBy?: WhatsappMessageLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WhatsappMessageLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWhatsappMessageLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WhatsappMessageLog model
+   */
+  readonly fields: WhatsappMessageLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WhatsappMessageLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WhatsappMessageLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WhatsappMessageLog model
+   */
+  interface WhatsappMessageLogFieldRefs {
+    readonly id: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly senderPhone: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly senderName: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly groupId: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly rawMessage: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly parsedAction: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly status: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly taskId: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly userId: FieldRef<"WhatsappMessageLog", 'String'>
+    readonly createdAt: FieldRef<"WhatsappMessageLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WhatsappMessageLog findUnique
+   */
+  export type WhatsappMessageLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappMessageLog to fetch.
+     */
+    where: WhatsappMessageLogWhereUniqueInput
+  }
+
+  /**
+   * WhatsappMessageLog findUniqueOrThrow
+   */
+  export type WhatsappMessageLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappMessageLog to fetch.
+     */
+    where: WhatsappMessageLogWhereUniqueInput
+  }
+
+  /**
+   * WhatsappMessageLog findFirst
+   */
+  export type WhatsappMessageLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappMessageLog to fetch.
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappMessageLogs to fetch.
+     */
+    orderBy?: WhatsappMessageLogOrderByWithRelationInput | WhatsappMessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WhatsappMessageLogs.
+     */
+    cursor?: WhatsappMessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappMessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappMessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappMessageLogs.
+     */
+    distinct?: WhatsappMessageLogScalarFieldEnum | WhatsappMessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappMessageLog findFirstOrThrow
+   */
+  export type WhatsappMessageLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappMessageLog to fetch.
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappMessageLogs to fetch.
+     */
+    orderBy?: WhatsappMessageLogOrderByWithRelationInput | WhatsappMessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WhatsappMessageLogs.
+     */
+    cursor?: WhatsappMessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappMessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappMessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappMessageLogs.
+     */
+    distinct?: WhatsappMessageLogScalarFieldEnum | WhatsappMessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappMessageLog findMany
+   */
+  export type WhatsappMessageLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WhatsappMessageLogs to fetch.
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WhatsappMessageLogs to fetch.
+     */
+    orderBy?: WhatsappMessageLogOrderByWithRelationInput | WhatsappMessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WhatsappMessageLogs.
+     */
+    cursor?: WhatsappMessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WhatsappMessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WhatsappMessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WhatsappMessageLogs.
+     */
+    distinct?: WhatsappMessageLogScalarFieldEnum | WhatsappMessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * WhatsappMessageLog create
+   */
+  export type WhatsappMessageLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a WhatsappMessageLog.
+     */
+    data: XOR<WhatsappMessageLogCreateInput, WhatsappMessageLogUncheckedCreateInput>
+  }
+
+  /**
+   * WhatsappMessageLog createMany
+   */
+  export type WhatsappMessageLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WhatsappMessageLogs.
+     */
+    data: WhatsappMessageLogCreateManyInput | WhatsappMessageLogCreateManyInput[]
+  }
+
+  /**
+   * WhatsappMessageLog createManyAndReturn
+   */
+  export type WhatsappMessageLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many WhatsappMessageLogs.
+     */
+    data: WhatsappMessageLogCreateManyInput | WhatsappMessageLogCreateManyInput[]
+  }
+
+  /**
+   * WhatsappMessageLog update
+   */
+  export type WhatsappMessageLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a WhatsappMessageLog.
+     */
+    data: XOR<WhatsappMessageLogUpdateInput, WhatsappMessageLogUncheckedUpdateInput>
+    /**
+     * Choose, which WhatsappMessageLog to update.
+     */
+    where: WhatsappMessageLogWhereUniqueInput
+  }
+
+  /**
+   * WhatsappMessageLog updateMany
+   */
+  export type WhatsappMessageLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WhatsappMessageLogs.
+     */
+    data: XOR<WhatsappMessageLogUpdateManyMutationInput, WhatsappMessageLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WhatsappMessageLogs to update
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * Limit how many WhatsappMessageLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappMessageLog updateManyAndReturn
+   */
+  export type WhatsappMessageLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * The data used to update WhatsappMessageLogs.
+     */
+    data: XOR<WhatsappMessageLogUpdateManyMutationInput, WhatsappMessageLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WhatsappMessageLogs to update
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * Limit how many WhatsappMessageLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappMessageLog upsert
+   */
+  export type WhatsappMessageLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the WhatsappMessageLog to update in case it exists.
+     */
+    where: WhatsappMessageLogWhereUniqueInput
+    /**
+     * In case the WhatsappMessageLog found by the `where` argument doesn't exist, create a new WhatsappMessageLog with this data.
+     */
+    create: XOR<WhatsappMessageLogCreateInput, WhatsappMessageLogUncheckedCreateInput>
+    /**
+     * In case the WhatsappMessageLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WhatsappMessageLogUpdateInput, WhatsappMessageLogUncheckedUpdateInput>
+  }
+
+  /**
+   * WhatsappMessageLog delete
+   */
+  export type WhatsappMessageLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+    /**
+     * Filter which WhatsappMessageLog to delete.
+     */
+    where: WhatsappMessageLogWhereUniqueInput
+  }
+
+  /**
+   * WhatsappMessageLog deleteMany
+   */
+  export type WhatsappMessageLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WhatsappMessageLogs to delete
+     */
+    where?: WhatsappMessageLogWhereInput
+    /**
+     * Limit how many WhatsappMessageLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WhatsappMessageLog without action
+   */
+  export type WhatsappMessageLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WhatsappMessageLog
+     */
+    select?: WhatsappMessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WhatsappMessageLog
+     */
+    omit?: WhatsappMessageLogOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13460,6 +15729,35 @@ export namespace Prisma {
   };
 
   export type AttendanceScalarFieldEnum = (typeof AttendanceScalarFieldEnum)[keyof typeof AttendanceScalarFieldEnum]
+
+
+  export const WhatsappConfigScalarFieldEnum: {
+    id: 'id',
+    phoneNumberId: 'phoneNumberId',
+    groupId: 'groupId',
+    webhookToken: 'webhookToken',
+    defaultProjectId: 'defaultProjectId',
+    enabled: 'enabled',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WhatsappConfigScalarFieldEnum = (typeof WhatsappConfigScalarFieldEnum)[keyof typeof WhatsappConfigScalarFieldEnum]
+
+
+  export const WhatsappMessageLogScalarFieldEnum: {
+    id: 'id',
+    senderPhone: 'senderPhone',
+    senderName: 'senderName',
+    groupId: 'groupId',
+    rawMessage: 'rawMessage',
+    parsedAction: 'parsedAction',
+    status: 'status',
+    taskId: 'taskId',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type WhatsappMessageLogScalarFieldEnum = (typeof WhatsappMessageLogScalarFieldEnum)[keyof typeof WhatsappMessageLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14240,6 +16538,145 @@ export namespace Prisma {
     clockOutAt?: DateTimeNullableWithAggregatesFilter<"Attendance"> | Date | string | null
   }
 
+  export type WhatsappConfigWhereInput = {
+    AND?: WhatsappConfigWhereInput | WhatsappConfigWhereInput[]
+    OR?: WhatsappConfigWhereInput[]
+    NOT?: WhatsappConfigWhereInput | WhatsappConfigWhereInput[]
+    id?: StringFilter<"WhatsappConfig"> | string
+    phoneNumberId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    groupId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    webhookToken?: StringNullableFilter<"WhatsappConfig"> | string | null
+    defaultProjectId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    enabled?: BoolFilter<"WhatsappConfig"> | boolean
+    updatedAt?: DateTimeFilter<"WhatsappConfig"> | Date | string
+  }
+
+  export type WhatsappConfigOrderByWithRelationInput = {
+    id?: SortOrder
+    phoneNumberId?: SortOrderInput | SortOrder
+    groupId?: SortOrderInput | SortOrder
+    webhookToken?: SortOrderInput | SortOrder
+    defaultProjectId?: SortOrderInput | SortOrder
+    enabled?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WhatsappConfigWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WhatsappConfigWhereInput | WhatsappConfigWhereInput[]
+    OR?: WhatsappConfigWhereInput[]
+    NOT?: WhatsappConfigWhereInput | WhatsappConfigWhereInput[]
+    phoneNumberId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    groupId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    webhookToken?: StringNullableFilter<"WhatsappConfig"> | string | null
+    defaultProjectId?: StringNullableFilter<"WhatsappConfig"> | string | null
+    enabled?: BoolFilter<"WhatsappConfig"> | boolean
+    updatedAt?: DateTimeFilter<"WhatsappConfig"> | Date | string
+  }, "id">
+
+  export type WhatsappConfigOrderByWithAggregationInput = {
+    id?: SortOrder
+    phoneNumberId?: SortOrderInput | SortOrder
+    groupId?: SortOrderInput | SortOrder
+    webhookToken?: SortOrderInput | SortOrder
+    defaultProjectId?: SortOrderInput | SortOrder
+    enabled?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WhatsappConfigCountOrderByAggregateInput
+    _max?: WhatsappConfigMaxOrderByAggregateInput
+    _min?: WhatsappConfigMinOrderByAggregateInput
+  }
+
+  export type WhatsappConfigScalarWhereWithAggregatesInput = {
+    AND?: WhatsappConfigScalarWhereWithAggregatesInput | WhatsappConfigScalarWhereWithAggregatesInput[]
+    OR?: WhatsappConfigScalarWhereWithAggregatesInput[]
+    NOT?: WhatsappConfigScalarWhereWithAggregatesInput | WhatsappConfigScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WhatsappConfig"> | string
+    phoneNumberId?: StringNullableWithAggregatesFilter<"WhatsappConfig"> | string | null
+    groupId?: StringNullableWithAggregatesFilter<"WhatsappConfig"> | string | null
+    webhookToken?: StringNullableWithAggregatesFilter<"WhatsappConfig"> | string | null
+    defaultProjectId?: StringNullableWithAggregatesFilter<"WhatsappConfig"> | string | null
+    enabled?: BoolWithAggregatesFilter<"WhatsappConfig"> | boolean
+    updatedAt?: DateTimeWithAggregatesFilter<"WhatsappConfig"> | Date | string
+  }
+
+  export type WhatsappMessageLogWhereInput = {
+    AND?: WhatsappMessageLogWhereInput | WhatsappMessageLogWhereInput[]
+    OR?: WhatsappMessageLogWhereInput[]
+    NOT?: WhatsappMessageLogWhereInput | WhatsappMessageLogWhereInput[]
+    id?: StringFilter<"WhatsappMessageLog"> | string
+    senderPhone?: StringFilter<"WhatsappMessageLog"> | string
+    senderName?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    groupId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    rawMessage?: StringFilter<"WhatsappMessageLog"> | string
+    parsedAction?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    status?: StringFilter<"WhatsappMessageLog"> | string
+    taskId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    userId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    createdAt?: DateTimeFilter<"WhatsappMessageLog"> | Date | string
+  }
+
+  export type WhatsappMessageLogOrderByWithRelationInput = {
+    id?: SortOrder
+    senderPhone?: SortOrder
+    senderName?: SortOrderInput | SortOrder
+    groupId?: SortOrderInput | SortOrder
+    rawMessage?: SortOrder
+    parsedAction?: SortOrderInput | SortOrder
+    status?: SortOrder
+    taskId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WhatsappMessageLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WhatsappMessageLogWhereInput | WhatsappMessageLogWhereInput[]
+    OR?: WhatsappMessageLogWhereInput[]
+    NOT?: WhatsappMessageLogWhereInput | WhatsappMessageLogWhereInput[]
+    senderPhone?: StringFilter<"WhatsappMessageLog"> | string
+    senderName?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    groupId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    rawMessage?: StringFilter<"WhatsappMessageLog"> | string
+    parsedAction?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    status?: StringFilter<"WhatsappMessageLog"> | string
+    taskId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    userId?: StringNullableFilter<"WhatsappMessageLog"> | string | null
+    createdAt?: DateTimeFilter<"WhatsappMessageLog"> | Date | string
+  }, "id">
+
+  export type WhatsappMessageLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    senderPhone?: SortOrder
+    senderName?: SortOrderInput | SortOrder
+    groupId?: SortOrderInput | SortOrder
+    rawMessage?: SortOrder
+    parsedAction?: SortOrderInput | SortOrder
+    status?: SortOrder
+    taskId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: WhatsappMessageLogCountOrderByAggregateInput
+    _max?: WhatsappMessageLogMaxOrderByAggregateInput
+    _min?: WhatsappMessageLogMinOrderByAggregateInput
+  }
+
+  export type WhatsappMessageLogScalarWhereWithAggregatesInput = {
+    AND?: WhatsappMessageLogScalarWhereWithAggregatesInput | WhatsappMessageLogScalarWhereWithAggregatesInput[]
+    OR?: WhatsappMessageLogScalarWhereWithAggregatesInput[]
+    NOT?: WhatsappMessageLogScalarWhereWithAggregatesInput | WhatsappMessageLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WhatsappMessageLog"> | string
+    senderPhone?: StringWithAggregatesFilter<"WhatsappMessageLog"> | string
+    senderName?: StringNullableWithAggregatesFilter<"WhatsappMessageLog"> | string | null
+    groupId?: StringNullableWithAggregatesFilter<"WhatsappMessageLog"> | string | null
+    rawMessage?: StringWithAggregatesFilter<"WhatsappMessageLog"> | string
+    parsedAction?: StringNullableWithAggregatesFilter<"WhatsappMessageLog"> | string | null
+    status?: StringWithAggregatesFilter<"WhatsappMessageLog"> | string
+    taskId?: StringNullableWithAggregatesFilter<"WhatsappMessageLog"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"WhatsappMessageLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"WhatsappMessageLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -15000,6 +17437,167 @@ export namespace Prisma {
     clockOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type WhatsappConfigCreateInput = {
+    id?: string
+    phoneNumberId?: string | null
+    groupId?: string | null
+    webhookToken?: string | null
+    defaultProjectId?: string | null
+    enabled?: boolean
+    updatedAt?: Date | string
+  }
+
+  export type WhatsappConfigUncheckedCreateInput = {
+    id?: string
+    phoneNumberId?: string | null
+    groupId?: string | null
+    webhookToken?: string | null
+    defaultProjectId?: string | null
+    enabled?: boolean
+    updatedAt?: Date | string
+  }
+
+  export type WhatsappConfigUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    phoneNumberId?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    webhookToken?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappConfigUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    phoneNumberId?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    webhookToken?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappConfigCreateManyInput = {
+    id?: string
+    phoneNumberId?: string | null
+    groupId?: string | null
+    webhookToken?: string | null
+    defaultProjectId?: string | null
+    enabled?: boolean
+    updatedAt?: Date | string
+  }
+
+  export type WhatsappConfigUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    phoneNumberId?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    webhookToken?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappConfigUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    phoneNumberId?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    webhookToken?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappMessageLogCreateInput = {
+    id?: string
+    senderPhone: string
+    senderName?: string | null
+    groupId?: string | null
+    rawMessage: string
+    parsedAction?: string | null
+    status?: string
+    taskId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WhatsappMessageLogUncheckedCreateInput = {
+    id?: string
+    senderPhone: string
+    senderName?: string | null
+    groupId?: string | null
+    rawMessage: string
+    parsedAction?: string | null
+    status?: string
+    taskId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WhatsappMessageLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderPhone?: StringFieldUpdateOperationsInput | string
+    senderName?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    rawMessage?: StringFieldUpdateOperationsInput | string
+    parsedAction?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappMessageLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderPhone?: StringFieldUpdateOperationsInput | string
+    senderName?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    rawMessage?: StringFieldUpdateOperationsInput | string
+    parsedAction?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappMessageLogCreateManyInput = {
+    id?: string
+    senderPhone: string
+    senderName?: string | null
+    groupId?: string | null
+    rawMessage: string
+    parsedAction?: string | null
+    status?: string
+    taskId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WhatsappMessageLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderPhone?: StringFieldUpdateOperationsInput | string
+    senderName?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    rawMessage?: StringFieldUpdateOperationsInput | string
+    parsedAction?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WhatsappMessageLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderPhone?: StringFieldUpdateOperationsInput | string
+    senderName?: NullableStringFieldUpdateOperationsInput | string | null
+    groupId?: NullableStringFieldUpdateOperationsInput | string | null
+    rawMessage?: StringFieldUpdateOperationsInput | string
+    parsedAction?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -15639,6 +18237,75 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type WhatsappConfigCountOrderByAggregateInput = {
+    id?: SortOrder
+    phoneNumberId?: SortOrder
+    groupId?: SortOrder
+    webhookToken?: SortOrder
+    defaultProjectId?: SortOrder
+    enabled?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WhatsappConfigMaxOrderByAggregateInput = {
+    id?: SortOrder
+    phoneNumberId?: SortOrder
+    groupId?: SortOrder
+    webhookToken?: SortOrder
+    defaultProjectId?: SortOrder
+    enabled?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WhatsappConfigMinOrderByAggregateInput = {
+    id?: SortOrder
+    phoneNumberId?: SortOrder
+    groupId?: SortOrder
+    webhookToken?: SortOrder
+    defaultProjectId?: SortOrder
+    enabled?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WhatsappMessageLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    senderPhone?: SortOrder
+    senderName?: SortOrder
+    groupId?: SortOrder
+    rawMessage?: SortOrder
+    parsedAction?: SortOrder
+    status?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WhatsappMessageLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    senderPhone?: SortOrder
+    senderName?: SortOrder
+    groupId?: SortOrder
+    rawMessage?: SortOrder
+    parsedAction?: SortOrder
+    status?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WhatsappMessageLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    senderPhone?: SortOrder
+    senderName?: SortOrder
+    groupId?: SortOrder
+    rawMessage?: SortOrder
+    parsedAction?: SortOrder
+    status?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProjectCreateNestedManyWithoutOwnerInput = {

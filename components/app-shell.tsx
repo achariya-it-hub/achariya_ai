@@ -22,6 +22,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/tasks", label: "Tasks", icon: CheckSquare, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/timeline", label: "Timeline", icon: GanttChart, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/whatsapp", label: "WhatsApp Integration", icon: MessageSquare, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/team", label: "Team", icon: Users, roles: ["admin", "manager"] },
   { href: "/dashboard/productivity", label: "Productivity", icon: BarChart3, roles: ["admin", "manager"] },
   { href: "/dashboard/meetings", label: "Meetings", icon: Video, roles: ["admin", "manager", "member", "trainee"] },

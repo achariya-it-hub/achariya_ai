@@ -151,3 +151,26 @@ model Attendance {
 
   @@index([userId])
 }
+
+model WhatsappConfig {
+  id               String   @id @default("default")
+  phoneNumberId    String?
+  groupId          String?  @default("group-crm-main")
+  webhookToken     String?  @default("wh_token_achariya_crm")
+  defaultProjectId String?
+  enabled          Boolean  @default(true)
+  updatedAt        DateTime @default(now()) @updatedAt
+}
+
+model WhatsappMessageLog {
+  id           String   @id @default(cuid())
+  senderPhone  String
+  senderName   String?
+  groupId      String?
+  rawMessage   String
+  parsedAction String?
+  status       String   @default("PROCESSED")
+  taskId       String?
+  userId       String?
+  createdAt    DateTime @default(now())
+}

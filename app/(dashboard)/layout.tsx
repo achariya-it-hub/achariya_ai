@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/auth-context";
 import { Sidebar } from "@/components/app-shell";
 import { Loader2 } from "lucide-react";
+import { useCRMStore } from "@/store/crm-store";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -15,6 +16,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    if (user) {
+      useCRMStore.getState().load();
+      const timer = setInterval(() => {
+        if (typeof document !== "undefined" && document.visibilityState === "visible") {
+          useCRMStore.getState().load();
+        }
+      }, 30000);
+      return () => clearInterval(timer);
+    }
+  }, [user]);
 
   if (loading) {
     return (
