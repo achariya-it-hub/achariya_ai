@@ -249,8 +249,7 @@ export const seedData: CRMData = {
     // Trainee tasks with payouts
     { id: "t24", projectId: "p3", milestoneId: "m5", title: "Navigation Bar & Account Layout", description: "Develop responsive account view & navigation layout", status: "done", priority: "high", assigneeId: "u6", dueDate: "2025-06-18", order: 3, payout: 1500, proofs: [], createdAt: "2025-06-10T00:00:00.000Z" },
     { id: "t25", projectId: "p3", milestoneId: "m5", title: "User Payout Account UI Components", description: "Create task payout summary cards and account statement table", status: "in-progress", priority: "urgent", assigneeId: "u6", dueDate: "2025-07-10", order: 4, payout: 2000, proofs: [], createdAt: "2025-06-15T00:00:00.000Z" },
-    { id: "t26", projectId: "p2", milestoneId: "m4", title: "Video Color Grading & Rough Cut", description: "Perform color correction and audio sync for video episode 1", status: "done", priority: "high", assigneeId: "u3", dueDate: "2025-06-25", order: 3, payout: 1200, proofs: [], createdAt: "2025-06-15T00:00:00.000Z" },
-    { id: "t27", projectId: "p7", title: "RBIQ Client Motion Graphics Short", description: "Design and animate 30-second promo graphic clip", status: "in-progress", priority: "medium", assigneeId: "u3", dueDate: "2025-07-15", order: 2, payout: 800, proofs: [], createdAt: "2025-07-01T00:00:00.000Z" },
+
 
     // Scheduled 48 Video Works tasks
     { id: "v1", projectId: "p2", milestoneId: "m4", title: "DAY1", description: "Video Work DAY1", status: "done", priority: "medium", assigneeId: "u3", dueDate: "2025-07-01", payout: 50, proofNote: "Uploaded video DAY1", proofs: [], createdAt: "2025-07-01T00:00:00.000Z", order: 1 },
