@@ -6,6 +6,30 @@ import { seedData } from "@/lib/data";
 
 const STORAGE_KEY = "achariya_crm_store_v3";
 
+const DELETED_KEY = "achariya_crm_deleted_ids";
+
+function getDeletedIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return new Set();
+  }
+}
+
+function addDeletedId(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const ids = getDeletedIds();
+    ids.add(id);
+    localStorage.setItem(DELETED_KEY, JSON.stringify(Array.from(ids)));
+  } catch (err) {
+    console.warn("Error saving deleted ID:", err);
+  }
+}
+
 function saveLocalData(data: {
   members: TeamMember[];
   projects: Project[];
@@ -83,16 +107,18 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
     }
     isSyncing = true;
 
+    const deleted = getDeletedIds();
+
     // 1. Initial hydration from localStorage if present
     const cached = getLocalData();
     if (cached) {
       set({
-        members: cached.members?.length ? cached.members : seedData.members,
-        projects: cached.projects?.length ? cached.projects : seedData.projects,
-        milestones: cached.milestones?.length ? cached.milestones : seedData.milestones,
-        tasks: cached.tasks?.length ? cached.tasks : seedData.tasks,
-        meetings: cached.meetings?.length ? cached.meetings : seedData.meetings,
-        activities: cached.activities?.length ? cached.activities : seedData.activities,
+        members: (cached.members?.length ? cached.members : seedData.members).filter((m: any) => !deleted.has(m.id)),
+        projects: (cached.projects?.length ? cached.projects : seedData.projects).filter((p: any) => !deleted.has(p.id)),
+        milestones: (cached.milestones?.length ? cached.milestones : seedData.milestones).filter((m: any) => !deleted.has(m.id)),
+        tasks: (cached.tasks?.length ? cached.tasks : seedData.tasks).filter((t: any) => !deleted.has(t.id)),
+        meetings: (cached.meetings?.length ? cached.meetings : seedData.meetings).filter((m: any) => !deleted.has(m.id)),
+        activities: (cached.activities?.length ? cached.activities : seedData.activities).filter((a: any) => !deleted.has(a.id)),
         attendance: cached.attendance || [],
       });
     }
@@ -110,13 +136,25 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
       const cur = get();
 
-      // Merge function that overlays API data on current state without discarding user edits
+      // Merge function that strictly enforces deleted ID exclusion and avoids resurrecting deleted items
       const merge = <T extends { id: string }>(apiList: T[] | null, currentList: T[], seedList: T[]) => {
-        if (!apiList || apiList.length === 0) return currentList.length > 0 ? currentList : seedList;
-        const apiMap = new Map(apiList.map((item) => [item.id, item]));
-        const merged = [...apiList];
+        let baseList: T[] = [];
+        if (Array.isArray(apiList) && apiList.length > 0) {
+          baseList = apiList.filter((item) => !deleted.has(item.id));
+        } else if (currentList.length > 0) {
+          baseList = currentList.filter((item) => !deleted.has(item.id));
+        } else {
+          baseList = seedList.filter((item) => !deleted.has(item.id));
+        }
+
+        const baseMap = new Map(baseList.map((item) => [item.id, item]));
+        const merged = [...baseList];
         for (const item of currentList) {
-          if (!apiMap.has(item.id)) {
+          if (
+            !deleted.has(item.id) &&
+            !baseMap.has(item.id) &&
+            (item.id.startsWith("task-") || item.id.startsWith("p-") || item.id.startsWith("m-") || item.id.startsWith("u-") || item.id.startsWith("meet-"))
+          ) {
             merged.push(item);
           }
         }
@@ -191,6 +229,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   deleteMember: async (id) => {
+    addDeletedId(id);
     set((s) => {
       const next = { ...s, members: s.members.filter((m) => m.id !== id) };
       saveLocalData(next);
@@ -236,6 +275,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   deleteProject: async (id) => {
+    addDeletedId(id);
     set((s) => {
       const next = { ...s, projects: s.projects.filter((p) => p.id !== id) };
       saveLocalData(next);
@@ -267,6 +307,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   deleteMilestone: async (id) => {
+    addDeletedId(id);
     set((s) => {
       const next = { ...s, milestones: s.milestones.filter((m) => m.id !== id) };
       saveLocalData(next);
@@ -301,6 +342,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   deleteTask: async (id) => {
+    addDeletedId(id);
     set((s) => {
       const next = { ...s, tasks: s.tasks.filter((t) => t.id !== id) };
       saveLocalData(next);
@@ -359,6 +401,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   deleteMeeting: async (id) => {
+    addDeletedId(id);
     set((s) => {
       const next = { ...s, meetings: s.meetings.filter((m) => m.id !== id) };
       saveLocalData(next);
