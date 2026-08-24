@@ -123,26 +123,46 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         return merged;
       };
 
-      const finalMembers = merge(membersRes, cur.members, seedData.members);
-      const finalProjects = merge(projectsRes, cur.projects, seedData.projects);
-      const finalMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
-      const finalTasks = merge(tasksRes, cur.tasks, seedData.tasks);
-      const finalMeetings = Array.isArray(meetingsRes) ? meetingsRes : cur.meetings;
-      const finalActivities = Array.isArray(activitiesRes) ? activitiesRes : cur.activities;
-      const finalAttendance = Array.isArray(attendanceRes) ? attendanceRes : cur.attendance;
+      const isSame = (a: any, b: any) => JSON.stringify(a) === JSON.stringify(b);
 
-      const newState = {
-        members: finalMembers,
-        projects: finalProjects,
-        milestones: finalMilestones,
-        tasks: finalTasks,
-        meetings: finalMeetings,
-        activities: finalActivities,
-        attendance: finalAttendance,
-      };
+      const mergedMembers = merge(membersRes, cur.members, seedData.members);
+      const mergedProjects = merge(projectsRes, cur.projects, seedData.projects);
+      const mergedMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
+      const mergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+      const mergedMeetings = Array.isArray(meetingsRes) ? meetingsRes : cur.meetings;
+      const mergedActivities = Array.isArray(activitiesRes) ? activitiesRes : cur.activities;
+      const mergedAttendance = Array.isArray(attendanceRes) ? attendanceRes : cur.attendance;
 
-      set(newState);
-      saveLocalData(newState);
+      const finalMembers = isSame(mergedMembers, cur.members) ? cur.members : mergedMembers;
+      const finalProjects = isSame(mergedProjects, cur.projects) ? cur.projects : mergedProjects;
+      const finalMilestones = isSame(mergedMilestones, cur.milestones) ? cur.milestones : mergedMilestones;
+      const finalTasks = isSame(mergedTasks, cur.tasks) ? cur.tasks : mergedTasks;
+      const finalMeetings = isSame(mergedMeetings, cur.meetings) ? cur.meetings : mergedMeetings;
+      const finalActivities = isSame(mergedActivities, cur.activities) ? cur.activities : mergedActivities;
+      const finalAttendance = isSame(mergedAttendance, cur.attendance) ? cur.attendance : mergedAttendance;
+
+      const hasChanged =
+        finalMembers !== cur.members ||
+        finalProjects !== cur.projects ||
+        finalMilestones !== cur.milestones ||
+        finalTasks !== cur.tasks ||
+        finalMeetings !== cur.meetings ||
+        finalActivities !== cur.activities ||
+        finalAttendance !== cur.attendance;
+
+      if (hasChanged) {
+        const newState = {
+          members: finalMembers,
+          projects: finalProjects,
+          milestones: finalMilestones,
+          tasks: finalTasks,
+          meetings: finalMeetings,
+          activities: finalActivities,
+          attendance: finalAttendance,
+        };
+        set(newState);
+        saveLocalData(newState);
+      }
     } catch (err) {
       console.warn("Store load sync warning:", err);
     } finally {
