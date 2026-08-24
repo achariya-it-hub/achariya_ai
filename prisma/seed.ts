@@ -97,8 +97,7 @@ async function main() {
       { id: "t25", projectId: "p3", milestoneId: "m5", title: "User Payout Account UI Components", description: "Create task payout summary cards and account statement table", status: "in-progress", priority: "urgent", assigneeId: "u6", dueDate: "2025-07-10", order: 4, payout: 2000 },
       { id: "t26", projectId: "p2", milestoneId: "m4", title: "Video Color Grading & Rough Cut", description: "Perform color correction and audio sync for video episode 1", status: "done", priority: "high", assigneeId: "u3", dueDate: "2025-06-25", order: 3, payout: 1200 },
       { id: "t27", projectId: "p7", title: "RBIQ Client Motion Graphics Short", description: "Design and animate 30-second promo graphic clip", status: "in-progress", priority: "medium", assigneeId: "u3", dueDate: "2025-07-15", order: 2, payout: 800 },
-      { id: "t30", projectId: "p1", milestoneId: "m1", title: "Proofreading & Formatting Chapter 1-2", description: "Review grammar, typography layout, and image captions", status: "done", priority: "medium", assigneeId: "u9", dueDate: "2025-06-22", order: 2, payout: 750 },
-      { id: "t31", projectId: "p4", title: "Podcast Episode 1 Show Notes & Transcript", description: "Generate full transcript and write summary bullet points", status: "in-progress", priority: "high", assigneeId: "u9", dueDate: "2025-07-18", order: 1, payout: 950 },
+
 
       // Scheduled 48 Video Works tasks (All completed with uploaded proof)
       { id: "v1", projectId: "p2", milestoneId: "m4", title: "DAY1", description: "Video Work DAY1", status: "done", priority: "medium", assigneeId: "u3", dueDate: "2025-07-01", order: 1, payout: 50, proofNote: "Uploaded video DAY1" },

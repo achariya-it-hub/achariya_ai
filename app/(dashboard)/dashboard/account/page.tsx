@@ -30,6 +30,7 @@ import {
   Award,
   Users,
   Eye,
+  Trash2,
 } from "lucide-react";
 
 const container = {
@@ -55,6 +56,7 @@ export default function AccountPage() {
   const projects = useCRMStore((s) => s.projects);
   const members = useCRMStore((s) => s.members);
   const load = useCRMStore((s) => s.load);
+  const deleteTask = useCRMStore((s) => s.deleteTask);
 
   useEffect(() => {
     load();
@@ -466,14 +468,25 @@ export default function AccountPage() {
                           </td>
 
                           <td className="px-5 py-3.5 text-right">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setSelectedTask(t)}
-                              className="h-8 text-xs text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 gap-1 font-semibold"
-                            >
-                              Details <ArrowUpRight className="h-3.5 w-3.5" />
-                            </Button>
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setSelectedTask(t)}
+                                className="h-8 text-xs text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 gap-1 font-semibold"
+                              >
+                                Details <ArrowUpRight className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteTask(t.id)}
+                                title="Remove task"
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );
