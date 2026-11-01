@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import ProgressRing from "@/components/progress-ring";
 import { formatDate, initials } from "@/lib/utils";
+import { calculateProjectHealth } from "@/lib/project-health";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -46,6 +47,7 @@ export default function DashboardPage() {
 
   const role = user?.role || "trainee";
   const isElevated = role === "admin" || role === "manager";
+  const isAdmin = role === "admin";
 
   // Engaged projects & tasks for current user role
   const allowedProjects = projects.filter((p) => isElevated || p.memberIds.includes(user?.id || "") || p.ownerId === user?.id);
@@ -63,10 +65,10 @@ export default function DashboardPage() {
   const upcomingMeetings = meetings.filter((m) => isElevated || m.hostId === user?.id || m.attendeeIds?.includes(user?.id || ""));
 
   const stats = [
-    { label: isElevated ? "Active Projects" : "Engaged Projects", value: activeProjects.length, icon: FolderKanban, gradient: "indigo" as const, orb: "bg-fuchsia-400/40" },
-    { label: "My Tasks", value: myTasks.length, icon: CheckSquare, gradient: "blue" as const, orb: "bg-cyan-300/40" },
-    { label: "Overdue Tasks", value: overdueTasks.length, icon: AlertCircle, gradient: "red" as const, orb: "bg-rose-300/40" },
-    { label: "Upcoming Meetings", value: upcomingMeetings.length, icon: Calendar, gradient: "green" as const, orb: "bg-emerald-300/40" },
+    { label: isElevated ? "Active Projects" : "Engaged Projects", value: activeProjects.length, icon: FolderKanban, gradient: "indigo" as const, orb: "bg-fuchsia-400/40", href: "/dashboard/projects" },
+    { label: "My Tasks", value: myTasks.length, icon: CheckSquare, gradient: "blue" as const, orb: "bg-cyan-300/40", href: "/dashboard/tasks?assignee=me" },
+    { label: "Overdue Tasks", value: overdueTasks.length, icon: AlertCircle, gradient: "red" as const, orb: "bg-rose-300/40", href: "/dashboard/tasks?overdue=true" },
+    { label: "Upcoming Meetings", value: upcomingMeetings.length, icon: Calendar, gradient: "green" as const, orb: "bg-emerald-300/40", href: "/dashboard/meetings" },
   ];
 
   const statThemes: Record<string, string> = {
@@ -151,75 +153,132 @@ export default function DashboardPage() {
               key={stat.label}
               variants={item}
               whileHover={{ y: -6, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <Card className={`relative overflow-hidden border-0 bg-gradient-to-br ${theme} text-white rounded-2xl shadow-xl shadow-black/20 hover:shadow-2xl`}>
-                {/* glossy sheen */}
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.9),transparent_55%)]" />
-                {/* shine sweep */}
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  <motion.div
-                    className="absolute top-0 bottom-0 w-1/3 -skew-x-12 bg-white/40 blur-md"
-                    initial={{ left: "-40%" }}
-                    animate={{ left: ["-40%", "120%"] }}
-                    transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
-                  />
-                </div>
-                {/* decorative depth orb */}
-                <div className={`absolute -right-6 -top-6 h-24 w-24 rounded-full ${stat.orb} blur-xl`} />
-                <div className="absolute -bottom-8 -left-6 h-28 w-28 rounded-full bg-white/10 blur-xl" />
-                <CardContent className="relative p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white/85">{stat.label}</p>
-                      <p className="text-3xl font-bold mt-1 drop-shadow-sm">{stat.value}</p>
-                    </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/25 ring-1 ring-white/40 shadow-lg backdrop-blur">
-                      <stat.icon className="h-5 w-5 text-white drop-shadow" />
-                    </div>
+              <Link href={stat.href} className="block group h-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-2xl">
+                <Card className={`relative h-full overflow-hidden border-0 bg-gradient-to-br ${theme} text-white rounded-2xl shadow-xl shadow-black/20 hover:shadow-2xl transition-all duration-300 cursor-pointer`}>
+                  {/* glossy sheen */}
+                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.9),transparent_55%)]" />
+                  {/* shine sweep */}
+                  <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                    <motion.div
+                      className="absolute top-0 bottom-0 w-1/3 -skew-x-12 bg-white/40 blur-md"
+                      initial={{ left: "-40%" }}
+                      animate={{ left: ["-40%", "120%"] }}
+                      transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                    />
                   </div>
-                </CardContent>
-              </Card>
+                  {/* decorative depth orb */}
+                  <div className={`absolute -right-6 -top-6 h-24 w-24 rounded-full ${stat.orb} blur-xl`} />
+                  <div className="absolute -bottom-8 -left-6 h-28 w-28 rounded-full bg-white/10 blur-xl" />
+                  <CardContent className="relative p-5">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-white/85 group-hover:text-white transition-colors">{stat.label}</p>
+                        <p className="text-3xl font-bold mt-1 drop-shadow-sm">{stat.value}</p>
+                      </div>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/25 ring-1 ring-white/40 shadow-lg backdrop-blur group-hover:bg-white/35 group-hover:scale-110 transition-all duration-200">
+                        <stat.icon className="h-5 w-5 text-white drop-shadow" />
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-1 text-[11px] font-medium text-white/75 group-hover:text-white transition-colors">
+                      <span>Open {stat.label}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </motion.div>
           );
         })}
       </div>
 
-      {/* User Personal Account Payout Banner */}
-      <motion.div variants={item}>
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 p-5 text-white shadow-lg shadow-emerald-500/10">
-          <div className="pointer-events-none absolute -right-10 -bottom-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-3.5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-inner shrink-0">
-                <Banknote className="h-6 w-6 text-white" />
+      {/* Trainee Payout Tracker (For Trainees Only) */}
+      {role === "trainee" && (
+        <motion.div variants={item}>
+          <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 p-5 text-white shadow-lg shadow-emerald-500/10">
+            <div className="pointer-events-none absolute -right-10 -bottom-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-inner shrink-0">
+                  <Banknote className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-emerald-100 uppercase tracking-wider">My Trainee Payout Tracker</p>
+                  <div className="flex items-baseline gap-3 mt-0.5">
+                    <span className="text-2xl font-bold">
+                      ₹{myTasks.filter((t) => t.status === "done").reduce((sum, t) => sum + (t.payout || 0), 0).toLocaleString()}
+                    </span>
+                    <span className="text-xs text-emerald-100/90 font-medium">Earned (Completed Tasks)</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-emerald-100 uppercase tracking-wider">My Account Payout Summary</p>
-                <div className="flex items-baseline gap-3 mt-0.5">
-                  <span className="text-2xl font-bold">₹{myTasks.filter((t) => t.status === "done").reduce((sum, t) => sum + (t.payout || 0), 0).toLocaleString()}</span>
-                  <span className="text-xs text-emerald-100/90 font-medium">Earned (Completed Tasks)</span>
+
+              <div className="flex items-center gap-4">
+                <div className="text-right hidden sm:block">
+                  <p className="text-xs text-emerald-100/80">Pending Verification</p>
+                  <p className="text-lg font-semibold text-amber-200">
+                    ₹{myTasks.filter((t) => t.status !== "done").reduce((sum, t) => sum + (t.payout || 0), 0).toLocaleString()}
+                  </p>
+                </div>
+                <Link
+                  href="/dashboard/tasks"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-100 shadow-md transition-all duration-200 hover:scale-105"
+                >
+                  Submit Task Proofs <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Trainee Payout Overview for Admins */}
+      {isAdmin && (() => {
+        const traineeMembers = members.filter((m) => m.role === "trainee");
+        const traineeMemberIds = new Set(traineeMembers.map((m) => m.id));
+        const traineeTasks = tasks.filter((t) => t.assigneeId && traineeMemberIds.has(t.assigneeId));
+        const traineeEarned = traineeTasks.filter((t) => t.status === "done").reduce((sum, t) => sum + (t.payout || 0), 0);
+        const traineePending = traineeTasks.filter((t) => t.status !== "done").reduce((sum, t) => sum + (t.payout || 0), 0);
+
+        return (
+          <motion.div variants={item}>
+            <div className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 text-white shadow-lg shadow-indigo-500/10">
+              <div className="pointer-events-none absolute -right-10 -bottom-10 h-36 w-36 rounded-full bg-indigo-500/10 blur-2xl" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 ring-1 ring-indigo-400/30 shadow-inner shrink-0 text-indigo-300">
+                    <Banknote className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
+                      Trainee Payout Overview ({traineeMembers.length} Trainees)
+                    </p>
+                    <div className="flex items-baseline gap-3 mt-0.5">
+                      <span className="text-2xl font-bold">₹{traineeEarned.toLocaleString()}</span>
+                      <span className="text-xs text-indigo-200 font-medium">Earned across completed trainee tasks</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-xs text-slate-400">Pending Trainee Work</p>
+                    <p className="text-lg font-semibold text-amber-300">₹{traineePending.toLocaleString()}</p>
+                  </div>
+                  <Link
+                    href="/dashboard/account"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-xs font-bold text-white shadow-md transition-all duration-200 hover:scale-105"
+                  >
+                    Trainee Payouts & Settlements <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
               </div>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs text-emerald-100/80">Pending Payout</p>
-                <p className="text-lg font-semibold text-amber-200">
-                  ₹{myTasks.filter((t) => t.status !== "done").reduce((sum, t) => sum + (t.payout || 0), 0).toLocaleString()}
-                </p>
-              </div>
-              <Link
-                href="/dashboard/account"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-100 shadow-md transition-all duration-200 hover:scale-105"
-              >
-                View Account Statement <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
+        );
+      })()}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div variants={item} className="lg:col-span-2">
@@ -238,15 +297,21 @@ export default function DashboardPage() {
                 <p className="text-sm text-slate-400 py-8 text-center">No active projects.</p>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
-                  {activeProjects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/dashboard/projects/${project.id}`}
-                      className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 py-4 px-2 hover:border-indigo-200 hover:shadow-md hover:scale-[1.03] hover:bg-white transition-all duration-200"
-                    >
-                      <ProgressRing value={project.progress} label={project.name} color={project.color} size={120} stroke={9} />
-                    </Link>
-                  ))}
+                  {activeProjects.map((project) => {
+                    const health = calculateProjectHealth(project, tasks);
+                    return (
+                      <Link
+                        key={project.id}
+                        href={`/dashboard/projects/${project.id}`}
+                        className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 py-4 px-2 hover:border-indigo-200 hover:shadow-md hover:scale-[1.03] hover:bg-white transition-all duration-200 relative"
+                      >
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${health.bgLight} ${health.color} ${health.borderColor} mb-1`}>
+                          {health.label}
+                        </span>
+                        <ProgressRing value={project.progress} label={project.name} color={project.color} size={120} stroke={9} />
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>

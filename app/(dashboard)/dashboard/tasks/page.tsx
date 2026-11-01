@@ -17,6 +17,16 @@ import { initials, formatDate } from "@/lib/utils";
 import { Task, TaskStatus, Priority, TeamMember, Project } from "@/types";
 import { Plus, CheckCircle2, Circle, GripVertical, Filter, Banknote, Paperclip, Link2, Trash2, Upload, Layers, ChevronDown, ChevronUp, Sparkles, LayoutGrid, List, Calendar as CalendarIcon, GanttChart, Users, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { EnhancedProofDialog } from "@/components/tasks/enhanced-proof-dialog";
+import {
+  PlatformBadge,
+  CreativeTypeBadge,
+  calculateACMSMetrics,
+  platformMeta,
+  creativeTypeMeta,
+} from "@/components/tasks/acms-creative-badges";
+import { CreativePlatform, CreativeType } from "@/types";
+import { Clock4, RefreshCw, Award, AlertTriangle } from "lucide-react";
 
 type ViewMode = "kanban" | "table" | "calendar" | "timeline" | "workload";
 
@@ -228,7 +238,7 @@ function TaskCollageCard({
                           {formatDate(task.dueDate, { month: "short", day: "numeric" })}
                         </span>
                       )}
-                      {task.payout > 0 && (
+                      {task.payout > 0 && taskAssignee?.role === "trainee" && (
                         <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
                           <Banknote className="h-2.5 w-2.5" />
                           {task.payout.toLocaleString()}
@@ -326,6 +336,20 @@ function TaskTableView({
               return (
                 <tr key={task.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="px-4 py-3">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      {task.assetCode && (
+                        <span className="text-[9px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded border border-slate-200">
+                          {task.assetCode}
+                        </span>
+                      )}
+                      <PlatformBadge platform={task.platform} />
+                      <CreativeTypeBadge type={task.creativeType} />
+                      {task.reviewFeedback && task.status !== "done" && (
+                        <span className="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded border border-amber-200">
+                          ⚠️ Needs Correction
+                        </span>
+                      )}
+                    </div>
                     <p className="font-semibold text-slate-800">{task.title}</p>
                     {task.description && (
                       <p className="text-[10px] text-slate-400 line-clamp-1">{task.description}</p>
@@ -374,7 +398,7 @@ function TaskTableView({
                     {task.dueDate ? formatDate(task.dueDate, { month: "short", day: "numeric", year: "numeric" }) : "-"}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold text-emerald-600">
-                    {task.payout > 0 ? `₹${task.payout.toLocaleString()}` : "-"}
+                    {task.payout > 0 && assignee?.role === "trainee" ? `₹${task.payout.toLocaleString()}` : "-"}
                   </td>
                   <td className="px-4 py-3 text-center">
                     {task.proofs?.length > 0 ? (
@@ -611,7 +635,16 @@ function TaskWorkloadView({
           const memberTasks = tasks.filter((t) => t.assigneeId === member.id);
           const doneTasks = memberTasks.filter((t) => t.status === "done");
           const inProgTasks = memberTasks.filter((t) => t.status === "in-progress" || t.status === "review");
-          const totalEarned = memberTasks.reduce((sum, t) => sum + (t.payout || 0), 0);
+          const totalEarned = member.role === "trainee" ? memberTasks.reduce((sum, t) => sum + (t.payout || 0), 0) : 0;
+          const activeCount = inProgTasks.length + memberTasks.filter((t) => t.status === "todo").length;
+          const capacityStatus =
+            activeCount === 0
+              ? { label: "Available", color: "bg-emerald-100 text-emerald-800 border-emerald-200" }
+              : activeCount <= 4
+              ? { label: "Optimal Capacity", color: "bg-blue-100 text-blue-800 border-blue-200" }
+              : activeCount <= 7
+              ? { label: "Heavy Load", color: "bg-amber-100 text-amber-800 border-amber-200" }
+              : { label: "Overloaded", color: "bg-rose-100 text-rose-800 border-rose-200" };
 
           return (
             <div key={member.id} className="pt-4 first:pt-0 space-y-3">
@@ -622,8 +655,13 @@ function TaskWorkloadView({
                     <AvatarFallback className="text-xs">{initials(member.name)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-bold text-slate-800 text-sm">{member.name}</h3>
-                    <p className="text-[10px] text-slate-400">{member.title} · {member.department}</p>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-slate-800 text-sm">{member.name}</h3>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border ${capacityStatus.color}`}>
+                        {capacityStatus.label}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-400">{member.title} · {member.department} ({member.role})</p>
                   </div>
                 </div>
 
@@ -640,10 +678,12 @@ function TaskWorkloadView({
                     <p className="text-[10px] text-slate-400">In Progress</p>
                     <p className="font-bold text-amber-600">{inProgTasks.length}</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-400">Total Payout</p>
-                    <p className="font-bold text-indigo-600">₹{totalEarned.toLocaleString()}</p>
-                  </div>
+                  {member.role === "trainee" && (
+                    <div className="text-center">
+                      <p className="text-[10px] text-slate-400">Trainee Payout</p>
+                      <p className="font-bold text-indigo-600">₹{totalEarned.toLocaleString()}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -688,7 +728,6 @@ export default function TasksPage() {
   const members = useCRMStore((s) => s.members);
   const updateTask = useCRMStore((s) => s.updateTask);
   const addTask = useCRMStore((s) => s.addTask);
-  const deleteTask = useCRMStore((s) => s.deleteTask);
   const addTaskProof = useCRMStore((s) => s.addTaskProof);
   const removeTaskProof = useCRMStore((s) => s.removeTaskProof);
   const load = useCRMStore((s) => s.load);
@@ -697,9 +736,43 @@ export default function TasksPage() {
   const [open, setOpen] = useState(false);
   const [filterProject, setFilterProject] = useState("all");
   const [filterAssignee, setFilterAssignee] = useState("all");
+  const [filterPlatform, setFilterPlatform] = useState("all");
+  const [filterCreativeType, setFilterCreativeType] = useState("all");
+  const [filterNeedsCorrection, setFilterNeedsCorrection] = useState(false);
+  const [filterOverdue, setFilterOverdue] = useState(false);
+
+  // Sync filters from URL search params (e.g. ?assignee=me or ?overdue=true from Dashboard cards)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const assigneeParam = params.get("assignee");
+      if (assigneeParam === "me" && user?.id) {
+        setFilterAssignee(user.id);
+      } else if (assigneeParam) {
+        setFilterAssignee(assigneeParam);
+      }
+      if (params.get("overdue") === "true") {
+        setFilterOverdue(true);
+      }
+      if (params.get("project")) {
+        setFilterProject(params.get("project")!);
+      }
+    }
+  }, [user?.id]);
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [isCollagedView, setIsCollagedView] = useState(true);
-  const [form, setForm] = useState({ title: "", description: "", projectId: "", priority: "medium" as Priority, assigneeId: "", dueDate: "", payout: 0 });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    projectId: "",
+    priority: "medium" as Priority,
+    assigneeId: "",
+    dueDate: "",
+    payout: 0,
+    platform: "" as CreativePlatform | "",
+    creativeType: "" as CreativeType | "",
+    sbu: "",
+  });
   const [proofTask, setProofTask] = useState<Task | null>(null);
   const [proofUrl, setProofUrl] = useState("");
   const [proofNote, setProofNote] = useState("");
@@ -708,30 +781,38 @@ export default function TasksPage() {
 
   const role = user?.role || "trainee";
   const isElevated = role === "admin" || role === "manager";
+  const isAdmin = role === "admin";
 
   // Engaged projects for the user
   const engagedProjects = projects.filter((p) => isElevated || p.memberIds.includes(user?.id || "") || p.ownerId === user?.id);
   const engagedProjectIds = engagedProjects.map((p) => p.id);
 
-  // Role-isolated tasks: Trainees only see tasks assigned to them. Admins & Managers see all tasks.
+  // Role-isolated tasks
   const userAllowedTasks = tasks.filter((t) => {
     if (isElevated) return true;
-    if (role === "trainee") {
-      return t.assigneeId === user?.id;
-    }
+    // Trainees & Members: Only tasks assigned to them or in engaged projects
     return t.assigneeId === user?.id || engagedProjectIds.includes(t.projectId);
   });
 
   const filtered = userAllowedTasks.filter((t) => {
     if (filterProject !== "all" && t.projectId !== filterProject) return false;
     if (filterAssignee !== "all" && t.assigneeId !== filterAssignee) return false;
+    if (filterPlatform !== "all" && t.platform !== filterPlatform) return false;
+    if (filterCreativeType !== "all" && t.creativeType !== filterCreativeType) return false;
+    if (filterNeedsCorrection && (!t.reviewFeedback || t.status === "done")) return false;
+    if (filterOverdue) {
+      const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== "done";
+      if (!isOverdue) return false;
+    }
     return true;
   });
 
   function handleMove(task: Task, newStatus: TaskStatus) {
     if (task.status === newStatus) return;
-    // Preserve exact task payout as set by task/project creator
-    updateTask(task.id, { status: newStatus });
+    const taskAssignee = members.find((m) => m.id === task.assigneeId);
+    const isTrainee = taskAssignee?.role === "trainee";
+    const newPayout = isTrainee ? (task.payout || 0) : 0;
+    updateTask(task.id, { status: newStatus, payout: newPayout });
   }
 
   function handleCreate() {
@@ -744,10 +825,14 @@ export default function TasksPage() {
       priority: form.priority,
       assigneeId: form.assigneeId || undefined,
       dueDate: form.dueDate || undefined,
-      payout: form.payout,
+      payout: isAdmin && members.find((m) => m.id === form.assigneeId)?.role === "trainee" ? (Number(form.payout) || 0) : 0,
+      platform: (form.platform as CreativePlatform) || undefined,
+      creativeType: (form.creativeType as CreativeType) || undefined,
+      sbu: form.sbu || undefined,
+      assetCode: `CR-${Date.now().toString().slice(-4)}`,
     });
     setOpen(false);
-    setForm({ title: "", description: "", projectId: "", priority: "medium", assigneeId: "", dueDate: "", payout: 0 });
+    setForm({ title: "", description: "", projectId: "", priority: "medium", assigneeId: "", dueDate: "", payout: 0, platform: "", creativeType: "", sbu: "" });
   }
 
   function openProofDialog(task: Task) {
@@ -779,11 +864,7 @@ export default function TasksPage() {
 
   async function handleSaveProofDetails() {
     if (!proofTask) return;
-    const updates: Partial<Task> = { proofNote: proofNote || null };
-    if (isElevated) {
-      updates.payout = Number(payoutDraft) || 0;
-    }
-    await updateTask(proofTask.id, updates);
+    await updateTask(proofTask.id, { payout: Number(payoutDraft) || 0, proofNote: proofNote || null });
     setSaveMsg("Saved ✓");
   }
 
@@ -793,6 +874,7 @@ export default function TasksPage() {
     color: col.chart,
   }));
 
+  const acmsMetrics = calculateACMSMetrics(userAllowedTasks);
   const totalTasks = filtered.length;
   const doneCount = filtered.filter((t) => t.status === "done").length;
 
@@ -972,13 +1054,61 @@ export default function TasksPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Payout</Label>
-                      <Input type="number" min={0} step="0.01" className="mt-1.5" value={form.payout || ""} onChange={(e) => setForm({ ...form, payout: Number(e.target.value) || 0 })} placeholder="0.00" />
+                      <Label>Platform (ACMS)</Label>
+                      <Select value={form.platform} onValueChange={(v) => v && setForm({ ...form, platform: v as CreativePlatform })}>
+                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Platform" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="instagram">📸 Instagram</SelectItem>
+                          <SelectItem value="youtube">▶️ YouTube</SelectItem>
+                          <SelectItem value="linkedin">💼 LinkedIn</SelectItem>
+                          <SelectItem value="meta">👥 Meta / FB</SelectItem>
+                          <SelectItem value="website">🌐 Website</SelectItem>
+                          <SelectItem value="twitter">🐦 X (Twitter)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="flex items-end">
-                      <p className="text-xs text-slate-400 pb-2">Payout credited to the assignee on completion.</p>
+                    <div>
+                      <Label>Creative Format</Label>
+                      <Select value={form.creativeType} onValueChange={(v) => v && setForm({ ...form, creativeType: v as CreativeType })}>
+                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Format" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="reel">🎬 Reel</SelectItem>
+                          <SelectItem value="poster">🖼️ Poster</SelectItem>
+                          <SelectItem value="video">📹 Video</SelectItem>
+                          <SelectItem value="carousel">📑 Carousel</SelectItem>
+                          <SelectItem value="article">📝 Article</SelectItem>
+                          <SelectItem value="banner">🏷️ Banner</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
+                  {isAdmin && (
+                    <div>
+                      {members.find((m) => m.id === form.assigneeId)?.role === "trainee" ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Trainee Payout (₹)</Label>
+                            <Input
+                              type="number"
+                              min={0}
+                              step="0.01"
+                              className="mt-1.5"
+                              value={form.payout || ""}
+                              onChange={(e) => setForm({ ...form, payout: Number(e.target.value) || 0 })}
+                              placeholder="0.00"
+                            />
+                          </div>
+                          <div className="flex items-end">
+                            <p className="text-xs text-slate-400 pb-2">Credited to trainee upon completion & approval.</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
+                          💡 <strong>Trainee Payout Policy:</strong> Task payouts apply exclusively to Trainees. Salaried employees receive monthly compensation.
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <Button onClick={handleCreate} className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white">Create Task</Button>
                 </div>
               </DialogContent>
@@ -1019,6 +1149,142 @@ export default function TasksPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      
+      {/* ACMS Creative Operations & Workflow Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <Card className="border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30 p-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-indigo-100 text-indigo-700">
+              <Clock4 className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Avg TAT</p>
+              <p className="text-base font-bold text-slate-900">{acmsMetrics.avgTatDays} days</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="border border-amber-100 bg-gradient-to-br from-white to-amber-50/30 p-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-amber-100 text-amber-700">
+              <RefreshCw className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision Rate</p>
+              <p className="text-base font-bold text-slate-900">{acmsMetrics.revisionRate}% rework</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/30 p-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+              <Award className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Delivered</p>
+              <p className="text-base font-bold text-slate-900">{acmsMetrics.completed} Assets</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="border border-purple-100 bg-gradient-to-br from-white to-purple-50/30 p-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-purple-100 text-purple-700">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Top Platform</p>
+              <p className="text-base font-bold text-slate-900 capitalize">{acmsMetrics.topPlatform}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => setFilterNeedsCorrection(!filterNeedsCorrection)}
+          className={`border p-3 shadow-2xs cursor-pointer transition-all ${
+            filterNeedsCorrection
+              ? "border-amber-400 bg-amber-500 text-white shadow-sm ring-2 ring-amber-300"
+              : "border-slate-200 bg-white hover:border-amber-300"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <div className={`p-1.5 rounded-lg ${filterNeedsCorrection ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"}`}>
+              <AlertTriangle className="h-4 w-4" />
+            </div>
+            <div>
+              <p className={`text-[10px] font-semibold uppercase tracking-wider ${filterNeedsCorrection ? "text-white/80" : "text-slate-500"}`}>
+                Needs Correction
+              </p>
+              <p className={`text-base font-bold ${filterNeedsCorrection ? "text-white" : "text-slate-900"}`}>
+                {acmsMetrics.needsCorrection} {filterNeedsCorrection ? "Active" : "Tasks"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* ACMS Creative Platform & Format Quick Filters */}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+          <Filter className="h-3 w-3" /> Filters:
+        </span>
+
+        <Select value={filterPlatform} onValueChange={(v) => v && setFilterPlatform(v)}>
+          <SelectTrigger className="w-36 bg-white text-xs h-8 border-slate-200">
+            <SelectValue placeholder="All Platforms" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Platforms</SelectItem>
+            <SelectItem value="instagram">📸 Instagram</SelectItem>
+            <SelectItem value="youtube">▶️ YouTube</SelectItem>
+            <SelectItem value="linkedin">💼 LinkedIn</SelectItem>
+            <SelectItem value="meta">👥 Meta / FB</SelectItem>
+            <SelectItem value="website">🌐 Website</SelectItem>
+            <SelectItem value="twitter">🐦 X (Twitter)</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={filterCreativeType} onValueChange={(v) => v && setFilterCreativeType(v)}>
+          <SelectTrigger className="w-36 bg-white text-xs h-8 border-slate-200">
+            <SelectValue placeholder="All Formats" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Formats</SelectItem>
+            <SelectItem value="reel">🎬 Reel</SelectItem>
+            <SelectItem value="poster">🖼️ Poster</SelectItem>
+            <SelectItem value="video">📹 Video</SelectItem>
+            <SelectItem value="carousel">📑 Carousel</SelectItem>
+            <SelectItem value="article">📝 Article</SelectItem>
+            <SelectItem value="banner">🏷️ Banner</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {filterNeedsCorrection && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full border border-amber-300">
+            ⚠️ Showing Needs Correction Only
+            <button onClick={() => setFilterNeedsCorrection(false)} className="ml-1 hover:text-amber-950">×</button>
+          </span>
+        )}
+
+        {(filterPlatform !== "all" || filterCreativeType !== "all" || filterNeedsCorrection || filterProject !== "all" || filterAssignee !== "all") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFilterPlatform("all");
+              setFilterCreativeType("all");
+              setFilterNeedsCorrection(false);
+              setFilterProject("all");
+              setFilterAssignee("all");
+            }}
+            className="h-8 text-xs text-slate-500 hover:text-slate-800"
+          >
+            Reset Filters
+          </Button>
+        )}
       </div>
 
       {/* Render View based on viewMode state */}
@@ -1082,12 +1348,27 @@ export default function TasksPage() {
                           <Badge className={`text-[10px] ${priorityBadge[task.priority]}`}>{task.priority}</Badge>
                           <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
+                        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                          {task.assetCode && (
+                            <span className="text-[9px] font-mono font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200">
+                              {task.assetCode}
+                            </span>
+                          )}
+                          <PlatformBadge platform={task.platform} />
+                          <CreativeTypeBadge type={task.creativeType} />
+                        </div>
+                        {task.reviewFeedback && task.status !== "done" && (
+                          <div className="mb-2 p-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-medium flex items-center gap-1">
+                            <AlertTriangle className="h-3 w-3 text-amber-600 shrink-0" />
+                            <span className="truncate">Needs Correction</span>
+                          </div>
+                        )}
                         <p className="text-sm font-medium text-slate-800 mb-1">{task.title}</p>
                         {project && <p className="text-[10px] text-slate-400 mb-2">{project.name}</p>}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {task.dueDate && <span className="text-[10px] text-slate-400">{formatDate(task.dueDate, { month: "short", day: "numeric" })}</span>}
-                            {task.payout > 0 && (
+                            {task.payout > 0 && assignee?.role === "trainee" && (
                               <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
                                 <Banknote className="h-2.5 w-2.5" />{task.payout.toLocaleString()}
                               </span>
@@ -1158,82 +1439,13 @@ export default function TasksPage() {
         />
       )}
 
-      {/* Proof & Payout dialog */}
-      <Dialog open={!!proofTask} onOpenChange={(o) => { if (!o) setProofTask(null); }}>
-        <DialogContent className="sm:max-w-[560px] max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-xl font-semibold">Proof of Completion & Payout</DialogTitle></DialogHeader>
-          {proofTask && (
-            <div className="space-y-5 mt-4">
-              <div className="rounded-xl bg-slate-50 p-3">
-                <p className="text-sm font-semibold text-slate-800">{proofTask.title}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{projects.find((p) => p.id === proofTask.projectId)?.name} · {proofTask.status}</p>
-              </div>
-
-              <div>
-                <Label>Task Payout</Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input type="number" min={0} step="0.01" value={payoutDraft || ""} onChange={(e) => setPayoutDraft(Number(e.target.value) || 0)} placeholder="0.00" disabled={!isElevated} />
-                  {isElevated && <Button onClick={handleSaveProofDetails} variant="outline" className="shrink-0">Save Payout</Button>}
-                </div>
-                {!isElevated && <p className="text-xs text-slate-400 mt-1">Payout amount is defined by the task or project creator.</p>}
-              </div>
-
-              <div>
-                <Label>Completion Note</Label>
-                <Textarea className="mt-1.5" rows={2} value={proofNote} onChange={(e) => setProofNote(e.target.value)} placeholder="Describe how this task was completed..." />
-                <div className="mt-2"><Button onClick={handleSaveProofDetails} variant="outline" size="sm">Save Note</Button></div>
-              </div>
-
-              <div>
-                <Label>Proof Files / URLs</Label>
-                <div className="flex gap-2 mt-1.5">
-                  <Input value={proofUrl} onChange={(e) => setProofUrl(e.target.value)} placeholder="https://example.com/proof" />
-                  <Button onClick={handleAddProofUrl} variant="outline" className="shrink-0"><Link2 className="h-4 w-4 mr-1.5" />Add URL</Button>
-                </div>
-                <label className="mt-2 inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-700 cursor-pointer font-medium">
-                  <Upload className="h-4 w-4" /> Upload a file
-                  <input type="file" className="hidden" onChange={handleUploadProof} />
-                </label>
-                <div className="mt-3 space-y-2">
-                  {proofTask.proofs?.length === 0 && <p className="text-sm text-slate-400">No proofs added yet.</p>}
-                  {proofTask.proofs?.map((proof) => (
-                    <div key={proof.id} className="flex items-center gap-2 rounded-lg border border-slate-100 px-3 py-2">
-                      <span className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 ${proof.type === "upload" ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"}`}>
-                        <Paperclip className="h-3.5 w-3.5" />
-                      </span>
-                      <a href={proof.url} target="_blank" rel="noreferrer" className="flex-1 min-w-0 text-sm text-slate-700 hover:text-indigo-600 truncate">{proof.name || proof.url}</a>
-                      <Badge variant="secondary" className="text-[10px]">{proof.type}</Badge>
-                      <button onClick={() => removeTaskProof(proofTask.id, proof.id)} className="rounded-lg p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {isElevated ? (
-                <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      if (confirm(`Delete task "${proofTask.title}"?`)) {
-                        deleteTask(proofTask.id);
-                        setProofTask(null);
-                      }
-                    }}
-                    className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 text-xs"
-                  >
-                    <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete Task
-                  </Button>
-                  {saveMsg && <p className="text-sm font-medium text-emerald-600">{saveMsg}</p>}
-                </div>
-              ) : (
-                saveMsg && <p className="text-sm font-medium text-emerald-600">{saveMsg}</p>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Enhanced Proof, Subtasks & Review dialog */}
+      <EnhancedProofDialog
+        task={proofTask}
+        onClose={() => setProofTask(null)}
+        isAdmin={isAdmin}
+        isElevated={isElevated}
+      />
     </motion.div>
   );
 }

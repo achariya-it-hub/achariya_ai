@@ -55,7 +55,7 @@ export default function LoginPage() {
               <FolderKanban className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">Achariya AI</h1>
+          <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">Digiventures</h1>
           <p className="text-xl text-white/80 max-w-md mx-auto leading-relaxed">
             Your team&apos;s command center for projects, tasks, milestones, and real-time collaboration.
           </p>
@@ -85,7 +85,7 @@ export default function LoginPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30">
               <FolderKanban className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Achariya AI</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Digiventures</span>
           </div>
 
           <h2 className="text-2xl font-bold text-slate-900 mb-2">Welcome back</h2>
@@ -93,9 +93,9 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label className="text-slate-700 font-medium">Email</Label>
+              <Label className="text-slate-700 font-medium">Email or Employee ID</Label>
               <Input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1.5 h-11 bg-white border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20"
@@ -131,6 +131,34 @@ export default function LoginPage() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Sign In
             </Button>
+
+            {/* Quick Demo Sign-in by Employee ID */}
+            <div className="pt-2 text-center">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                Quick Sign-in with Employee ID
+              </p>
+              <div className="flex flex-wrap justify-center gap-1.5 text-xs">
+                {[
+                  { id: "EMP-001", name: "Athiyaman", role: "Admin", pass: "demo123" },
+                  { id: "EMP-003", name: "Ramkumar", role: "Admin", pass: "demo123" },
+                  { id: "CWMS-105", name: "Sneka", role: "Content", pass: "SnekCont@123" },
+                  { id: "TRN-001", name: "Jeevanesh", role: "Trainee", pass: "demo123" },
+                ].map((acc) => (
+                  <button
+                    key={acc.id}
+                    type="button"
+                    onClick={() => {
+                      setEmail(acc.id);
+                      setPassword(acc.pass);
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 text-[11px] font-medium transition-colors border border-slate-200"
+                  >
+                    <span className="font-mono font-bold text-slate-800">{acc.id}</span>
+                    <span className="opacity-70">({acc.name})</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </form>
         </motion.div>
       </div>

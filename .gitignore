@@ -7,3 +7,8 @@ node_modules
 hostinger-deploy
 .env
 .env*
+*.db
+*.db-journal
+dev.db
+dist-electron
+tsconfig.tsbuildinfo

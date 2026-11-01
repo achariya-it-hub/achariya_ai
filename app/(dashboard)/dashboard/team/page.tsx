@@ -38,6 +38,7 @@ const roleColors: Record<UserRole, string> = {
 const defaultDepartments = ["Engineering", "Design", "Marketing", "Sales", "Support", "Operations"];
 
 interface MemberForm {
+  employeeId: string;
   name: string;
   email: string;
   role: UserRole;
@@ -51,7 +52,7 @@ interface MemberForm {
   attendanceEnabled: boolean;
 }
 
-const emptyForm: MemberForm = { name: "", email: "", role: "member", department: "Engineering", title: "", phone: "", joinDate: new Date().toISOString().split("T")[0], status: "active", password: "demo123", avatar: "", attendanceEnabled: true };
+const emptyForm: MemberForm = { employeeId: "", name: "", email: "", role: "member", department: "Engineering", title: "", phone: "", joinDate: new Date().toISOString().split("T")[0], status: "active", password: "demo123", avatar: "", attendanceEnabled: true };
 
 export default function TeamPage() {
   const members = useCRMStore((s) => s.members);
@@ -73,6 +74,7 @@ export default function TeamPage() {
   const { user } = useAuth();
   const role = user?.role || "trainee";
   const isElevated = role === "admin" || role === "manager";
+  const isAdmin = role === "admin";
 
   const filtered = members.filter((m) => {
     if (filterDept !== "all" && m.department !== filterDept) return false;
@@ -98,7 +100,7 @@ export default function TeamPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm(emptyForm);
+    setForm({ ...emptyForm, employeeId: `EMP-${String(members.length + 1).padStart(3, "0")}` });
     setShowCustomDept(false);
     setCustomDept("");
     setOpen(true);
@@ -106,7 +108,7 @@ export default function TeamPage() {
 
   function openEdit(member: TeamMember) {
     setEditing(member);
-    setForm({ name: member.name, email: member.email, role: member.role, department: member.department, title: member.title, phone: member.phone, joinDate: member.joinDate, status: member.status, password: member.password || "", avatar: member.avatar || "", attendanceEnabled: member.attendanceEnabled !== false });
+    setForm({ employeeId: member.employeeId || member.id.toUpperCase(), name: member.name, email: member.email, role: member.role, department: member.department, title: member.title, phone: member.phone, joinDate: member.joinDate, status: member.status, password: member.password || "", avatar: member.avatar || "", attendanceEnabled: member.attendanceEnabled !== false });
     const isCustom = !defaultDepartments.includes(member.department);
     setShowCustomDept(isCustom);
     setCustomDept(isCustom ? member.department : "");
@@ -118,9 +120,9 @@ export default function TeamPage() {
     const avatarUrl = form.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${form.name.split(" ")[0]}`;
     const dept = showCustomDept && customDept.trim() ? customDept.trim() : form.department;
     if (editing) {
-      updateMember(editing.id, { name: form.name, email: form.email, role: form.role, department: dept, title: form.title, phone: form.phone, joinDate: form.joinDate, status: form.status, avatar: avatarUrl, attendanceEnabled: form.attendanceEnabled });
+      updateMember(editing.id, { employeeId: form.employeeId || undefined, name: form.name, email: form.email, role: form.role, department: dept, title: form.title, phone: form.phone, joinDate: form.joinDate, status: form.status, avatar: avatarUrl, attendanceEnabled: form.attendanceEnabled });
     } else {
-      addMember({ name: form.name, email: form.email, role: form.role, department: dept, title: form.title, phone: form.phone, joinDate: form.joinDate, status: form.status, password: form.password || "demo123", avatar: avatarUrl, attendanceEnabled: form.attendanceEnabled });
+      addMember({ employeeId: form.employeeId || undefined, name: form.name, email: form.email, role: form.role, department: dept, title: form.title, phone: form.phone, joinDate: form.joinDate, status: form.status, password: form.password || "demo123", avatar: avatarUrl, attendanceEnabled: form.attendanceEnabled });
     }
     setOpen(false);
     setForm(emptyForm);
@@ -161,45 +163,47 @@ export default function TeamPage() {
         </Button>
       </motion.div>
 
-      <motion.div variants={item}>
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-white via-white to-indigo-50/70 shadow-md shadow-indigo-500/5">
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-400 opacity-60" />
-          <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-300/40 to-teal-300/30 blur-2xl" />
-          <div className="flex items-center gap-2 px-5 pt-4 pb-1">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30"><Banknote className="h-4 w-4" /></span>
-            <h2 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Task Payouts</h2>
-          </div>
-          <div className="px-5 py-4">
-            {payoutStats.length === 0 ? (
-              <p className="text-sm text-slate-400 py-4 text-center">No completed tasks with payouts yet.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {payoutStats.slice(0, 6).map((s) => {
-                  const max = Math.max(...payoutStats.map((x) => x.total), 1);
-                  return (
-                    <div key={s.member.id} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={s.member.avatar} />
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs">{initials(s.member.name)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-slate-800 truncate">{s.member.name}</p>
-                          <p className="text-sm font-bold text-emerald-600 shrink-0">₹{s.total.toLocaleString()}</p>
+      {isAdmin && (
+        <motion.div variants={item}>
+          <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-white via-white to-indigo-50/70 shadow-md shadow-indigo-50/5">
+            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-400 opacity-60" />
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-300/40 to-teal-300/30 blur-2xl" />
+            <div className="flex items-center gap-2 px-5 pt-4 pb-1">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30"><Banknote className="h-4 w-4" /></span>
+              <h2 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Task Payouts</h2>
+            </div>
+            <div className="px-5 py-4">
+              {payoutStats.length === 0 ? (
+                <p className="text-sm text-slate-400 py-4 text-center">No completed tasks with payouts yet.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {payoutStats.slice(0, 6).map((s) => {
+                    const max = Math.max(...payoutStats.map((x) => x.total), 1);
+                    return (
+                      <div key={s.member.id} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3">
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={s.member.avatar} />
+                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs">{initials(s.member.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-medium text-slate-800 truncate">{s.member.name}</p>
+                            <p className="text-sm font-bold text-emerald-600 shrink-0">₹{s.total.toLocaleString()}</p>
+                          </div>
+                          <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${(s.total / max) * 100}%` }} />
+                          </div>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{s.done} tasks completed</p>
                         </div>
-                        <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
-                          <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${(s.total / max) * 100}%` }} />
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{s.done} tasks completed</p>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
 
       <motion.div variants={item} className="flex flex-wrap gap-3">
         {allDepartments.filter((d) => deptCounts[d] > 0).map((dept) => (
@@ -241,7 +245,12 @@ export default function TeamPage() {
                         <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm font-semibold">{initials(member.name)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-slate-800">{member.name}</h3>
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="font-semibold text-slate-800">{member.name}</h3>
+                          <span className="font-mono text-[10px] font-bold bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded border border-slate-200">
+                            {member.employeeId || member.id.toUpperCase()}
+                          </span>
+                        </div>
                         <p className="text-xs text-slate-500">{member.title}</p>
                       </div>
                     </div>
@@ -313,9 +322,24 @@ export default function TeamPage() {
               </div>
               <p className="text-xs text-slate-400">Click to upload a photo</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Full Name</Label><Input className="mt-1.5" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" /></div>
-              <div><Label>Email</Label><Input type="email" className="mt-1.5" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@company.com" /></div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Employee ID</Label>
+                <Input
+                  className="mt-1.5 font-mono text-xs uppercase"
+                  value={form.employeeId}
+                  onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
+                  placeholder="e.g. EMP-001"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Full Name</Label>
+                <Input className="mt-1.5" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
+              </div>
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input type="email" className="mt-1.5" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@company.com" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Job Title</Label><Input className="mt-1.5" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Frontend Developer" /></div>

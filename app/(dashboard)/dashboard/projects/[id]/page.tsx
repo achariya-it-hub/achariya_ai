@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate, initials } from "@/lib/utils";
-import { Milestone, Priority, TaskStatus } from "@/types";
+import { Milestone, Priority, TaskStatus, ProjectStatus } from "@/types";
 import { Plus, ArrowLeft, Calendar, CheckCircle2, Circle, Clock, AlertTriangle, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,13 @@ const statusIcons = {
   "in-progress": <Clock className="h-4 w-4 text-amber-500" />,
   completed: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
   overdue: <AlertTriangle className="h-4 w-4 text-red-500" />,
+};
+
+const projectStatusColors: Record<ProjectStatus, string> = {
+  active: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  completed: "bg-blue-50 text-blue-700 border-blue-200",
+  "on-hold": "bg-amber-50 text-amber-700 border-amber-200",
+  cancelled: "bg-red-50 text-red-700 border-red-200",
 };
 
 const taskStatusColors: Record<TaskStatus, string> = {
@@ -48,10 +55,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const tasks = useCRMStore((s) => s.tasks);
   const members = useCRMStore((s) => s.members);
   const addMilestone = useCRMStore((s) => s.addMilestone);
+  const updateMilestone = useCRMStore((s) => s.updateMilestone);
   const deleteMilestone = useCRMStore((s) => s.deleteMilestone);
   const addTask = useCRMStore((s) => s.addTask);
   const updateTask = useCRMStore((s) => s.updateTask);
   const deleteTask = useCRMStore((s) => s.deleteTask);
+  const updateProject = useCRMStore((s) => s.updateProject);
   const deleteProject = useCRMStore((s) => s.deleteProject);
   const load = useCRMStore((s) => s.load);
   useEffect(() => { load(); }, [load]);
@@ -89,6 +98,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const teamMembers = members.filter((m) => project.memberIds.includes(m.id));
+  const doneTasks = projectTasks.filter((t) => t.status === "done").length;
+  const computedTaskProgress = projectTasks.length > 0 ? Math.round((doneTasks / projectTasks.length) * 100) : project.progress;
 
   function handleAddMilestone() {
     if (!mForm.title) return;
@@ -133,11 +144,36 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex items-start gap-4">
             <div className="h-12 w-1 rounded-full" style={{ backgroundColor: project.color }} />
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">{project.name}</h1>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl font-bold text-slate-900">{project.name}</h1>
+                <Badge variant="outline" className={`capitalize text-xs font-semibold ${projectStatusColors[project.status] || ""}`}>
+                  {project.status}
+                </Badge>
+                {project.status === "completed" && (
+                  <Badge className="bg-emerald-500 text-white gap-1 text-[11px]">
+                    <CheckCircle2 className="h-3 w-3" /> Completed
+                  </Badge>
+                )}
+              </div>
               <p className="text-slate-500 mt-1 max-w-2xl">{project.description}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {isElevated && (
+              <Button
+                variant={project.status === "completed" ? "outline" : "default"}
+                size="sm"
+                onClick={() => {
+                  const nextStatus = project.status === "completed" ? "active" : "completed";
+                  const nextProgress = nextStatus === "completed" ? 100 : computedTaskProgress;
+                  updateProject(id, { status: nextStatus, progress: nextProgress });
+                }}
+                className={project.status === "completed" ? "text-slate-600 border-slate-300 hover:bg-slate-50" : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-1.5" />
+                {project.status === "completed" ? "Reopen Project" : "Complete Project"}
+              </Button>
+            )}
             <Dialog open={milestoneOpen} onOpenChange={setMilestoneOpen}>
               <DialogTrigger render={<Button variant="outline" size="sm" />}>
                 <Plus className="h-4 w-4 mr-1" />Milestone
@@ -211,7 +247,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
       <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card className="border-0 shadow-md bg-white"><CardContent className="p-4 text-center">
-          <p className="text-2xl font-bold text-slate-900">{project.progress}%</p><p className="text-xs text-slate-500 mt-1">Progress</p>
+          <p className="text-2xl font-bold text-slate-900">{project.progress}%</p><p className="text-xs text-slate-500 mt-1">Progress ({doneTasks}/{projectTasks.length} tasks)</p>
           <Progress value={project.progress} className="h-1.5 mt-2" />
         </CardContent></Card>
         <Card className="border-0 shadow-md bg-white"><CardContent className="p-4 text-center">
@@ -233,14 +269,34 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               {projectMilestones.length === 0 && <p className="text-sm text-slate-400 text-center py-6">No milestones yet.</p>}
               {projectMilestones.map((ms) => (
                 <div key={ms.id} className="flex items-start gap-3 rounded-xl border border-slate-100 p-4">
-                  {statusIcons[ms.status]}
+                  <button
+                    type="button"
+                    onClick={() => updateMilestone(ms.id, { status: ms.status === "completed" ? "in-progress" : "completed" })}
+                    className="shrink-0 mt-0.5 hover:scale-110 transition-transform cursor-pointer"
+                    title={ms.status === "completed" ? "Mark in-progress" : "Mark milestone completed"}
+                  >
+                    {statusIcons[ms.status]}
+                  </button>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">{ms.title}</p>
+                    <p className={`text-sm font-semibold ${ms.status === "completed" ? "text-slate-400 line-through" : "text-slate-800"}`}>{ms.title}</p>
                     <p className="text-xs text-slate-500 mt-1">{ms.description}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <Calendar className="h-3 w-3 text-slate-400" />
                       <span className="text-xs text-slate-400">Due {formatDate(ms.dueDate)}</span>
-                      <Badge variant="secondary" className="text-[10px]">{ms.status}</Badge>
+                      <Select
+                        value={ms.status}
+                        onValueChange={(val) => val && updateMilestone(ms.id, { status: val as Milestone["status"] })}
+                      >
+                        <SelectTrigger className="h-6 text-[10px] px-2 py-0 w-auto min-w-[95px] border-slate-200">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="upcoming">Upcoming</SelectItem>
+                          <SelectItem value="in-progress">In-progress</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="overdue">Overdue</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   {isElevated && (

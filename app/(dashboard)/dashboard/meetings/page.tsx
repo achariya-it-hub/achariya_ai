@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate, formatDateTime, initials } from "@/lib/utils";
 import { Meeting } from "@/types";
-import { Plus, Video, Users, Calendar, Clock, Phone, PhoneOff, X, Maximize2, Minimize2 } from "lucide-react";
+import { downloadICSFile } from "@/lib/calendar-export";
+import { Plus, Video, Users, Calendar, Clock, Phone, PhoneOff, X, Maximize2, Minimize2, Download } from "lucide-react";
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
@@ -161,7 +162,27 @@ export default function MeetingsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Meetings</h1>
           <p className="text-slate-500 mt-1">Schedule and join team meetings</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              const events = scheduled.map((m) => ({
+                title: m.title,
+                description: `${m.description || "Meeting Room: " + m.roomName}\nJoin URL: https://meet.jit.si/${m.roomName}`,
+                startTime: m.startTime,
+                endTime: m.endTime,
+                location: `Jitsi Room: ${m.roomName}`,
+                url: `https://meet.jit.si/${m.roomName}`,
+              }));
+              downloadICSFile("Digiventures_Meetings.ics", events);
+            }}
+            className="text-xs h-9 gap-1.5 font-semibold bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+            title="Download .ics file to import into Google Calendar, Apple Calendar, or Outlook"
+          >
+            <Download className="h-3.5 w-3.5" /> Export Calendar (.ics)
+          </Button>
+
+          <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger render={<Button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25" />}>
             <Plus className="h-4 w-4 mr-2" /> Schedule Meeting
           </DialogTrigger>
@@ -196,6 +217,7 @@ export default function MeetingsPage() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </motion.div>
 
       <motion.div variants={item}>

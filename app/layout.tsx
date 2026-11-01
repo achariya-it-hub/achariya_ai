@@ -6,8 +6,8 @@ import { Providers } from "@/components/providers/providers";
 const lexend = Lexend_Deca({ variable: "--font-lexend", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Achariya AI — Team Workspace",
-  description: "Projects, tasks, milestones, meetings & calls — all in one place.",
+  title: "Digiventures — Team Workspace",
+  description: "Projects, tasks, milestones, calendar, meetings & calls — all in one place.",
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",

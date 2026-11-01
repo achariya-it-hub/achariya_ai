@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUser } from "@/lib/auth";
 
 export async function GET() {
   try {
+    const user = await getUser();
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized: Admin access required" }, { status: 403 });
+    }
+
     let config = await prisma.whatsappConfig.findUnique({ where: { id: "default" } });
     if (!config) {
       config = await prisma.whatsappConfig.create({
@@ -28,6 +34,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const user = await getUser();
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized: Admin access required" }, { status: 403 });
+    }
+
     const body = await request.json();
     const { groupId, phoneNumberId, webhookToken, defaultProjectId, enabled } = body;
 

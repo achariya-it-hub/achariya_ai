@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUser } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -26,9 +27,20 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getUser();
     const { id } = await params;
     const body = await request.json();
     const { proofs, project, assignee, milestone, createdAt, ...cleanTaskData } = body;
+    if (!user || user.role !== "admin") {
+      delete cleanTaskData.payout;
+    } else if (cleanTaskData.assigneeId) {
+      try {
+        const assigneeUser = await prisma.user.findUnique({ where: { id: cleanTaskData.assigneeId } });
+        if (assigneeUser && assigneeUser.role !== "trainee") {
+          cleanTaskData.payout = 0;
+        }
+      } catch {}
+    }
     const task = await prisma.task.update({
       where: { id },
       data: cleanTaskData,

@@ -6,6 +6,8 @@ import { useAuth } from "@/components/providers/auth-context";
 import { Sidebar } from "@/components/app-shell";
 import { Loader2 } from "lucide-react";
 import { useCRMStore } from "@/store/crm-store";
+import { CalendarReminderNotifier } from "@/components/calendar/calendar-reminder-notifier";
+import { CommandPalette } from "@/components/command-palette";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -20,12 +22,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (user) {
       useCRMStore.getState().load();
-      const timer = setInterval(() => {
-        if (typeof document !== "undefined" && document.visibilityState === "visible") {
-          useCRMStore.getState().load();
-        }
-      }, 30000);
-      return () => clearInterval(timer);
+
+      const onFocus = () => {
+        useCRMStore.getState().load();
+      };
+      window.addEventListener("focus", onFocus);
+      return () => window.removeEventListener("focus", onFocus);
     }
   }, [user]);
 
@@ -52,6 +54,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </div>
       </main>
+      <CalendarReminderNotifier />
+      <CommandPalette />
     </div>
   );
 }

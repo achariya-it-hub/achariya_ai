@@ -19,6 +19,7 @@ import { formatDate, initials } from "@/lib/utils";
 import { Project, ProjectStatus, Priority } from "@/types";
 import { Plus, Search, FolderKanban, ArrowUpRight, Users, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { calculateProjectHealth } from "@/lib/project-health";
 import ProjectScatter from "@/components/project-scatter";
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
@@ -222,6 +223,7 @@ export default function ProjectsPage() {
           const doneTasks = projectTasks.filter((t) => t.status === "done").length;
           const projectMilestones = milestones.filter((m) => m.projectId === project.id);
           const teamMembers = members.filter((m) => project.memberIds.includes(m.id));
+          const health = calculateProjectHealth(project, tasks);
 
           return (
             <motion.div key={project.id} variants={item}>
@@ -253,6 +255,9 @@ export default function ProjectsPage() {
                     </div>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-4">{project.description}</p>
                     <div className="flex items-center gap-2 mb-3">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${health.bgLight} ${health.color} ${health.borderColor}`} title={health.reasons.join(", ")}>
+                        {health.label}
+                      </span>
                       <Badge variant="outline" className={statusColors[project.status]}>{project.status}</Badge>
                       <Badge variant="outline" className={priorityColors[project.priority]}>{project.priority}</Badge>
                     </div>

@@ -73,6 +73,16 @@ export type WhatsappConfig = $Result.DefaultSelection<Prisma.$WhatsappConfigPayl
  * 
  */
 export type WhatsappMessageLog = $Result.DefaultSelection<Prisma.$WhatsappMessageLogPayload>
+/**
+ * Model SocialPost
+ * 
+ */
+export type SocialPost = $Result.DefaultSelection<Prisma.$SocialPostPayload>
+/**
+ * Model CalendarEvent
+ * 
+ */
+export type CalendarEvent = $Result.DefaultSelection<Prisma.$CalendarEventPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -314,6 +324,26 @@ export class PrismaClient<
     * ```
     */
   get whatsappMessageLog(): Prisma.WhatsappMessageLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.socialPost`: Exposes CRUD operations for the **SocialPost** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SocialPosts
+    * const socialPosts = await prisma.socialPost.findMany()
+    * ```
+    */
+  get socialPost(): Prisma.SocialPostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.calendarEvent`: Exposes CRUD operations for the **CalendarEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CalendarEvents
+    * const calendarEvents = await prisma.calendarEvent.findMany()
+    * ```
+    */
+  get calendarEvent(): Prisma.CalendarEventDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -759,7 +789,9 @@ export namespace Prisma {
     Activity: 'Activity',
     Attendance: 'Attendance',
     WhatsappConfig: 'WhatsappConfig',
-    WhatsappMessageLog: 'WhatsappMessageLog'
+    WhatsappMessageLog: 'WhatsappMessageLog',
+    SocialPost: 'SocialPost',
+    CalendarEvent: 'CalendarEvent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -775,7 +807,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "project" | "projectMember" | "milestone" | "task" | "taskProof" | "meeting" | "meetingAttendee" | "activity" | "attendance" | "whatsappConfig" | "whatsappMessageLog"
+      modelProps: "user" | "project" | "projectMember" | "milestone" | "task" | "taskProof" | "meeting" | "meetingAttendee" | "activity" | "attendance" | "whatsappConfig" | "whatsappMessageLog" | "socialPost" | "calendarEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1667,6 +1699,154 @@ export namespace Prisma {
           }
         }
       }
+      SocialPost: {
+        payload: Prisma.$SocialPostPayload<ExtArgs>
+        fields: Prisma.SocialPostFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SocialPostFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SocialPostFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          findFirst: {
+            args: Prisma.SocialPostFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SocialPostFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          findMany: {
+            args: Prisma.SocialPostFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>[]
+          }
+          create: {
+            args: Prisma.SocialPostCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          createMany: {
+            args: Prisma.SocialPostCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SocialPostCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>[]
+          }
+          delete: {
+            args: Prisma.SocialPostDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          update: {
+            args: Prisma.SocialPostUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          deleteMany: {
+            args: Prisma.SocialPostDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SocialPostUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SocialPostUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>[]
+          }
+          upsert: {
+            args: Prisma.SocialPostUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialPostPayload>
+          }
+          aggregate: {
+            args: Prisma.SocialPostAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSocialPost>
+          }
+          groupBy: {
+            args: Prisma.SocialPostGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SocialPostGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SocialPostCountArgs<ExtArgs>
+            result: $Utils.Optional<SocialPostCountAggregateOutputType> | number
+          }
+        }
+      }
+      CalendarEvent: {
+        payload: Prisma.$CalendarEventPayload<ExtArgs>
+        fields: Prisma.CalendarEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CalendarEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CalendarEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          findFirst: {
+            args: Prisma.CalendarEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CalendarEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          findMany: {
+            args: Prisma.CalendarEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+          }
+          create: {
+            args: Prisma.CalendarEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          createMany: {
+            args: Prisma.CalendarEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CalendarEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+          }
+          delete: {
+            args: Prisma.CalendarEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          update: {
+            args: Prisma.CalendarEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.CalendarEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CalendarEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CalendarEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.CalendarEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+          }
+          aggregate: {
+            args: Prisma.CalendarEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCalendarEvent>
+          }
+          groupBy: {
+            args: Prisma.CalendarEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CalendarEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CalendarEventCountArgs<ExtArgs>
+            result: $Utils.Optional<CalendarEventCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1787,6 +1967,8 @@ export namespace Prisma {
     attendance?: AttendanceOmit
     whatsappConfig?: WhatsappConfigOmit
     whatsappMessageLog?: WhatsappMessageLogOmit
+    socialPost?: SocialPostOmit
+    calendarEvent?: CalendarEventOmit
   }
 
   /* Types for Logging */
@@ -3462,6 +3644,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    business: string | null
     status: string | null
     priority: string | null
     startDate: string | null
@@ -3476,6 +3659,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    business: string | null
     status: string | null
     priority: string | null
     startDate: string | null
@@ -3490,6 +3674,7 @@ export namespace Prisma {
     id: number
     name: number
     description: number
+    business: number
     status: number
     priority: number
     startDate: number
@@ -3514,6 +3699,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    business?: true
     status?: true
     priority?: true
     startDate?: true
@@ -3528,6 +3714,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    business?: true
     status?: true
     priority?: true
     startDate?: true
@@ -3542,6 +3729,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    business?: true
     status?: true
     priority?: true
     startDate?: true
@@ -3643,6 +3831,7 @@ export namespace Prisma {
     id: string
     name: string
     description: string
+    business: string | null
     status: string
     priority: string
     startDate: string
@@ -3676,6 +3865,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    business?: boolean
     status?: boolean
     priority?: boolean
     startDate?: boolean
@@ -3695,6 +3885,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    business?: boolean
     status?: boolean
     priority?: boolean
     startDate?: boolean
@@ -3710,6 +3901,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    business?: boolean
     status?: boolean
     priority?: boolean
     startDate?: boolean
@@ -3725,6 +3917,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    business?: boolean
     status?: boolean
     priority?: boolean
     startDate?: boolean
@@ -3735,7 +3928,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "status" | "priority" | "startDate" | "endDate" | "progress" | "color" | "ownerId" | "createdAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "business" | "status" | "priority" | "startDate" | "endDate" | "progress" | "color" | "ownerId" | "createdAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     members?: boolean | Project$membersArgs<ExtArgs>
@@ -3762,6 +3955,7 @@ export namespace Prisma {
       id: string
       name: string
       description: string
+      business: string | null
       status: string
       priority: string
       startDate: string
@@ -4200,6 +4394,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Project", 'String'>
     readonly name: FieldRef<"Project", 'String'>
     readonly description: FieldRef<"Project", 'String'>
+    readonly business: FieldRef<"Project", 'String'>
     readonly status: FieldRef<"Project", 'String'>
     readonly priority: FieldRef<"Project", 'String'>
     readonly startDate: FieldRef<"Project", 'String'>
@@ -15588,6 +15783,2581 @@ export namespace Prisma {
 
 
   /**
+   * Model SocialPost
+   */
+
+  export type AggregateSocialPost = {
+    _count: SocialPostCountAggregateOutputType | null
+    _avg: SocialPostAvgAggregateOutputType | null
+    _sum: SocialPostSumAggregateOutputType | null
+    _min: SocialPostMinAggregateOutputType | null
+    _max: SocialPostMaxAggregateOutputType | null
+  }
+
+  export type SocialPostAvgAggregateOutputType = {
+    reminderInterval: number | null
+  }
+
+  export type SocialPostSumAggregateOutputType = {
+    reminderInterval: number | null
+  }
+
+  export type SocialPostMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    company: string | null
+    platform: string | null
+    status: string | null
+    scheduledAt: Date | null
+    publishedAt: Date | null
+    postUrl: string | null
+    createdById: string | null
+    assigneeId: string | null
+    content: string | null
+    mediaUrl: string | null
+    hashtags: string | null
+    isProcessed: boolean | null
+    reminderInterval: number | null
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SocialPostMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    company: string | null
+    platform: string | null
+    status: string | null
+    scheduledAt: Date | null
+    publishedAt: Date | null
+    postUrl: string | null
+    createdById: string | null
+    assigneeId: string | null
+    content: string | null
+    mediaUrl: string | null
+    hashtags: string | null
+    isProcessed: boolean | null
+    reminderInterval: number | null
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SocialPostCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    company: number
+    platform: number
+    status: number
+    scheduledAt: number
+    publishedAt: number
+    postUrl: number
+    createdById: number
+    assigneeId: number
+    content: number
+    mediaUrl: number
+    hashtags: number
+    isProcessed: number
+    reminderInterval: number
+    lastRemindedAt: number
+    snoozedUntil: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SocialPostAvgAggregateInputType = {
+    reminderInterval?: true
+  }
+
+  export type SocialPostSumAggregateInputType = {
+    reminderInterval?: true
+  }
+
+  export type SocialPostMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    platform?: true
+    status?: true
+    scheduledAt?: true
+    publishedAt?: true
+    postUrl?: true
+    createdById?: true
+    assigneeId?: true
+    content?: true
+    mediaUrl?: true
+    hashtags?: true
+    isProcessed?: true
+    reminderInterval?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SocialPostMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    platform?: true
+    status?: true
+    scheduledAt?: true
+    publishedAt?: true
+    postUrl?: true
+    createdById?: true
+    assigneeId?: true
+    content?: true
+    mediaUrl?: true
+    hashtags?: true
+    isProcessed?: true
+    reminderInterval?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SocialPostCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    platform?: true
+    status?: true
+    scheduledAt?: true
+    publishedAt?: true
+    postUrl?: true
+    createdById?: true
+    assigneeId?: true
+    content?: true
+    mediaUrl?: true
+    hashtags?: true
+    isProcessed?: true
+    reminderInterval?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SocialPostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SocialPost to aggregate.
+     */
+    where?: SocialPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialPosts to fetch.
+     */
+    orderBy?: SocialPostOrderByWithRelationInput | SocialPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SocialPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SocialPosts
+    **/
+    _count?: true | SocialPostCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SocialPostAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SocialPostSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SocialPostMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SocialPostMaxAggregateInputType
+  }
+
+  export type GetSocialPostAggregateType<T extends SocialPostAggregateArgs> = {
+        [P in keyof T & keyof AggregateSocialPost]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSocialPost[P]>
+      : GetScalarType<T[P], AggregateSocialPost[P]>
+  }
+
+
+
+
+  export type SocialPostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SocialPostWhereInput
+    orderBy?: SocialPostOrderByWithAggregationInput | SocialPostOrderByWithAggregationInput[]
+    by: SocialPostScalarFieldEnum[] | SocialPostScalarFieldEnum
+    having?: SocialPostScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SocialPostCountAggregateInputType | true
+    _avg?: SocialPostAvgAggregateInputType
+    _sum?: SocialPostSumAggregateInputType
+    _min?: SocialPostMinAggregateInputType
+    _max?: SocialPostMaxAggregateInputType
+  }
+
+  export type SocialPostGroupByOutputType = {
+    id: string
+    title: string
+    description: string | null
+    company: string | null
+    platform: string
+    status: string
+    scheduledAt: Date | null
+    publishedAt: Date | null
+    postUrl: string | null
+    createdById: string | null
+    assigneeId: string | null
+    content: string | null
+    mediaUrl: string | null
+    hashtags: string | null
+    isProcessed: boolean
+    reminderInterval: number
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SocialPostCountAggregateOutputType | null
+    _avg: SocialPostAvgAggregateOutputType | null
+    _sum: SocialPostSumAggregateOutputType | null
+    _min: SocialPostMinAggregateOutputType | null
+    _max: SocialPostMaxAggregateOutputType | null
+  }
+
+  type GetSocialPostGroupByPayload<T extends SocialPostGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SocialPostGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SocialPostGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SocialPostGroupByOutputType[P]>
+            : GetScalarType<T[P], SocialPostGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SocialPostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    platform?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    publishedAt?: boolean
+    postUrl?: boolean
+    createdById?: boolean
+    assigneeId?: boolean
+    content?: boolean
+    mediaUrl?: boolean
+    hashtags?: boolean
+    isProcessed?: boolean
+    reminderInterval?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["socialPost"]>
+
+  export type SocialPostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    platform?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    publishedAt?: boolean
+    postUrl?: boolean
+    createdById?: boolean
+    assigneeId?: boolean
+    content?: boolean
+    mediaUrl?: boolean
+    hashtags?: boolean
+    isProcessed?: boolean
+    reminderInterval?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["socialPost"]>
+
+  export type SocialPostSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    platform?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    publishedAt?: boolean
+    postUrl?: boolean
+    createdById?: boolean
+    assigneeId?: boolean
+    content?: boolean
+    mediaUrl?: boolean
+    hashtags?: boolean
+    isProcessed?: boolean
+    reminderInterval?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["socialPost"]>
+
+  export type SocialPostSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    platform?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    publishedAt?: boolean
+    postUrl?: boolean
+    createdById?: boolean
+    assigneeId?: boolean
+    content?: boolean
+    mediaUrl?: boolean
+    hashtags?: boolean
+    isProcessed?: boolean
+    reminderInterval?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SocialPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "company" | "platform" | "status" | "scheduledAt" | "publishedAt" | "postUrl" | "createdById" | "assigneeId" | "content" | "mediaUrl" | "hashtags" | "isProcessed" | "reminderInterval" | "lastRemindedAt" | "snoozedUntil" | "createdAt" | "updatedAt", ExtArgs["result"]["socialPost"]>
+
+  export type $SocialPostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SocialPost"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string | null
+      company: string | null
+      platform: string
+      status: string
+      scheduledAt: Date | null
+      publishedAt: Date | null
+      postUrl: string | null
+      createdById: string | null
+      assigneeId: string | null
+      content: string | null
+      mediaUrl: string | null
+      hashtags: string | null
+      isProcessed: boolean
+      reminderInterval: number
+      lastRemindedAt: Date | null
+      snoozedUntil: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["socialPost"]>
+    composites: {}
+  }
+
+  type SocialPostGetPayload<S extends boolean | null | undefined | SocialPostDefaultArgs> = $Result.GetResult<Prisma.$SocialPostPayload, S>
+
+  type SocialPostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SocialPostFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SocialPostCountAggregateInputType | true
+    }
+
+  export interface SocialPostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SocialPost'], meta: { name: 'SocialPost' } }
+    /**
+     * Find zero or one SocialPost that matches the filter.
+     * @param {SocialPostFindUniqueArgs} args - Arguments to find a SocialPost
+     * @example
+     * // Get one SocialPost
+     * const socialPost = await prisma.socialPost.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SocialPostFindUniqueArgs>(args: SelectSubset<T, SocialPostFindUniqueArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SocialPost that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SocialPostFindUniqueOrThrowArgs} args - Arguments to find a SocialPost
+     * @example
+     * // Get one SocialPost
+     * const socialPost = await prisma.socialPost.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SocialPostFindUniqueOrThrowArgs>(args: SelectSubset<T, SocialPostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SocialPost that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostFindFirstArgs} args - Arguments to find a SocialPost
+     * @example
+     * // Get one SocialPost
+     * const socialPost = await prisma.socialPost.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SocialPostFindFirstArgs>(args?: SelectSubset<T, SocialPostFindFirstArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SocialPost that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostFindFirstOrThrowArgs} args - Arguments to find a SocialPost
+     * @example
+     * // Get one SocialPost
+     * const socialPost = await prisma.socialPost.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SocialPostFindFirstOrThrowArgs>(args?: SelectSubset<T, SocialPostFindFirstOrThrowArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SocialPosts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SocialPosts
+     * const socialPosts = await prisma.socialPost.findMany()
+     * 
+     * // Get first 10 SocialPosts
+     * const socialPosts = await prisma.socialPost.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const socialPostWithIdOnly = await prisma.socialPost.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SocialPostFindManyArgs>(args?: SelectSubset<T, SocialPostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SocialPost.
+     * @param {SocialPostCreateArgs} args - Arguments to create a SocialPost.
+     * @example
+     * // Create one SocialPost
+     * const SocialPost = await prisma.socialPost.create({
+     *   data: {
+     *     // ... data to create a SocialPost
+     *   }
+     * })
+     * 
+     */
+    create<T extends SocialPostCreateArgs>(args: SelectSubset<T, SocialPostCreateArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SocialPosts.
+     * @param {SocialPostCreateManyArgs} args - Arguments to create many SocialPosts.
+     * @example
+     * // Create many SocialPosts
+     * const socialPost = await prisma.socialPost.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SocialPostCreateManyArgs>(args?: SelectSubset<T, SocialPostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SocialPosts and returns the data saved in the database.
+     * @param {SocialPostCreateManyAndReturnArgs} args - Arguments to create many SocialPosts.
+     * @example
+     * // Create many SocialPosts
+     * const socialPost = await prisma.socialPost.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SocialPosts and only return the `id`
+     * const socialPostWithIdOnly = await prisma.socialPost.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SocialPostCreateManyAndReturnArgs>(args?: SelectSubset<T, SocialPostCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SocialPost.
+     * @param {SocialPostDeleteArgs} args - Arguments to delete one SocialPost.
+     * @example
+     * // Delete one SocialPost
+     * const SocialPost = await prisma.socialPost.delete({
+     *   where: {
+     *     // ... filter to delete one SocialPost
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SocialPostDeleteArgs>(args: SelectSubset<T, SocialPostDeleteArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SocialPost.
+     * @param {SocialPostUpdateArgs} args - Arguments to update one SocialPost.
+     * @example
+     * // Update one SocialPost
+     * const socialPost = await prisma.socialPost.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SocialPostUpdateArgs>(args: SelectSubset<T, SocialPostUpdateArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SocialPosts.
+     * @param {SocialPostDeleteManyArgs} args - Arguments to filter SocialPosts to delete.
+     * @example
+     * // Delete a few SocialPosts
+     * const { count } = await prisma.socialPost.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SocialPostDeleteManyArgs>(args?: SelectSubset<T, SocialPostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SocialPosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SocialPosts
+     * const socialPost = await prisma.socialPost.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SocialPostUpdateManyArgs>(args: SelectSubset<T, SocialPostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SocialPosts and returns the data updated in the database.
+     * @param {SocialPostUpdateManyAndReturnArgs} args - Arguments to update many SocialPosts.
+     * @example
+     * // Update many SocialPosts
+     * const socialPost = await prisma.socialPost.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SocialPosts and only return the `id`
+     * const socialPostWithIdOnly = await prisma.socialPost.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SocialPostUpdateManyAndReturnArgs>(args: SelectSubset<T, SocialPostUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SocialPost.
+     * @param {SocialPostUpsertArgs} args - Arguments to update or create a SocialPost.
+     * @example
+     * // Update or create a SocialPost
+     * const socialPost = await prisma.socialPost.upsert({
+     *   create: {
+     *     // ... data to create a SocialPost
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SocialPost we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SocialPostUpsertArgs>(args: SelectSubset<T, SocialPostUpsertArgs<ExtArgs>>): Prisma__SocialPostClient<$Result.GetResult<Prisma.$SocialPostPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SocialPosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostCountArgs} args - Arguments to filter SocialPosts to count.
+     * @example
+     * // Count the number of SocialPosts
+     * const count = await prisma.socialPost.count({
+     *   where: {
+     *     // ... the filter for the SocialPosts we want to count
+     *   }
+     * })
+    **/
+    count<T extends SocialPostCountArgs>(
+      args?: Subset<T, SocialPostCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SocialPostCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SocialPost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SocialPostAggregateArgs>(args: Subset<T, SocialPostAggregateArgs>): Prisma.PrismaPromise<GetSocialPostAggregateType<T>>
+
+    /**
+     * Group by SocialPost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialPostGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SocialPostGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SocialPostGroupByArgs['orderBy'] }
+        : { orderBy?: SocialPostGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SocialPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSocialPostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SocialPost model
+   */
+  readonly fields: SocialPostFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SocialPost.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SocialPostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SocialPost model
+   */
+  interface SocialPostFieldRefs {
+    readonly id: FieldRef<"SocialPost", 'String'>
+    readonly title: FieldRef<"SocialPost", 'String'>
+    readonly description: FieldRef<"SocialPost", 'String'>
+    readonly company: FieldRef<"SocialPost", 'String'>
+    readonly platform: FieldRef<"SocialPost", 'String'>
+    readonly status: FieldRef<"SocialPost", 'String'>
+    readonly scheduledAt: FieldRef<"SocialPost", 'DateTime'>
+    readonly publishedAt: FieldRef<"SocialPost", 'DateTime'>
+    readonly postUrl: FieldRef<"SocialPost", 'String'>
+    readonly createdById: FieldRef<"SocialPost", 'String'>
+    readonly assigneeId: FieldRef<"SocialPost", 'String'>
+    readonly content: FieldRef<"SocialPost", 'String'>
+    readonly mediaUrl: FieldRef<"SocialPost", 'String'>
+    readonly hashtags: FieldRef<"SocialPost", 'String'>
+    readonly isProcessed: FieldRef<"SocialPost", 'Boolean'>
+    readonly reminderInterval: FieldRef<"SocialPost", 'Int'>
+    readonly lastRemindedAt: FieldRef<"SocialPost", 'DateTime'>
+    readonly snoozedUntil: FieldRef<"SocialPost", 'DateTime'>
+    readonly createdAt: FieldRef<"SocialPost", 'DateTime'>
+    readonly updatedAt: FieldRef<"SocialPost", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SocialPost findUnique
+   */
+  export type SocialPostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter, which SocialPost to fetch.
+     */
+    where: SocialPostWhereUniqueInput
+  }
+
+  /**
+   * SocialPost findUniqueOrThrow
+   */
+  export type SocialPostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter, which SocialPost to fetch.
+     */
+    where: SocialPostWhereUniqueInput
+  }
+
+  /**
+   * SocialPost findFirst
+   */
+  export type SocialPostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter, which SocialPost to fetch.
+     */
+    where?: SocialPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialPosts to fetch.
+     */
+    orderBy?: SocialPostOrderByWithRelationInput | SocialPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SocialPosts.
+     */
+    cursor?: SocialPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialPosts.
+     */
+    distinct?: SocialPostScalarFieldEnum | SocialPostScalarFieldEnum[]
+  }
+
+  /**
+   * SocialPost findFirstOrThrow
+   */
+  export type SocialPostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter, which SocialPost to fetch.
+     */
+    where?: SocialPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialPosts to fetch.
+     */
+    orderBy?: SocialPostOrderByWithRelationInput | SocialPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SocialPosts.
+     */
+    cursor?: SocialPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialPosts.
+     */
+    distinct?: SocialPostScalarFieldEnum | SocialPostScalarFieldEnum[]
+  }
+
+  /**
+   * SocialPost findMany
+   */
+  export type SocialPostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter, which SocialPosts to fetch.
+     */
+    where?: SocialPostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialPosts to fetch.
+     */
+    orderBy?: SocialPostOrderByWithRelationInput | SocialPostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SocialPosts.
+     */
+    cursor?: SocialPostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialPosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialPosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialPosts.
+     */
+    distinct?: SocialPostScalarFieldEnum | SocialPostScalarFieldEnum[]
+  }
+
+  /**
+   * SocialPost create
+   */
+  export type SocialPostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SocialPost.
+     */
+    data: XOR<SocialPostCreateInput, SocialPostUncheckedCreateInput>
+  }
+
+  /**
+   * SocialPost createMany
+   */
+  export type SocialPostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SocialPosts.
+     */
+    data: SocialPostCreateManyInput | SocialPostCreateManyInput[]
+  }
+
+  /**
+   * SocialPost createManyAndReturn
+   */
+  export type SocialPostCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * The data used to create many SocialPosts.
+     */
+    data: SocialPostCreateManyInput | SocialPostCreateManyInput[]
+  }
+
+  /**
+   * SocialPost update
+   */
+  export type SocialPostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SocialPost.
+     */
+    data: XOR<SocialPostUpdateInput, SocialPostUncheckedUpdateInput>
+    /**
+     * Choose, which SocialPost to update.
+     */
+    where: SocialPostWhereUniqueInput
+  }
+
+  /**
+   * SocialPost updateMany
+   */
+  export type SocialPostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SocialPosts.
+     */
+    data: XOR<SocialPostUpdateManyMutationInput, SocialPostUncheckedUpdateManyInput>
+    /**
+     * Filter which SocialPosts to update
+     */
+    where?: SocialPostWhereInput
+    /**
+     * Limit how many SocialPosts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SocialPost updateManyAndReturn
+   */
+  export type SocialPostUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * The data used to update SocialPosts.
+     */
+    data: XOR<SocialPostUpdateManyMutationInput, SocialPostUncheckedUpdateManyInput>
+    /**
+     * Filter which SocialPosts to update
+     */
+    where?: SocialPostWhereInput
+    /**
+     * Limit how many SocialPosts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SocialPost upsert
+   */
+  export type SocialPostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SocialPost to update in case it exists.
+     */
+    where: SocialPostWhereUniqueInput
+    /**
+     * In case the SocialPost found by the `where` argument doesn't exist, create a new SocialPost with this data.
+     */
+    create: XOR<SocialPostCreateInput, SocialPostUncheckedCreateInput>
+    /**
+     * In case the SocialPost was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SocialPostUpdateInput, SocialPostUncheckedUpdateInput>
+  }
+
+  /**
+   * SocialPost delete
+   */
+  export type SocialPostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+    /**
+     * Filter which SocialPost to delete.
+     */
+    where: SocialPostWhereUniqueInput
+  }
+
+  /**
+   * SocialPost deleteMany
+   */
+  export type SocialPostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SocialPosts to delete
+     */
+    where?: SocialPostWhereInput
+    /**
+     * Limit how many SocialPosts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SocialPost without action
+   */
+  export type SocialPostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialPost
+     */
+    select?: SocialPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialPost
+     */
+    omit?: SocialPostOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CalendarEvent
+   */
+
+  export type AggregateCalendarEvent = {
+    _count: CalendarEventCountAggregateOutputType | null
+    _avg: CalendarEventAvgAggregateOutputType | null
+    _sum: CalendarEventSumAggregateOutputType | null
+    _min: CalendarEventMinAggregateOutputType | null
+    _max: CalendarEventMaxAggregateOutputType | null
+  }
+
+  export type CalendarEventAvgAggregateOutputType = {
+    reminderInterval: number | null
+    reminderCount: number | null
+  }
+
+  export type CalendarEventSumAggregateOutputType = {
+    reminderInterval: number | null
+    reminderCount: number | null
+  }
+
+  export type CalendarEventMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    company: string | null
+    type: string | null
+    category: string | null
+    priority: string | null
+    status: string | null
+    isProcessed: boolean | null
+    processedAt: Date | null
+    processedBy: string | null
+    start: Date | null
+    end: Date | null
+    allDay: boolean | null
+    location: string | null
+    clientName: string | null
+    clientPhone: string | null
+    clientEmail: string | null
+    reminderInterval: number | null
+    reminderUnit: string | null
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    reminderCount: number | null
+    assigneeId: string | null
+    projectId: string | null
+    color: string | null
+    source: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CalendarEventMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    company: string | null
+    type: string | null
+    category: string | null
+    priority: string | null
+    status: string | null
+    isProcessed: boolean | null
+    processedAt: Date | null
+    processedBy: string | null
+    start: Date | null
+    end: Date | null
+    allDay: boolean | null
+    location: string | null
+    clientName: string | null
+    clientPhone: string | null
+    clientEmail: string | null
+    reminderInterval: number | null
+    reminderUnit: string | null
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    reminderCount: number | null
+    assigneeId: string | null
+    projectId: string | null
+    color: string | null
+    source: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CalendarEventCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    company: number
+    type: number
+    category: number
+    priority: number
+    status: number
+    isProcessed: number
+    processedAt: number
+    processedBy: number
+    start: number
+    end: number
+    allDay: number
+    location: number
+    clientName: number
+    clientPhone: number
+    clientEmail: number
+    reminderInterval: number
+    reminderUnit: number
+    lastRemindedAt: number
+    snoozedUntil: number
+    reminderCount: number
+    assigneeId: number
+    projectId: number
+    color: number
+    source: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CalendarEventAvgAggregateInputType = {
+    reminderInterval?: true
+    reminderCount?: true
+  }
+
+  export type CalendarEventSumAggregateInputType = {
+    reminderInterval?: true
+    reminderCount?: true
+  }
+
+  export type CalendarEventMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    type?: true
+    category?: true
+    priority?: true
+    status?: true
+    isProcessed?: true
+    processedAt?: true
+    processedBy?: true
+    start?: true
+    end?: true
+    allDay?: true
+    location?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    reminderInterval?: true
+    reminderUnit?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    reminderCount?: true
+    assigneeId?: true
+    projectId?: true
+    color?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CalendarEventMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    type?: true
+    category?: true
+    priority?: true
+    status?: true
+    isProcessed?: true
+    processedAt?: true
+    processedBy?: true
+    start?: true
+    end?: true
+    allDay?: true
+    location?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    reminderInterval?: true
+    reminderUnit?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    reminderCount?: true
+    assigneeId?: true
+    projectId?: true
+    color?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CalendarEventCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    company?: true
+    type?: true
+    category?: true
+    priority?: true
+    status?: true
+    isProcessed?: true
+    processedAt?: true
+    processedBy?: true
+    start?: true
+    end?: true
+    allDay?: true
+    location?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    reminderInterval?: true
+    reminderUnit?: true
+    lastRemindedAt?: true
+    snoozedUntil?: true
+    reminderCount?: true
+    assigneeId?: true
+    projectId?: true
+    color?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CalendarEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CalendarEvent to aggregate.
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarEvents to fetch.
+     */
+    orderBy?: CalendarEventOrderByWithRelationInput | CalendarEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CalendarEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CalendarEvents
+    **/
+    _count?: true | CalendarEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CalendarEventAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CalendarEventSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CalendarEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CalendarEventMaxAggregateInputType
+  }
+
+  export type GetCalendarEventAggregateType<T extends CalendarEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateCalendarEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCalendarEvent[P]>
+      : GetScalarType<T[P], AggregateCalendarEvent[P]>
+  }
+
+
+
+
+  export type CalendarEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CalendarEventWhereInput
+    orderBy?: CalendarEventOrderByWithAggregationInput | CalendarEventOrderByWithAggregationInput[]
+    by: CalendarEventScalarFieldEnum[] | CalendarEventScalarFieldEnum
+    having?: CalendarEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CalendarEventCountAggregateInputType | true
+    _avg?: CalendarEventAvgAggregateInputType
+    _sum?: CalendarEventSumAggregateInputType
+    _min?: CalendarEventMinAggregateInputType
+    _max?: CalendarEventMaxAggregateInputType
+  }
+
+  export type CalendarEventGroupByOutputType = {
+    id: string
+    title: string
+    description: string | null
+    company: string | null
+    type: string
+    category: string
+    priority: string
+    status: string
+    isProcessed: boolean
+    processedAt: Date | null
+    processedBy: string | null
+    start: Date
+    end: Date | null
+    allDay: boolean
+    location: string | null
+    clientName: string | null
+    clientPhone: string | null
+    clientEmail: string | null
+    reminderInterval: number
+    reminderUnit: string
+    lastRemindedAt: Date | null
+    snoozedUntil: Date | null
+    reminderCount: number
+    assigneeId: string | null
+    projectId: string | null
+    color: string | null
+    source: string
+    createdAt: Date
+    updatedAt: Date
+    _count: CalendarEventCountAggregateOutputType | null
+    _avg: CalendarEventAvgAggregateOutputType | null
+    _sum: CalendarEventSumAggregateOutputType | null
+    _min: CalendarEventMinAggregateOutputType | null
+    _max: CalendarEventMaxAggregateOutputType | null
+  }
+
+  type GetCalendarEventGroupByPayload<T extends CalendarEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CalendarEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CalendarEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CalendarEventGroupByOutputType[P]>
+            : GetScalarType<T[P], CalendarEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CalendarEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    type?: boolean
+    category?: boolean
+    priority?: boolean
+    status?: boolean
+    isProcessed?: boolean
+    processedAt?: boolean
+    processedBy?: boolean
+    start?: boolean
+    end?: boolean
+    allDay?: boolean
+    location?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    reminderInterval?: boolean
+    reminderUnit?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    reminderCount?: boolean
+    assigneeId?: boolean
+    projectId?: boolean
+    color?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["calendarEvent"]>
+
+  export type CalendarEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    type?: boolean
+    category?: boolean
+    priority?: boolean
+    status?: boolean
+    isProcessed?: boolean
+    processedAt?: boolean
+    processedBy?: boolean
+    start?: boolean
+    end?: boolean
+    allDay?: boolean
+    location?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    reminderInterval?: boolean
+    reminderUnit?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    reminderCount?: boolean
+    assigneeId?: boolean
+    projectId?: boolean
+    color?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["calendarEvent"]>
+
+  export type CalendarEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    type?: boolean
+    category?: boolean
+    priority?: boolean
+    status?: boolean
+    isProcessed?: boolean
+    processedAt?: boolean
+    processedBy?: boolean
+    start?: boolean
+    end?: boolean
+    allDay?: boolean
+    location?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    reminderInterval?: boolean
+    reminderUnit?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    reminderCount?: boolean
+    assigneeId?: boolean
+    projectId?: boolean
+    color?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["calendarEvent"]>
+
+  export type CalendarEventSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    company?: boolean
+    type?: boolean
+    category?: boolean
+    priority?: boolean
+    status?: boolean
+    isProcessed?: boolean
+    processedAt?: boolean
+    processedBy?: boolean
+    start?: boolean
+    end?: boolean
+    allDay?: boolean
+    location?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    reminderInterval?: boolean
+    reminderUnit?: boolean
+    lastRemindedAt?: boolean
+    snoozedUntil?: boolean
+    reminderCount?: boolean
+    assigneeId?: boolean
+    projectId?: boolean
+    color?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CalendarEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "company" | "type" | "category" | "priority" | "status" | "isProcessed" | "processedAt" | "processedBy" | "start" | "end" | "allDay" | "location" | "clientName" | "clientPhone" | "clientEmail" | "reminderInterval" | "reminderUnit" | "lastRemindedAt" | "snoozedUntil" | "reminderCount" | "assigneeId" | "projectId" | "color" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["calendarEvent"]>
+
+  export type $CalendarEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CalendarEvent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string | null
+      company: string | null
+      type: string
+      category: string
+      priority: string
+      status: string
+      isProcessed: boolean
+      processedAt: Date | null
+      processedBy: string | null
+      start: Date
+      end: Date | null
+      allDay: boolean
+      location: string | null
+      clientName: string | null
+      clientPhone: string | null
+      clientEmail: string | null
+      reminderInterval: number
+      reminderUnit: string
+      lastRemindedAt: Date | null
+      snoozedUntil: Date | null
+      reminderCount: number
+      assigneeId: string | null
+      projectId: string | null
+      color: string | null
+      source: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["calendarEvent"]>
+    composites: {}
+  }
+
+  type CalendarEventGetPayload<S extends boolean | null | undefined | CalendarEventDefaultArgs> = $Result.GetResult<Prisma.$CalendarEventPayload, S>
+
+  type CalendarEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CalendarEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CalendarEventCountAggregateInputType | true
+    }
+
+  export interface CalendarEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CalendarEvent'], meta: { name: 'CalendarEvent' } }
+    /**
+     * Find zero or one CalendarEvent that matches the filter.
+     * @param {CalendarEventFindUniqueArgs} args - Arguments to find a CalendarEvent
+     * @example
+     * // Get one CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CalendarEventFindUniqueArgs>(args: SelectSubset<T, CalendarEventFindUniqueArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CalendarEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CalendarEventFindUniqueOrThrowArgs} args - Arguments to find a CalendarEvent
+     * @example
+     * // Get one CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CalendarEventFindUniqueOrThrowArgs>(args: SelectSubset<T, CalendarEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CalendarEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventFindFirstArgs} args - Arguments to find a CalendarEvent
+     * @example
+     * // Get one CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CalendarEventFindFirstArgs>(args?: SelectSubset<T, CalendarEventFindFirstArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CalendarEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventFindFirstOrThrowArgs} args - Arguments to find a CalendarEvent
+     * @example
+     * // Get one CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CalendarEventFindFirstOrThrowArgs>(args?: SelectSubset<T, CalendarEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CalendarEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CalendarEvents
+     * const calendarEvents = await prisma.calendarEvent.findMany()
+     * 
+     * // Get first 10 CalendarEvents
+     * const calendarEvents = await prisma.calendarEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const calendarEventWithIdOnly = await prisma.calendarEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CalendarEventFindManyArgs>(args?: SelectSubset<T, CalendarEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CalendarEvent.
+     * @param {CalendarEventCreateArgs} args - Arguments to create a CalendarEvent.
+     * @example
+     * // Create one CalendarEvent
+     * const CalendarEvent = await prisma.calendarEvent.create({
+     *   data: {
+     *     // ... data to create a CalendarEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends CalendarEventCreateArgs>(args: SelectSubset<T, CalendarEventCreateArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CalendarEvents.
+     * @param {CalendarEventCreateManyArgs} args - Arguments to create many CalendarEvents.
+     * @example
+     * // Create many CalendarEvents
+     * const calendarEvent = await prisma.calendarEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CalendarEventCreateManyArgs>(args?: SelectSubset<T, CalendarEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CalendarEvents and returns the data saved in the database.
+     * @param {CalendarEventCreateManyAndReturnArgs} args - Arguments to create many CalendarEvents.
+     * @example
+     * // Create many CalendarEvents
+     * const calendarEvent = await prisma.calendarEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CalendarEvents and only return the `id`
+     * const calendarEventWithIdOnly = await prisma.calendarEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CalendarEventCreateManyAndReturnArgs>(args?: SelectSubset<T, CalendarEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CalendarEvent.
+     * @param {CalendarEventDeleteArgs} args - Arguments to delete one CalendarEvent.
+     * @example
+     * // Delete one CalendarEvent
+     * const CalendarEvent = await prisma.calendarEvent.delete({
+     *   where: {
+     *     // ... filter to delete one CalendarEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CalendarEventDeleteArgs>(args: SelectSubset<T, CalendarEventDeleteArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CalendarEvent.
+     * @param {CalendarEventUpdateArgs} args - Arguments to update one CalendarEvent.
+     * @example
+     * // Update one CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CalendarEventUpdateArgs>(args: SelectSubset<T, CalendarEventUpdateArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CalendarEvents.
+     * @param {CalendarEventDeleteManyArgs} args - Arguments to filter CalendarEvents to delete.
+     * @example
+     * // Delete a few CalendarEvents
+     * const { count } = await prisma.calendarEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CalendarEventDeleteManyArgs>(args?: SelectSubset<T, CalendarEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CalendarEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CalendarEvents
+     * const calendarEvent = await prisma.calendarEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CalendarEventUpdateManyArgs>(args: SelectSubset<T, CalendarEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CalendarEvents and returns the data updated in the database.
+     * @param {CalendarEventUpdateManyAndReturnArgs} args - Arguments to update many CalendarEvents.
+     * @example
+     * // Update many CalendarEvents
+     * const calendarEvent = await prisma.calendarEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CalendarEvents and only return the `id`
+     * const calendarEventWithIdOnly = await prisma.calendarEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CalendarEventUpdateManyAndReturnArgs>(args: SelectSubset<T, CalendarEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CalendarEvent.
+     * @param {CalendarEventUpsertArgs} args - Arguments to update or create a CalendarEvent.
+     * @example
+     * // Update or create a CalendarEvent
+     * const calendarEvent = await prisma.calendarEvent.upsert({
+     *   create: {
+     *     // ... data to create a CalendarEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CalendarEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CalendarEventUpsertArgs>(args: SelectSubset<T, CalendarEventUpsertArgs<ExtArgs>>): Prisma__CalendarEventClient<$Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CalendarEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventCountArgs} args - Arguments to filter CalendarEvents to count.
+     * @example
+     * // Count the number of CalendarEvents
+     * const count = await prisma.calendarEvent.count({
+     *   where: {
+     *     // ... the filter for the CalendarEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends CalendarEventCountArgs>(
+      args?: Subset<T, CalendarEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CalendarEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CalendarEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CalendarEventAggregateArgs>(args: Subset<T, CalendarEventAggregateArgs>): Prisma.PrismaPromise<GetCalendarEventAggregateType<T>>
+
+    /**
+     * Group by CalendarEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CalendarEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CalendarEventGroupByArgs['orderBy'] }
+        : { orderBy?: CalendarEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CalendarEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCalendarEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CalendarEvent model
+   */
+  readonly fields: CalendarEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CalendarEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CalendarEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CalendarEvent model
+   */
+  interface CalendarEventFieldRefs {
+    readonly id: FieldRef<"CalendarEvent", 'String'>
+    readonly title: FieldRef<"CalendarEvent", 'String'>
+    readonly description: FieldRef<"CalendarEvent", 'String'>
+    readonly company: FieldRef<"CalendarEvent", 'String'>
+    readonly type: FieldRef<"CalendarEvent", 'String'>
+    readonly category: FieldRef<"CalendarEvent", 'String'>
+    readonly priority: FieldRef<"CalendarEvent", 'String'>
+    readonly status: FieldRef<"CalendarEvent", 'String'>
+    readonly isProcessed: FieldRef<"CalendarEvent", 'Boolean'>
+    readonly processedAt: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly processedBy: FieldRef<"CalendarEvent", 'String'>
+    readonly start: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly end: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly allDay: FieldRef<"CalendarEvent", 'Boolean'>
+    readonly location: FieldRef<"CalendarEvent", 'String'>
+    readonly clientName: FieldRef<"CalendarEvent", 'String'>
+    readonly clientPhone: FieldRef<"CalendarEvent", 'String'>
+    readonly clientEmail: FieldRef<"CalendarEvent", 'String'>
+    readonly reminderInterval: FieldRef<"CalendarEvent", 'Int'>
+    readonly reminderUnit: FieldRef<"CalendarEvent", 'String'>
+    readonly lastRemindedAt: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly snoozedUntil: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly reminderCount: FieldRef<"CalendarEvent", 'Int'>
+    readonly assigneeId: FieldRef<"CalendarEvent", 'String'>
+    readonly projectId: FieldRef<"CalendarEvent", 'String'>
+    readonly color: FieldRef<"CalendarEvent", 'String'>
+    readonly source: FieldRef<"CalendarEvent", 'String'>
+    readonly createdAt: FieldRef<"CalendarEvent", 'DateTime'>
+    readonly updatedAt: FieldRef<"CalendarEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CalendarEvent findUnique
+   */
+  export type CalendarEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter, which CalendarEvent to fetch.
+     */
+    where: CalendarEventWhereUniqueInput
+  }
+
+  /**
+   * CalendarEvent findUniqueOrThrow
+   */
+  export type CalendarEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter, which CalendarEvent to fetch.
+     */
+    where: CalendarEventWhereUniqueInput
+  }
+
+  /**
+   * CalendarEvent findFirst
+   */
+  export type CalendarEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter, which CalendarEvent to fetch.
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarEvents to fetch.
+     */
+    orderBy?: CalendarEventOrderByWithRelationInput | CalendarEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CalendarEvents.
+     */
+    cursor?: CalendarEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CalendarEvents.
+     */
+    distinct?: CalendarEventScalarFieldEnum | CalendarEventScalarFieldEnum[]
+  }
+
+  /**
+   * CalendarEvent findFirstOrThrow
+   */
+  export type CalendarEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter, which CalendarEvent to fetch.
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarEvents to fetch.
+     */
+    orderBy?: CalendarEventOrderByWithRelationInput | CalendarEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CalendarEvents.
+     */
+    cursor?: CalendarEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CalendarEvents.
+     */
+    distinct?: CalendarEventScalarFieldEnum | CalendarEventScalarFieldEnum[]
+  }
+
+  /**
+   * CalendarEvent findMany
+   */
+  export type CalendarEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter, which CalendarEvents to fetch.
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarEvents to fetch.
+     */
+    orderBy?: CalendarEventOrderByWithRelationInput | CalendarEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CalendarEvents.
+     */
+    cursor?: CalendarEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CalendarEvents.
+     */
+    distinct?: CalendarEventScalarFieldEnum | CalendarEventScalarFieldEnum[]
+  }
+
+  /**
+   * CalendarEvent create
+   */
+  export type CalendarEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CalendarEvent.
+     */
+    data: XOR<CalendarEventCreateInput, CalendarEventUncheckedCreateInput>
+  }
+
+  /**
+   * CalendarEvent createMany
+   */
+  export type CalendarEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CalendarEvents.
+     */
+    data: CalendarEventCreateManyInput | CalendarEventCreateManyInput[]
+  }
+
+  /**
+   * CalendarEvent createManyAndReturn
+   */
+  export type CalendarEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many CalendarEvents.
+     */
+    data: CalendarEventCreateManyInput | CalendarEventCreateManyInput[]
+  }
+
+  /**
+   * CalendarEvent update
+   */
+  export type CalendarEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CalendarEvent.
+     */
+    data: XOR<CalendarEventUpdateInput, CalendarEventUncheckedUpdateInput>
+    /**
+     * Choose, which CalendarEvent to update.
+     */
+    where: CalendarEventWhereUniqueInput
+  }
+
+  /**
+   * CalendarEvent updateMany
+   */
+  export type CalendarEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CalendarEvents.
+     */
+    data: XOR<CalendarEventUpdateManyMutationInput, CalendarEventUncheckedUpdateManyInput>
+    /**
+     * Filter which CalendarEvents to update
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * Limit how many CalendarEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CalendarEvent updateManyAndReturn
+   */
+  export type CalendarEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * The data used to update CalendarEvents.
+     */
+    data: XOR<CalendarEventUpdateManyMutationInput, CalendarEventUncheckedUpdateManyInput>
+    /**
+     * Filter which CalendarEvents to update
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * Limit how many CalendarEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CalendarEvent upsert
+   */
+  export type CalendarEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CalendarEvent to update in case it exists.
+     */
+    where: CalendarEventWhereUniqueInput
+    /**
+     * In case the CalendarEvent found by the `where` argument doesn't exist, create a new CalendarEvent with this data.
+     */
+    create: XOR<CalendarEventCreateInput, CalendarEventUncheckedCreateInput>
+    /**
+     * In case the CalendarEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CalendarEventUpdateInput, CalendarEventUncheckedUpdateInput>
+  }
+
+  /**
+   * CalendarEvent delete
+   */
+  export type CalendarEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+    /**
+     * Filter which CalendarEvent to delete.
+     */
+    where: CalendarEventWhereUniqueInput
+  }
+
+  /**
+   * CalendarEvent deleteMany
+   */
+  export type CalendarEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CalendarEvents to delete
+     */
+    where?: CalendarEventWhereInput
+    /**
+     * Limit how many CalendarEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CalendarEvent without action
+   */
+  export type CalendarEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CalendarEvent
+     */
+    select?: CalendarEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CalendarEvent
+     */
+    omit?: CalendarEventOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15621,6 +18391,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     description: 'description',
+    business: 'business',
     status: 'status',
     priority: 'priority',
     startDate: 'startDate',
@@ -15758,6 +18529,67 @@ export namespace Prisma {
   };
 
   export type WhatsappMessageLogScalarFieldEnum = (typeof WhatsappMessageLogScalarFieldEnum)[keyof typeof WhatsappMessageLogScalarFieldEnum]
+
+
+  export const SocialPostScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    company: 'company',
+    platform: 'platform',
+    status: 'status',
+    scheduledAt: 'scheduledAt',
+    publishedAt: 'publishedAt',
+    postUrl: 'postUrl',
+    createdById: 'createdById',
+    assigneeId: 'assigneeId',
+    content: 'content',
+    mediaUrl: 'mediaUrl',
+    hashtags: 'hashtags',
+    isProcessed: 'isProcessed',
+    reminderInterval: 'reminderInterval',
+    lastRemindedAt: 'lastRemindedAt',
+    snoozedUntil: 'snoozedUntil',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SocialPostScalarFieldEnum = (typeof SocialPostScalarFieldEnum)[keyof typeof SocialPostScalarFieldEnum]
+
+
+  export const CalendarEventScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    company: 'company',
+    type: 'type',
+    category: 'category',
+    priority: 'priority',
+    status: 'status',
+    isProcessed: 'isProcessed',
+    processedAt: 'processedAt',
+    processedBy: 'processedBy',
+    start: 'start',
+    end: 'end',
+    allDay: 'allDay',
+    location: 'location',
+    clientName: 'clientName',
+    clientPhone: 'clientPhone',
+    clientEmail: 'clientEmail',
+    reminderInterval: 'reminderInterval',
+    reminderUnit: 'reminderUnit',
+    lastRemindedAt: 'lastRemindedAt',
+    snoozedUntil: 'snoozedUntil',
+    reminderCount: 'reminderCount',
+    assigneeId: 'assigneeId',
+    projectId: 'projectId',
+    color: 'color',
+    source: 'source',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)[keyof typeof CalendarEventScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15939,6 +18771,7 @@ export namespace Prisma {
     id?: StringFilter<"Project"> | string
     name?: StringFilter<"Project"> | string
     description?: StringFilter<"Project"> | string
+    business?: StringNullableFilter<"Project"> | string | null
     status?: StringFilter<"Project"> | string
     priority?: StringFilter<"Project"> | string
     startDate?: StringFilter<"Project"> | string
@@ -15957,6 +18790,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    business?: SortOrderInput | SortOrder
     status?: SortOrder
     priority?: SortOrder
     startDate?: SortOrder
@@ -15978,6 +18812,7 @@ export namespace Prisma {
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     name?: StringFilter<"Project"> | string
     description?: StringFilter<"Project"> | string
+    business?: StringNullableFilter<"Project"> | string | null
     status?: StringFilter<"Project"> | string
     priority?: StringFilter<"Project"> | string
     startDate?: StringFilter<"Project"> | string
@@ -15996,6 +18831,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    business?: SortOrderInput | SortOrder
     status?: SortOrder
     priority?: SortOrder
     startDate?: SortOrder
@@ -16018,6 +18854,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Project"> | string
     name?: StringWithAggregatesFilter<"Project"> | string
     description?: StringWithAggregatesFilter<"Project"> | string
+    business?: StringNullableWithAggregatesFilter<"Project"> | string | null
     status?: StringWithAggregatesFilter<"Project"> | string
     priority?: StringWithAggregatesFilter<"Project"> | string
     startDate?: StringWithAggregatesFilter<"Project"> | string
@@ -16677,6 +19514,309 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"WhatsappMessageLog"> | Date | string
   }
 
+  export type SocialPostWhereInput = {
+    AND?: SocialPostWhereInput | SocialPostWhereInput[]
+    OR?: SocialPostWhereInput[]
+    NOT?: SocialPostWhereInput | SocialPostWhereInput[]
+    id?: StringFilter<"SocialPost"> | string
+    title?: StringFilter<"SocialPost"> | string
+    description?: StringNullableFilter<"SocialPost"> | string | null
+    company?: StringNullableFilter<"SocialPost"> | string | null
+    platform?: StringFilter<"SocialPost"> | string
+    status?: StringFilter<"SocialPost"> | string
+    scheduledAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    publishedAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    postUrl?: StringNullableFilter<"SocialPost"> | string | null
+    createdById?: StringNullableFilter<"SocialPost"> | string | null
+    assigneeId?: StringNullableFilter<"SocialPost"> | string | null
+    content?: StringNullableFilter<"SocialPost"> | string | null
+    mediaUrl?: StringNullableFilter<"SocialPost"> | string | null
+    hashtags?: StringNullableFilter<"SocialPost"> | string | null
+    isProcessed?: BoolFilter<"SocialPost"> | boolean
+    reminderInterval?: IntFilter<"SocialPost"> | number
+    lastRemindedAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    snoozedUntil?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    createdAt?: DateTimeFilter<"SocialPost"> | Date | string
+    updatedAt?: DateTimeFilter<"SocialPost"> | Date | string
+  }
+
+  export type SocialPostOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    platform?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    postUrl?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    hashtags?: SortOrderInput | SortOrder
+    isProcessed?: SortOrder
+    reminderInterval?: SortOrder
+    lastRemindedAt?: SortOrderInput | SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SocialPostWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SocialPostWhereInput | SocialPostWhereInput[]
+    OR?: SocialPostWhereInput[]
+    NOT?: SocialPostWhereInput | SocialPostWhereInput[]
+    title?: StringFilter<"SocialPost"> | string
+    description?: StringNullableFilter<"SocialPost"> | string | null
+    company?: StringNullableFilter<"SocialPost"> | string | null
+    platform?: StringFilter<"SocialPost"> | string
+    status?: StringFilter<"SocialPost"> | string
+    scheduledAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    publishedAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    postUrl?: StringNullableFilter<"SocialPost"> | string | null
+    createdById?: StringNullableFilter<"SocialPost"> | string | null
+    assigneeId?: StringNullableFilter<"SocialPost"> | string | null
+    content?: StringNullableFilter<"SocialPost"> | string | null
+    mediaUrl?: StringNullableFilter<"SocialPost"> | string | null
+    hashtags?: StringNullableFilter<"SocialPost"> | string | null
+    isProcessed?: BoolFilter<"SocialPost"> | boolean
+    reminderInterval?: IntFilter<"SocialPost"> | number
+    lastRemindedAt?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    snoozedUntil?: DateTimeNullableFilter<"SocialPost"> | Date | string | null
+    createdAt?: DateTimeFilter<"SocialPost"> | Date | string
+    updatedAt?: DateTimeFilter<"SocialPost"> | Date | string
+  }, "id">
+
+  export type SocialPostOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    platform?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    postUrl?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    hashtags?: SortOrderInput | SortOrder
+    isProcessed?: SortOrder
+    reminderInterval?: SortOrder
+    lastRemindedAt?: SortOrderInput | SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SocialPostCountOrderByAggregateInput
+    _avg?: SocialPostAvgOrderByAggregateInput
+    _max?: SocialPostMaxOrderByAggregateInput
+    _min?: SocialPostMinOrderByAggregateInput
+    _sum?: SocialPostSumOrderByAggregateInput
+  }
+
+  export type SocialPostScalarWhereWithAggregatesInput = {
+    AND?: SocialPostScalarWhereWithAggregatesInput | SocialPostScalarWhereWithAggregatesInput[]
+    OR?: SocialPostScalarWhereWithAggregatesInput[]
+    NOT?: SocialPostScalarWhereWithAggregatesInput | SocialPostScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SocialPost"> | string
+    title?: StringWithAggregatesFilter<"SocialPost"> | string
+    description?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    company?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    platform?: StringWithAggregatesFilter<"SocialPost"> | string
+    status?: StringWithAggregatesFilter<"SocialPost"> | string
+    scheduledAt?: DateTimeNullableWithAggregatesFilter<"SocialPost"> | Date | string | null
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"SocialPost"> | Date | string | null
+    postUrl?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    createdById?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    assigneeId?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    content?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    mediaUrl?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    hashtags?: StringNullableWithAggregatesFilter<"SocialPost"> | string | null
+    isProcessed?: BoolWithAggregatesFilter<"SocialPost"> | boolean
+    reminderInterval?: IntWithAggregatesFilter<"SocialPost"> | number
+    lastRemindedAt?: DateTimeNullableWithAggregatesFilter<"SocialPost"> | Date | string | null
+    snoozedUntil?: DateTimeNullableWithAggregatesFilter<"SocialPost"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SocialPost"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SocialPost"> | Date | string
+  }
+
+  export type CalendarEventWhereInput = {
+    AND?: CalendarEventWhereInput | CalendarEventWhereInput[]
+    OR?: CalendarEventWhereInput[]
+    NOT?: CalendarEventWhereInput | CalendarEventWhereInput[]
+    id?: StringFilter<"CalendarEvent"> | string
+    title?: StringFilter<"CalendarEvent"> | string
+    description?: StringNullableFilter<"CalendarEvent"> | string | null
+    company?: StringNullableFilter<"CalendarEvent"> | string | null
+    type?: StringFilter<"CalendarEvent"> | string
+    category?: StringFilter<"CalendarEvent"> | string
+    priority?: StringFilter<"CalendarEvent"> | string
+    status?: StringFilter<"CalendarEvent"> | string
+    isProcessed?: BoolFilter<"CalendarEvent"> | boolean
+    processedAt?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    processedBy?: StringNullableFilter<"CalendarEvent"> | string | null
+    start?: DateTimeFilter<"CalendarEvent"> | Date | string
+    end?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    allDay?: BoolFilter<"CalendarEvent"> | boolean
+    location?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientName?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientPhone?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientEmail?: StringNullableFilter<"CalendarEvent"> | string | null
+    reminderInterval?: IntFilter<"CalendarEvent"> | number
+    reminderUnit?: StringFilter<"CalendarEvent"> | string
+    lastRemindedAt?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    snoozedUntil?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    reminderCount?: IntFilter<"CalendarEvent"> | number
+    assigneeId?: StringNullableFilter<"CalendarEvent"> | string | null
+    projectId?: StringNullableFilter<"CalendarEvent"> | string | null
+    color?: StringNullableFilter<"CalendarEvent"> | string | null
+    source?: StringFilter<"CalendarEvent"> | string
+    createdAt?: DateTimeFilter<"CalendarEvent"> | Date | string
+    updatedAt?: DateTimeFilter<"CalendarEvent"> | Date | string
+  }
+
+  export type CalendarEventOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    status?: SortOrder
+    isProcessed?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    processedBy?: SortOrderInput | SortOrder
+    start?: SortOrder
+    end?: SortOrderInput | SortOrder
+    allDay?: SortOrder
+    location?: SortOrderInput | SortOrder
+    clientName?: SortOrderInput | SortOrder
+    clientPhone?: SortOrderInput | SortOrder
+    clientEmail?: SortOrderInput | SortOrder
+    reminderInterval?: SortOrder
+    reminderUnit?: SortOrder
+    lastRemindedAt?: SortOrderInput | SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    reminderCount?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    projectId?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CalendarEventWhereInput | CalendarEventWhereInput[]
+    OR?: CalendarEventWhereInput[]
+    NOT?: CalendarEventWhereInput | CalendarEventWhereInput[]
+    title?: StringFilter<"CalendarEvent"> | string
+    description?: StringNullableFilter<"CalendarEvent"> | string | null
+    company?: StringNullableFilter<"CalendarEvent"> | string | null
+    type?: StringFilter<"CalendarEvent"> | string
+    category?: StringFilter<"CalendarEvent"> | string
+    priority?: StringFilter<"CalendarEvent"> | string
+    status?: StringFilter<"CalendarEvent"> | string
+    isProcessed?: BoolFilter<"CalendarEvent"> | boolean
+    processedAt?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    processedBy?: StringNullableFilter<"CalendarEvent"> | string | null
+    start?: DateTimeFilter<"CalendarEvent"> | Date | string
+    end?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    allDay?: BoolFilter<"CalendarEvent"> | boolean
+    location?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientName?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientPhone?: StringNullableFilter<"CalendarEvent"> | string | null
+    clientEmail?: StringNullableFilter<"CalendarEvent"> | string | null
+    reminderInterval?: IntFilter<"CalendarEvent"> | number
+    reminderUnit?: StringFilter<"CalendarEvent"> | string
+    lastRemindedAt?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    snoozedUntil?: DateTimeNullableFilter<"CalendarEvent"> | Date | string | null
+    reminderCount?: IntFilter<"CalendarEvent"> | number
+    assigneeId?: StringNullableFilter<"CalendarEvent"> | string | null
+    projectId?: StringNullableFilter<"CalendarEvent"> | string | null
+    color?: StringNullableFilter<"CalendarEvent"> | string | null
+    source?: StringFilter<"CalendarEvent"> | string
+    createdAt?: DateTimeFilter<"CalendarEvent"> | Date | string
+    updatedAt?: DateTimeFilter<"CalendarEvent"> | Date | string
+  }, "id">
+
+  export type CalendarEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    company?: SortOrderInput | SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    status?: SortOrder
+    isProcessed?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    processedBy?: SortOrderInput | SortOrder
+    start?: SortOrder
+    end?: SortOrderInput | SortOrder
+    allDay?: SortOrder
+    location?: SortOrderInput | SortOrder
+    clientName?: SortOrderInput | SortOrder
+    clientPhone?: SortOrderInput | SortOrder
+    clientEmail?: SortOrderInput | SortOrder
+    reminderInterval?: SortOrder
+    reminderUnit?: SortOrder
+    lastRemindedAt?: SortOrderInput | SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    reminderCount?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    projectId?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CalendarEventCountOrderByAggregateInput
+    _avg?: CalendarEventAvgOrderByAggregateInput
+    _max?: CalendarEventMaxOrderByAggregateInput
+    _min?: CalendarEventMinOrderByAggregateInput
+    _sum?: CalendarEventSumOrderByAggregateInput
+  }
+
+  export type CalendarEventScalarWhereWithAggregatesInput = {
+    AND?: CalendarEventScalarWhereWithAggregatesInput | CalendarEventScalarWhereWithAggregatesInput[]
+    OR?: CalendarEventScalarWhereWithAggregatesInput[]
+    NOT?: CalendarEventScalarWhereWithAggregatesInput | CalendarEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    title?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    description?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    company?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    type?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    category?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    priority?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    status?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    isProcessed?: BoolWithAggregatesFilter<"CalendarEvent"> | boolean
+    processedAt?: DateTimeNullableWithAggregatesFilter<"CalendarEvent"> | Date | string | null
+    processedBy?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    start?: DateTimeWithAggregatesFilter<"CalendarEvent"> | Date | string
+    end?: DateTimeNullableWithAggregatesFilter<"CalendarEvent"> | Date | string | null
+    allDay?: BoolWithAggregatesFilter<"CalendarEvent"> | boolean
+    location?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    clientName?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    clientPhone?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    clientEmail?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    reminderInterval?: IntWithAggregatesFilter<"CalendarEvent"> | number
+    reminderUnit?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    lastRemindedAt?: DateTimeNullableWithAggregatesFilter<"CalendarEvent"> | Date | string | null
+    snoozedUntil?: DateTimeNullableWithAggregatesFilter<"CalendarEvent"> | Date | string | null
+    reminderCount?: IntWithAggregatesFilter<"CalendarEvent"> | number
+    assigneeId?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    projectId?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    color?: StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
+    source?: StringWithAggregatesFilter<"CalendarEvent"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CalendarEvent"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CalendarEvent"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -16821,6 +19961,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -16838,6 +19979,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -16855,6 +19997,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -16872,6 +20015,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -16889,6 +20033,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -16903,6 +20048,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -16916,6 +20062,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -17598,6 +20745,391 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SocialPostCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    platform: string
+    status?: string
+    scheduledAt?: Date | string | null
+    publishedAt?: Date | string | null
+    postUrl?: string | null
+    createdById?: string | null
+    assigneeId?: string | null
+    content?: string | null
+    mediaUrl?: string | null
+    hashtags?: string | null
+    isProcessed?: boolean
+    reminderInterval?: number
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SocialPostUncheckedCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    platform: string
+    status?: string
+    scheduledAt?: Date | string | null
+    publishedAt?: Date | string | null
+    postUrl?: string | null
+    createdById?: string | null
+    assigneeId?: string | null
+    content?: string | null
+    mediaUrl?: string | null
+    hashtags?: string | null
+    isProcessed?: boolean
+    reminderInterval?: number
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SocialPostUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    postUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hashtags?: NullableStringFieldUpdateOperationsInput | string | null
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialPostUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    postUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hashtags?: NullableStringFieldUpdateOperationsInput | string | null
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialPostCreateManyInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    platform: string
+    status?: string
+    scheduledAt?: Date | string | null
+    publishedAt?: Date | string | null
+    postUrl?: string | null
+    createdById?: string | null
+    assigneeId?: string | null
+    content?: string | null
+    mediaUrl?: string | null
+    hashtags?: string | null
+    isProcessed?: boolean
+    reminderInterval?: number
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SocialPostUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    postUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hashtags?: NullableStringFieldUpdateOperationsInput | string | null
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialPostUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    postUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hashtags?: NullableStringFieldUpdateOperationsInput | string | null
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarEventCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    type?: string
+    category?: string
+    priority?: string
+    status?: string
+    isProcessed?: boolean
+    processedAt?: Date | string | null
+    processedBy?: string | null
+    start: Date | string
+    end?: Date | string | null
+    allDay?: boolean
+    location?: string | null
+    clientName?: string | null
+    clientPhone?: string | null
+    clientEmail?: string | null
+    reminderInterval?: number
+    reminderUnit?: string
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    reminderCount?: number
+    assigneeId?: string | null
+    projectId?: string | null
+    color?: string | null
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarEventUncheckedCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    type?: string
+    category?: string
+    priority?: string
+    status?: string
+    isProcessed?: boolean
+    processedAt?: Date | string | null
+    processedBy?: string | null
+    start: Date | string
+    end?: Date | string | null
+    allDay?: boolean
+    location?: string | null
+    clientName?: string | null
+    clientPhone?: string | null
+    clientEmail?: string | null
+    reminderInterval?: number
+    reminderUnit?: string
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    reminderCount?: number
+    assigneeId?: string | null
+    projectId?: string | null
+    color?: string | null
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    processedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    start?: DateTimeFieldUpdateOperationsInput | Date | string
+    end?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: NullableStringFieldUpdateOperationsInput | string | null
+    clientPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    clientEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    reminderUnit?: StringFieldUpdateOperationsInput | string
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderCount?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    processedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    start?: DateTimeFieldUpdateOperationsInput | Date | string
+    end?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: NullableStringFieldUpdateOperationsInput | string | null
+    clientPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    clientEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    reminderUnit?: StringFieldUpdateOperationsInput | string
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderCount?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarEventCreateManyInput = {
+    id?: string
+    title: string
+    description?: string | null
+    company?: string | null
+    type?: string
+    category?: string
+    priority?: string
+    status?: string
+    isProcessed?: boolean
+    processedAt?: Date | string | null
+    processedBy?: string | null
+    start: Date | string
+    end?: Date | string | null
+    allDay?: boolean
+    location?: string | null
+    clientName?: string | null
+    clientPhone?: string | null
+    clientEmail?: string | null
+    reminderInterval?: number
+    reminderUnit?: string
+    lastRemindedAt?: Date | string | null
+    snoozedUntil?: Date | string | null
+    reminderCount?: number
+    assigneeId?: string | null
+    projectId?: string | null
+    color?: string | null
+    source?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    processedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    start?: DateTimeFieldUpdateOperationsInput | Date | string
+    end?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: NullableStringFieldUpdateOperationsInput | string | null
+    clientPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    clientEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    reminderUnit?: StringFieldUpdateOperationsInput | string
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderCount?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    processedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    start?: DateTimeFieldUpdateOperationsInput | Date | string
+    end?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allDay?: BoolFieldUpdateOperationsInput | boolean
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    clientName?: NullableStringFieldUpdateOperationsInput | string | null
+    clientPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    clientEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderInterval?: IntFieldUpdateOperationsInput | number
+    reminderUnit?: StringFieldUpdateOperationsInput | string
+    lastRemindedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderCount?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -17851,6 +21383,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    business?: SortOrder
     status?: SortOrder
     priority?: SortOrder
     startDate?: SortOrder
@@ -17869,6 +21402,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    business?: SortOrder
     status?: SortOrder
     priority?: SortOrder
     startDate?: SortOrder
@@ -17883,6 +21417,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    business?: SortOrder
     status?: SortOrder
     priority?: SortOrder
     startDate?: SortOrder
@@ -18306,6 +21841,189 @@ export namespace Prisma {
     taskId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type SocialPostCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    platform?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    publishedAt?: SortOrder
+    postUrl?: SortOrder
+    createdById?: SortOrder
+    assigneeId?: SortOrder
+    content?: SortOrder
+    mediaUrl?: SortOrder
+    hashtags?: SortOrder
+    isProcessed?: SortOrder
+    reminderInterval?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SocialPostAvgOrderByAggregateInput = {
+    reminderInterval?: SortOrder
+  }
+
+  export type SocialPostMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    platform?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    publishedAt?: SortOrder
+    postUrl?: SortOrder
+    createdById?: SortOrder
+    assigneeId?: SortOrder
+    content?: SortOrder
+    mediaUrl?: SortOrder
+    hashtags?: SortOrder
+    isProcessed?: SortOrder
+    reminderInterval?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SocialPostMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    platform?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    publishedAt?: SortOrder
+    postUrl?: SortOrder
+    createdById?: SortOrder
+    assigneeId?: SortOrder
+    content?: SortOrder
+    mediaUrl?: SortOrder
+    hashtags?: SortOrder
+    isProcessed?: SortOrder
+    reminderInterval?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SocialPostSumOrderByAggregateInput = {
+    reminderInterval?: SortOrder
+  }
+
+  export type CalendarEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    status?: SortOrder
+    isProcessed?: SortOrder
+    processedAt?: SortOrder
+    processedBy?: SortOrder
+    start?: SortOrder
+    end?: SortOrder
+    allDay?: SortOrder
+    location?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    reminderInterval?: SortOrder
+    reminderUnit?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    reminderCount?: SortOrder
+    assigneeId?: SortOrder
+    projectId?: SortOrder
+    color?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarEventAvgOrderByAggregateInput = {
+    reminderInterval?: SortOrder
+    reminderCount?: SortOrder
+  }
+
+  export type CalendarEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    status?: SortOrder
+    isProcessed?: SortOrder
+    processedAt?: SortOrder
+    processedBy?: SortOrder
+    start?: SortOrder
+    end?: SortOrder
+    allDay?: SortOrder
+    location?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    reminderInterval?: SortOrder
+    reminderUnit?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    reminderCount?: SortOrder
+    assigneeId?: SortOrder
+    projectId?: SortOrder
+    color?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    company?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    status?: SortOrder
+    isProcessed?: SortOrder
+    processedAt?: SortOrder
+    processedBy?: SortOrder
+    start?: SortOrder
+    end?: SortOrder
+    allDay?: SortOrder
+    location?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    reminderInterval?: SortOrder
+    reminderUnit?: SortOrder
+    lastRemindedAt?: SortOrder
+    snoozedUntil?: SortOrder
+    reminderCount?: SortOrder
+    assigneeId?: SortOrder
+    projectId?: SortOrder
+    color?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarEventSumOrderByAggregateInput = {
+    reminderInterval?: SortOrder
+    reminderCount?: SortOrder
   }
 
   export type ProjectCreateNestedManyWithoutOwnerInput = {
@@ -19270,6 +22988,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -19286,6 +23005,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -19486,6 +23206,7 @@ export namespace Prisma {
     id?: StringFilter<"Project"> | string
     name?: StringFilter<"Project"> | string
     description?: StringFilter<"Project"> | string
+    business?: StringNullableFilter<"Project"> | string | null
     status?: StringFilter<"Project"> | string
     priority?: StringFilter<"Project"> | string
     startDate?: StringFilter<"Project"> | string
@@ -19920,6 +23641,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -19936,6 +23658,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -20017,6 +23740,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -20033,6 +23757,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -20104,6 +23829,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -20120,6 +23846,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -20193,6 +23920,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -20209,6 +23937,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -20241,6 +23970,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -20257,6 +23987,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -20386,6 +24117,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -20402,6 +24134,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -21121,6 +24854,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
+    business?: string | null
     status?: string
     priority?: string
     startDate: string
@@ -21183,6 +24917,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -21199,6 +24934,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string
@@ -21215,6 +24951,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    business?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     startDate?: StringFieldUpdateOperationsInput | string

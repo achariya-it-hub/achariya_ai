@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { seedData } from "@/lib/data";
+import { getUser } from "@/lib/auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -37,8 +38,21 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const user = await getUser();
   const body = await request.json();
   const { proofs, project, assignee, milestone, createdAt, ...cleanTaskData } = body;
+  if (!user || user.role !== "admin") {
+    cleanTaskData.payout = 0;
+  } else if (cleanTaskData.assigneeId) {
+    try {
+      const assigneeUser = await prisma.user.findUnique({ where: { id: cleanTaskData.assigneeId } });
+      if (assigneeUser && assigneeUser.role !== "trainee") {
+        cleanTaskData.payout = 0;
+      }
+    } catch {}
+  } else {
+    cleanTaskData.payout = 0;
+  }
   try {
     const task = await prisma.task.create({
       data: cleanTaskData,

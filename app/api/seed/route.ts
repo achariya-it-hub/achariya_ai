@@ -162,7 +162,31 @@ export async function POST() {
       ],
     });
 
-    return NextResponse.json({ message: "Database seeded successfully!" });
+    try {
+      await prisma.socialPost.deleteMany();
+      await prisma.socialPost.createMany({
+        data: [
+          { id: "sp1", title: "Product Launch Teaser", description: "Teaser for new feature launch", platform: "instagram", status: "scheduled", scheduledAt: new Date(Date.now() + 86400000), content: "Coming soon! Exciting updates on the way.", hashtags: "#launch #comingsoon #achariya", createdById: "u1", assigneeId: "u3" },
+          { id: "sp2", title: "Behind the Scenes", description: "BTS content", platform: "linkedin", status: "draft", content: "Meet our team and see how we work.", hashtags: "#team #culture #work", createdById: "u1", assigneeId: "u3" },
+          { id: "sp3", title: "Client Success Story", description: "Case study highlight", platform: "instagram", status: "idea", content: "How we helped our client achieve results.", hashtags: "#success #clients #results", createdById: "u1", assigneeId: "u7" },
+          { id: "sp4", title: "Weekly Tips", description: "Educational content", platform: "twitter", status: "published", publishedAt: new Date(Date.now() - 3600000), postUrl: "https://x.com/achariya/status/123", content: "3 tips to boost your productivity today.", hashtags: "#tips #productivity", createdById: "u2", assigneeId: "u6" },
+        ],
+      });
+    } catch (e) {
+      console.warn("Social posts seeding skipped:", e);
+    }
+
+    let socialPosts: any[] = [];
+    try {
+      socialPosts = await prisma.socialPost.findMany();
+    } catch (e) {
+      socialPosts = [];
+    }
+
+    return NextResponse.json({ 
+      message: "Database seeded successfully!",
+      socialPosts
+    });
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }

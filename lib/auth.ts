@@ -17,16 +17,27 @@ export async function getUser(): Promise<JWTPayload | null> {
 
 export async function authenticate(emailInput: string, password: string): Promise<JWTPayload | null> {
   const clean = emailInput.trim().toLowerCase();
-  
-  // Normalize alias emails (e.g. ram@achariya.ai -> ramkumar@achariya.ai, adhithya@achariya.ai -> adhi@achariya.ai)
-  let normalizedEmail = clean;
-  if (!clean.includes("@")) {
-    if (clean === "ram") normalizedEmail = "ramkumar@achariya.ai";
-    else if (clean === "adhithya") normalizedEmail = "adhi@achariya.ai";
-    else normalizedEmail = `${clean}@achariya.ai`;
-  } else if (clean === "ram@achariya.ai") {
+  const cleanNoDash = clean.replace(/[-_\s]/g, "");
+
+  // Match by Employee ID, email, username, or ID from seedMembers
+  const matchedMember = seedMembers.find(
+    (m) =>
+      (m.employeeId && m.employeeId.toLowerCase() === clean) ||
+      (m.employeeId && m.employeeId.toLowerCase().replace(/[-_\s]/g, "") === cleanNoDash) ||
+      m.email.toLowerCase() === clean ||
+      m.id.toLowerCase() === clean ||
+      m.name.toLowerCase() === clean ||
+      m.email.split("@")[0].toLowerCase() === clean
+  );
+
+  let normalizedEmail = matchedMember ? matchedMember.email.toLowerCase() : clean;
+  if (!normalizedEmail.includes("@")) {
+    if (normalizedEmail === "ram") normalizedEmail = "ramkumar@achariya.ai";
+    else if (normalizedEmail === "adhithya") normalizedEmail = "adhi@achariya.ai";
+    else normalizedEmail = `${normalizedEmail}@achariya.ai`;
+  } else if (normalizedEmail === "ram@achariya.ai") {
     normalizedEmail = "ramkumar@achariya.ai";
-  } else if (clean === "adhithya@achariya.ai") {
+  } else if (normalizedEmail === "adhithya@achariya.ai") {
     normalizedEmail = "adhi@achariya.ai";
   }
 
@@ -36,6 +47,7 @@ export async function authenticate(emailInput: string, password: string): Promis
         OR: [
           { email: normalizedEmail },
           { email: clean },
+          ...(matchedMember ? [{ id: matchedMember.id }] : []),
         ],
       },
     });
@@ -46,23 +58,14 @@ export async function authenticate(emailInput: string, password: string): Promis
     console.warn("Prisma DB lookup error on serverless lambda, falling back to seed members:", err);
   }
 
-  // Fallback in-memory auth for Netlify serverless environment
-  const fallback = seedMembers.find(
-    (m) =>
-      m.email.toLowerCase() === normalizedEmail ||
-      m.email.toLowerCase() === clean ||
-      m.name.toLowerCase() === clean ||
-      m.email.split("@")[0].toLowerCase() === clean ||
-      m.id.toLowerCase() === clean
-  );
-
-  if (fallback) {
+  // In-memory fallback
+  if (matchedMember) {
     return {
-      id: fallback.id,
-      email: fallback.email,
-      name: fallback.name,
-      avatar: fallback.avatar,
-      role: fallback.role,
+      id: matchedMember.id,
+      email: matchedMember.email,
+      name: matchedMember.name,
+      avatar: matchedMember.avatar,
+      role: matchedMember.role,
     };
   }
 

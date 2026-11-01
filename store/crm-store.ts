@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof } from "@/types";
+import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof, SocialPost, CalendarEvent } from "@/types";
 import { seedData } from "@/lib/data";
 
 const STORAGE_KEY = "achariya_crm_store_v3";
@@ -38,6 +38,8 @@ function saveLocalData(data: {
   meetings: Meeting[];
   activities: Activity[];
   attendance: AttendanceRecord[];
+  socialPosts?: SocialPost[];
+  calendarEvents?: CalendarEvent[];
 }) {
   if (typeof window === "undefined") return;
   try {
@@ -66,6 +68,8 @@ interface CRMStore {
   meetings: Meeting[];
   activities: Activity[];
   attendance: AttendanceRecord[];
+  socialPosts: SocialPost[];
+  calendarEvents: CalendarEvent[];
   load: () => Promise<void>;
   addMember: (member: Omit<TeamMember, "id">) => Promise<void>;
   updateMember: (id: string, updates: Partial<TeamMember>) => Promise<void>;
@@ -86,6 +90,17 @@ interface CRMStore {
   updateMeeting: (id: string, updates: Partial<Meeting>) => Promise<void>;
   deleteMeeting: (id: string) => Promise<void>;
   addActivity: (activity: Omit<Activity, "id" | "createdAt">) => Promise<void>;
+  addCalendarEvent: (event: Omit<CalendarEvent, "id" | "createdAt" | "updatedAt">) => Promise<CalendarEvent>;
+  bulkImportCalendarEvents: (events: Array<Omit<CalendarEvent, "id" | "createdAt" | "updatedAt">>) => Promise<number>;
+  updateCalendarEvent: (id: string, updates: Partial<CalendarEvent>) => Promise<void>;
+  toggleEventProcessed: (id: string, isProcessed: boolean, processedBy?: string) => Promise<void>;
+  snoozeCalendarReminder: (id: string, additionalMinutes?: number) => Promise<void>;
+  addSocialPost: (post: Omit<SocialPost, "id" | "createdAt" | "updatedAt">) => Promise<SocialPost>;
+  bulkImportSocialPosts: (posts: Array<Omit<SocialPost, "id" | "createdAt" | "updatedAt">>) => Promise<number>;
+  updateSocialPost: (id: string, updates: Partial<SocialPost>) => Promise<void>;
+  deleteSocialPost: (id: string) => Promise<void>;
+  snoozeSocialPostReminder: (id: string, additionalMinutes?: number) => Promise<void>;
+  toggleSocialPostProcessed: (id: string, isProcessed: boolean) => Promise<void>;
 }
 
 let isSyncing = false;
@@ -99,10 +114,12 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   meetings: seedData.meetings,
   activities: seedData.activities,
   attendance: [],
+  socialPosts: seedData.socialPosts || [],
+  calendarEvents: seedData.calendarEvents || [],
 
   load: async (force?: boolean) => {
     const now = Date.now();
-    if (isSyncing || (!force && now - lastSyncTime < 5000)) {
+    if (isSyncing || (!force && now - lastSyncTime < 10000)) {
       return;
     }
     isSyncing = true;
@@ -120,11 +137,13 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         meetings: (cached.meetings?.length ? cached.meetings : seedData.meetings).filter((m: any) => !deleted.has(m.id)),
         activities: (cached.activities?.length ? cached.activities : seedData.activities).filter((a: any) => !deleted.has(a.id)),
         attendance: cached.attendance || [],
+        calendarEvents: (cached.calendarEvents?.length ? cached.calendarEvents : (seedData.calendarEvents || [])).filter((e: any) => !deleted.has(e.id)),
+        socialPosts: (cached.socialPosts?.length ? cached.socialPosts : (seedData.socialPosts || [])).filter((s: any) => !deleted.has(s.id)),
       });
     }
 
     try {
-      const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes] = await Promise.all([
+      const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes, calendarRes, socialRes] = await Promise.all([
         fetch("/api/members").then((r) => r.ok ? r.json() : null).catch(() => null),
         fetch("/api/projects").then((r) => r.ok ? r.json() : null).then((projects) => (Array.isArray(projects) ? projects.map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] })) : null)).catch(() => null),
         fetch("/api/milestones").then((r) => r.ok ? r.json() : null).catch(() => null),
@@ -132,6 +151,8 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         fetch("/api/meetings").then((r) => r.ok ? r.json() : null).then((meetings) => (Array.isArray(meetings) ? meetings.map((m: any) => ({ ...m, attendeeIds: m.attendees?.map((a: any) => a.userId) || m.attendeeIds || [] })) : null)).catch(() => null),
         fetch("/api/activities").then((r) => r.ok ? r.json() : null).catch(() => null),
         fetch("/api/attendance").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/calendar").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/social").then((r) => r.ok ? r.json() : null).catch(() => null),
       ]);
 
       const cur = get();
@@ -149,12 +170,19 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
         const baseMap = new Map(baseList.map((item) => [item.id, item]));
         const merged = [...baseList];
+        for (const s of seedList) {
+          if (!deleted.has(s.id) && !baseMap.has(s.id)) {
+            baseMap.set(s.id, s);
+            merged.push(s);
+          }
+        }
         for (const item of currentList) {
           if (
             !deleted.has(item.id) &&
             !baseMap.has(item.id) &&
-            (item.id.startsWith("task-") || item.id.startsWith("p-") || item.id.startsWith("m-") || item.id.startsWith("u-") || item.id.startsWith("meet-"))
+            (item.id.startsWith("task-") || item.id.startsWith("p-") || item.id.startsWith("m-") || item.id.startsWith("u-") || item.id.startsWith("meet-") || item.id.startsWith("sp-") || item.id.startsWith("cal-"))
           ) {
+            baseMap.set(item.id, item);
             merged.push(item);
           }
         }
@@ -166,10 +194,21 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       const mergedMembers = merge(membersRes, cur.members, seedData.members);
       const mergedProjects = merge(projectsRes, cur.projects, seedData.projects);
       const mergedMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
-      const mergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+      const rawMergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+      // Enforce trainee-only payout policy (reset non-trainee & Ramkumar payouts to 0)
+      const mergedTasks = rawMergedTasks.map((t) => {
+        const assignee = mergedMembers.find((m) => m.id === t.assigneeId);
+        const isTrainee = assignee?.role === "trainee";
+        if (!isTrainee && (t.payout > 0 || t.payoutStatus)) {
+          return { ...t, payout: 0, payoutStatus: undefined };
+        }
+        return t;
+      });
       const mergedMeetings = Array.isArray(meetingsRes) ? meetingsRes : cur.meetings;
       const mergedActivities = Array.isArray(activitiesRes) ? activitiesRes : cur.activities;
       const mergedAttendance = Array.isArray(attendanceRes) ? attendanceRes : cur.attendance;
+      const mergedCalendarEvents = merge(calendarRes, cur.calendarEvents, seedData.calendarEvents || []);
+      const mergedSocialPosts = merge(socialRes, cur.socialPosts, seedData.socialPosts || []);
 
       const finalMembers = isSame(mergedMembers, cur.members) ? cur.members : mergedMembers;
       const finalProjects = isSame(mergedProjects, cur.projects) ? cur.projects : mergedProjects;
@@ -178,6 +217,8 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       const finalMeetings = isSame(mergedMeetings, cur.meetings) ? cur.meetings : mergedMeetings;
       const finalActivities = isSame(mergedActivities, cur.activities) ? cur.activities : mergedActivities;
       const finalAttendance = isSame(mergedAttendance, cur.attendance) ? cur.attendance : mergedAttendance;
+      const finalSocialPosts = isSame(mergedSocialPosts, cur.socialPosts) ? (cur.socialPosts || []) : mergedSocialPosts;
+      const finalCalendarEvents = isSame(mergedCalendarEvents, cur.calendarEvents) ? (cur.calendarEvents || []) : mergedCalendarEvents;
 
       const hasChanged =
         finalMembers !== cur.members ||
@@ -186,7 +227,9 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         finalTasks !== cur.tasks ||
         finalMeetings !== cur.meetings ||
         finalActivities !== cur.activities ||
-        finalAttendance !== cur.attendance;
+        finalAttendance !== cur.attendance ||
+        finalSocialPosts !== cur.socialPosts ||
+        finalCalendarEvents !== cur.calendarEvents;
 
       if (hasChanged) {
         const newState = {
@@ -197,9 +240,11 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
           meetings: finalMeetings,
           activities: finalActivities,
           attendance: finalAttendance,
+          socialPosts: finalSocialPosts,
+          calendarEvents: finalCalendarEvents,
         };
         set(newState);
-        saveLocalData(newState);
+        saveLocalData(newState as any);
       }
     } catch (err) {
       console.warn("Store load sync warning:", err);
@@ -334,7 +379,18 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
   updateTask: async (id, updates) => {
     set((s) => {
-      const next = { ...s, tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)) };
+      const existing = s.tasks.find((t) => t.id === id);
+      const assigneeId = updates.assigneeId !== undefined ? updates.assigneeId : existing?.assigneeId;
+      const assignee = s.members.find((m) => m.id === assigneeId);
+      const isTrainee = assignee?.role === "trainee";
+
+      const safeUpdates = { ...updates };
+      if (!isTrainee) {
+        safeUpdates.payout = 0;
+        safeUpdates.payoutStatus = undefined;
+      }
+
+      const next = { ...s, tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...safeUpdates } : t)) };
       saveLocalData(next);
       return next;
     });
@@ -418,6 +474,307 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       return next;
     });
     await fetch("/api/activities", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(activity) }).catch(() => {});
+  },
+
+  addCalendarEvent: async (event) => {
+    const tempId = `cal-${Date.now()}`;
+    const newEv: CalendarEvent = {
+      ...event,
+      id: tempId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    set((s) => {
+      const next = { ...s, calendarEvents: [newEv, ...s.calendarEvents] };
+      saveLocalData(next as any);
+      return next;
+    });
+    try {
+      const res = await fetch("/api/calendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(event),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        set((s) => {
+          const next = {
+            ...s,
+            calendarEvents: s.calendarEvents.map((e) => (e.id === tempId ? saved : e)),
+          };
+          saveLocalData(next as any);
+          return next;
+        });
+        return saved;
+      }
+    } catch (e) {
+      console.warn("Failed to create calendar event on server:", e);
+    }
+    return newEv;
+  },
+
+  bulkImportCalendarEvents: async (events) => {
+    try {
+      const res = await fetch("/api/calendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(events),
+      });
+      if (res.ok) {
+        const createdList = await res.json();
+        if (Array.isArray(createdList)) {
+          set((s) => {
+            const next = {
+              ...s,
+              calendarEvents: [...createdList, ...s.calendarEvents],
+            };
+            saveLocalData(next as any);
+            return next;
+          });
+          return createdList.length;
+        }
+      }
+    } catch (e) {
+      console.warn("Server bulk import failed, falling back to local:", e);
+    }
+
+    const now = Date.now();
+    const createdList: CalendarEvent[] = events.map((ev, idx) => ({
+      ...ev,
+      id: `cal-imp-${now}-${idx}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+    set((s) => {
+      const next = { ...s, calendarEvents: [...createdList, ...s.calendarEvents] };
+      saveLocalData(next as any);
+      return next;
+    });
+    return createdList.length;
+  },
+
+  updateCalendarEvent: async (id, updates) => {
+    set((s) => {
+      const next = {
+        ...s,
+        calendarEvents: s.calendarEvents.map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/calendar/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
+  },
+
+  toggleEventProcessed: async (id, isProcessed, processedBy) => {
+    const updates = {
+      isProcessed,
+      status: (isProcessed ? "processed" : "pending") as any,
+      processedAt: isProcessed ? new Date().toISOString() : null,
+      processedBy: isProcessed ? (processedBy || "Current User") : null,
+    };
+    set((s) => {
+      const next = {
+        ...s,
+        calendarEvents: s.calendarEvents.map((e) => (e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/calendar/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
+  },
+
+  deleteCalendarEvent: async (id: string) => {
+    addDeletedId(id);
+    set((s) => {
+      const next = {
+        ...s,
+        calendarEvents: s.calendarEvents.filter((e) => e.id !== id),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/calendar/${id}`, { method: "DELETE" }).catch(() => {});
+  },
+
+  snoozeCalendarReminder: async (id, additionalMinutes = 15) => {
+    const cur = get().calendarEvents.find((e) => e.id === id);
+    if (!cur) return;
+    const newCount = (cur.reminderCount || 0) + 1;
+    const snoozedUntil = new Date(Date.now() + additionalMinutes * 60 * 1000).toISOString();
+    const updates = {
+      lastRemindedAt: new Date().toISOString(),
+      snoozedUntil,
+      reminderCount: newCount,
+    };
+    set((s) => {
+      const next = {
+        ...s,
+        calendarEvents: s.calendarEvents.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/calendar/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
+  },
+
+  addSocialPost: async (post) => {
+    const tempId = `post-${Date.now()}`;
+    const newPost: SocialPost = {
+      ...post,
+      id: tempId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    set((s) => {
+      const next = { ...s, socialPosts: [newPost, ...(s.socialPosts || [])] };
+      saveLocalData(next as any);
+      return next;
+    });
+    try {
+      const res = await fetch("/api/social", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(post),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        set((s) => {
+          const next = {
+            ...s,
+            socialPosts: s.socialPosts.map((p) => (p.id === tempId ? saved : p)),
+          };
+          saveLocalData(next as any);
+          return next;
+        });
+        return saved;
+      }
+    } catch (e) {
+      console.warn("Failed to create social post on server:", e);
+    }
+    return newPost;
+  },
+
+  bulkImportSocialPosts: async (posts) => {
+    try {
+      const res = await fetch("/api/social", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(posts),
+      });
+      if (res.ok) {
+        const createdList = await res.json();
+        if (Array.isArray(createdList)) {
+          set((s) => {
+            const next = {
+              ...s,
+              socialPosts: [...createdList, ...(s.socialPosts || [])],
+            };
+            saveLocalData(next as any);
+            return next;
+          });
+          return createdList.length;
+        }
+      }
+    } catch (e) {
+      console.warn("Server bulk import of social posts failed:", e);
+    }
+
+    const now = Date.now();
+    const createdList: SocialPost[] = posts.map((p, idx) => ({
+      ...p,
+      id: `post-imp-${now}-${idx}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+    set((s) => {
+      const next = { ...s, socialPosts: [...createdList, ...(s.socialPosts || [])] };
+      saveLocalData(next as any);
+      return next;
+    });
+    return createdList.length;
+  },
+
+  updateSocialPost: async (id, updates) => {
+    set((s) => {
+      const next = {
+        ...s,
+        socialPosts: s.socialPosts.map((p) => (p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/social/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
+  },
+
+  deleteSocialPost: async (id: string) => {
+    addDeletedId(id);
+    set((s) => {
+      const next = {
+        ...s,
+        socialPosts: s.socialPosts.filter((p) => p.id !== id),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/social/${id}`, { method: "DELETE" }).catch(() => {});
+  },
+
+  snoozeSocialPostReminder: async (id: string, additionalMinutes = 15) => {
+    const snoozedUntil = new Date(Date.now() + additionalMinutes * 60 * 1000).toISOString();
+    const updates = {
+      lastRemindedAt: new Date().toISOString(),
+      snoozedUntil,
+    };
+    set((s) => {
+      const next = {
+        ...s,
+        socialPosts: s.socialPosts.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/social/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
+  },
+
+  toggleSocialPostProcessed: async (id: string, isProcessed: boolean) => {
+    const updates: Partial<SocialPost> = {
+      isProcessed,
+      status: isProcessed ? "published" : "scheduled",
+      publishedAt: isProcessed ? new Date().toISOString() : null,
+    };
+    set((s) => {
+      const next = {
+        ...s,
+        socialPosts: s.socialPosts.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+    await fetch(`/api/social/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
   },
 }));
 

@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useCRMStore } from "@/store/crm-store";
+import { useAuth } from "@/components/providers/auth-context";
 import { initials } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare,
   Send,
@@ -43,9 +47,12 @@ interface WhatsappLog {
 }
 
 export default function WhatsappIntegrationPage() {
+  const { user, loading: authLoading } = useAuth();
   const members = useCRMStore((s) => s.members);
   const projects = useCRMStore((s) => s.projects);
   const tasks = useCRMStore((s) => s.tasks);
+  const meetings = useCRMStore((s) => s.meetings);
+  const attendance = useCRMStore((s) => s.attendance);
   const loadStore = useCRMStore((s) => s.load);
 
   const [config, setConfig] = useState<WhatsappConfig>({
@@ -59,7 +66,8 @@ export default function WhatsappIntegrationPage() {
   const [loading, setLoading] = useState(true);
   const [savingConfig, setSavingConfig] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"simulator" | "config" | "directory" | "logs">("simulator");
+  const [digestCopied, setDigestCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"simulator" | "config" | "directory" | "logs" | "digest">("simulator");
 
   // Simulator state
   const [simSender, setSimSender] = useState(members[0]?.email || "");
@@ -88,8 +96,30 @@ export default function WhatsappIntegrationPage() {
   };
 
   useEffect(() => {
-    fetchConfigAndLogs();
-  }, []);
+    if (user?.role === "admin") {
+      fetchConfigAndLogs();
+    }
+  }, [user?.role]);
+
+  if (!authLoading && user && user.role !== "admin") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 mb-4 shadow-sm">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-800">Admin Access Only</h2>
+        <p className="text-sm text-slate-500 max-w-md mt-2">
+          WhatsApp integration settings, webhooks, and message logs are restricted to administrators.
+        </p>
+        <Link
+          href="/dashboard"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors shadow-sm"
+        >
+          Return to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,6 +233,17 @@ export default function WhatsappIntegrationPage() {
         {/* Tab Navigation */}
         <div className="mt-6 flex flex-wrap gap-2 border-t border-white/15 pt-4">
           <button
+            onClick={() => setActiveTab("digest")}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+              activeTab === "digest"
+                ? "bg-white text-emerald-950 shadow-md font-semibold"
+                : "text-white/80 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <Sparkles className="h-4 w-4" />
+            Standup Digest & Alerts
+          </button>
+          <button
             onClick={() => setActiveTab("simulator")}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
               activeTab === "simulator"
@@ -248,6 +289,162 @@ export default function WhatsappIntegrationPage() {
           </button>
         </div>
       </div>
+
+      {/* TAB 0: DAILY STANDUP DIGEST & AUTOMATION ALERTS */}
+      {activeTab === "digest" && (() => {
+        const today = new Date();
+        const todayStr = today.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
+        const clockedInToday = attendance.filter((a) => {
+          const d = new Date(a.clockInAt);
+          return d.toDateString() === today.toDateString();
+        });
+        const todayMeetings = meetings.filter((m) => {
+          const d = new Date(m.startTime);
+          return d.toDateString() === today.toDateString();
+        });
+        const urgentTasks = tasks.filter((t) => (t.priority === "urgent" || t.priority === "high") && t.status !== "done");
+        const overdueTasks = tasks.filter((t) => t.dueDate && new Date(t.dueDate) < today && t.status !== "done");
+        const reviewTasks = tasks.filter((t) => t.status === "review");
+
+        const digestText = `☀️ *DIGIVENTURES DAILY WORKSPACE BRIEFING*
+📅 *${todayStr}*
+
+👥 *ATTENDANCE & PRESENCE*
+• Clocked-In Members: ${clockedInToday.length} active today
+• Team Roster: ${members.length} enrolled
+
+🎯 *URGENT & HIGH-PRIORITY DELIVERABLES*
+${urgentTasks.length > 0 ? urgentTasks.slice(0, 5).map((t) => `• [${t.priority.toUpperCase()}] *${t.title}* - Assignee: ${members.find((m) => m.id === t.assigneeId)?.name || "Unassigned"}`).join("\n") : "• No urgent blockers today."}
+
+${overdueTasks.length > 0 ? `⚠️ *OVERDUE TASKS NEEDING IMMEDIATE ACTION*\n${overdueTasks.slice(0, 5).map((t) => `• *${t.title}* (${members.find((m) => m.id === t.assigneeId)?.name || "Unassigned"}) - Due: ${t.dueDate}`).join("\n")}\n` : ""}
+${reviewTasks.length > 0 ? `📋 *PROOF APPROVALS AWAITING REVIEW*\n${reviewTasks.slice(0, 4).map((t) => `• *${t.title}* by ${members.find((m) => m.id === t.assigneeId)?.name || "Assignee"}`).join("\n")}\n` : ""}
+📹 *MEETINGS SCHEDULED TODAY*
+${todayMeetings.length > 0 ? todayMeetings.map((m) => `• *${m.title}* at ${new Date(m.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} (Room: ${m.roomName})`).join("\n") : "• No team meetings scheduled today."}
+
+💼 *WORKSPACE PORTAL*
+http://localhost:3000/dashboard
+_Automated Digiventures CRM Intelligence_`;
+
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left 2 Cols: Formatted Digest Preview */}
+              <div className="lg:col-span-2 space-y-4">
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20">
+                        <MessageSquare className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-slate-900">Morning Standup & Operations Briefing</h2>
+                        <p className="text-xs text-slate-500">
+                          Auto-generated digest compiled from live attendance, today&apos;s meetings, and urgent deliverables
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(digestText);
+                          setDigestCopied(true);
+                          setTimeout(() => setDigestCopied(false), 2000);
+                        }}
+                        className={`h-9 text-xs font-bold gap-1.5 transition-all ${
+                          digestCopied
+                            ? "bg-emerald-600 text-white"
+                            : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20"
+                        }`}
+                      >
+                        {digestCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {digestCopied ? "Copied to Clipboard!" : "Copy WhatsApp Digest"}
+                      </Button>
+
+                      <a
+                        href={`https://web.whatsapp.com/send?text=${encodeURIComponent(digestText)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
+                      >
+                        <Send className="h-3.5 w-3.5" /> Share in Group
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* WhatsApp Chat Preview Bubble */}
+                  <div className="rounded-2xl bg-[#EFEAE2] p-5 border border-slate-200/80 shadow-inner">
+                    <div className="max-w-lg rounded-2xl rounded-tl-xs bg-white p-4 text-xs font-sans text-slate-800 shadow-md border border-slate-200/60 leading-relaxed whitespace-pre-wrap font-mono">
+                      {digestText}
+                      <div className="mt-2 text-right text-[10px] text-slate-400">
+                        {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ✓✓
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Col: Instant Overdue Reminder Pings */}
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-rose-600" /> Overdue Tasks Direct Ping ({overdueTasks.length})
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Send 1-click friendly WhatsApp reminder nudges directly to the assigned team member or trainee
+                  </p>
+
+                  <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                    {overdueTasks.length === 0 ? (
+                      <div className="py-8 text-center text-xs text-slate-400">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-500 mx-auto mb-1" />
+                        No overdue tasks! Team is fully on track.
+                      </div>
+                    ) : (
+                      overdueTasks.map((t) => {
+                        const assignee = members.find((m) => m.id === t.assigneeId);
+                        const cleanPhone = (assignee?.phone || "").replace(/[^0-9]/g, "");
+                        const pingMsg = `Hi ${assignee?.name || "there"}, this is a reminder regarding task *"${t.title}"* which was due on *${t.dueDate}*. Please submit your completion proof on the CRM portal: http://localhost:3000/dashboard/tasks`;
+
+                        return (
+                          <div key={t.id} className="p-3 rounded-xl border border-slate-100 bg-slate-50 space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <p className="text-xs font-bold text-slate-800 line-clamp-1">{t.title}</p>
+                                <p className="text-[11px] text-slate-400">
+                                  {assignee?.name || "Unassigned"} · Due {t.dueDate}
+                                </p>
+                              </div>
+                              <Badge variant="outline" className="text-[10px] bg-rose-50 text-rose-700 border-rose-200">
+                                Overdue
+                              </Badge>
+                            </div>
+
+                            {assignee?.phone ? (
+                              <a
+                                href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(pingMsg)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs transition-colors"
+                              >
+                                <Send className="h-3 w-3" /> WhatsApp Reminder ({assignee.name.split(" ")[0]})
+                              </a>
+                            ) : (
+                              <p className="text-[10px] text-slate-400 italic">No phone number recorded</p>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* TAB 1: SIMULATOR */}
       {activeTab === "simulator" && (

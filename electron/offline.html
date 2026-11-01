@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digiventures - Connecting</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .hint {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">25</div>
+    <h1>Unable to Connect</h1>
+    <p>We couldn't connect to the Digiventures server. Please check your internet connection or verify that the server is running.</p>
+    <button class="btn" onclick="retry()">Retry Connection</button>
+    <div class="hint">Attempting automatic reconnect in <span id="countdown">10</span>s...</div>
+  </div>
+
+  <script>
+    let timer = 10;
+    const countEl = document.getElementById('countdown');
+
+    const interval = setInterval(() => {
+      timer--;
+      if (countEl) countEl.innerText = timer;
+      if (timer <= 0) {
+        clearInterval(interval);
+        retry();
+      }
+    }, 1000);
+
+    function retry() {
+      if (window.electronAPI && window.electronAPI.retryConnection) {
+        window.electronAPI.retryConnection();
+      } else {
+        window.location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
+
