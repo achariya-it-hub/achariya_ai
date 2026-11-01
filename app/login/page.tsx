@@ -131,34 +131,6 @@ export default function LoginPage() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Sign In
             </Button>
-
-            {/* Quick Demo Sign-in by Employee ID */}
-            <div className="pt-2 text-center">
-              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Quick Sign-in with Employee ID
-              </p>
-              <div className="flex flex-wrap justify-center gap-1.5 text-xs">
-                {[
-                  { id: "EMP-001", name: "Athiyaman", role: "Admin", pass: "demo123" },
-                  { id: "EMP-003", name: "Ramkumar", role: "Admin", pass: "demo123" },
-                  { id: "CWMS-105", name: "Sneka", role: "Content", pass: "SnekCont@123" },
-                  { id: "TRN-001", name: "Jeevanesh", role: "Trainee", pass: "demo123" },
-                ].map((acc) => (
-                  <button
-                    key={acc.id}
-                    type="button"
-                    onClick={() => {
-                      setEmail(acc.id);
-                      setPassword(acc.pass);
-                    }}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 text-[11px] font-medium transition-colors border border-slate-200"
-                  >
-                    <span className="font-mono font-bold text-slate-800">{acc.id}</span>
-                    <span className="opacity-70">({acc.name})</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </form>
         </motion.div>
       </div>
