@@ -23,6 +23,8 @@ async function main() {
       { id: "u7", name: "SIVA", email: "siva@achariya.ai", password: "demo123", role: "trainee", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Siva", department: "Media Production", title: "Video Editing Trainee", phone: "+91 98765 43214", joinDate: "2024-05-01", status: "active" },
       { id: "u8", name: "ADHITHYA", email: "adhi@achariya.ai", password: "demo123", role: "trainee", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Adhithya", department: "Design", title: "UI/UX Trainee", phone: "+91 98765 43215", joinDate: "2024-05-15", status: "active" },
       { id: "u9", name: "ALBERT", email: "albert@achariya.ai", password: "demo123", role: "trainee", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Albert", department: "Content & Media", title: "Content Writing Trainee", phone: "+91 98765 43216", joinDate: "2024-06-01", status: "active" },
+      { id: "u-sneka", name: "Sneka Balan", email: "sneka@cwms.local", password: "SnekCont@123", role: "member", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneka", department: "Content Writing & Scripts", title: "Content Writer", phone: "+91 98765 43217", joinDate: "2024-06-15", status: "active" },
+      { id: "u-hari", name: "Hari", email: "hari@achariya.ai", password: "demo123", role: "member", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hari", department: "Design", title: "Graphic Designer", phone: "+91 98765 43218", joinDate: "2024-07-01", status: "active" },
     ],
   });
 

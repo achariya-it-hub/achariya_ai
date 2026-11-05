@@ -113,6 +113,20 @@ export const seedMembers: TeamMember[] = [
     joinDate: "2024-06-15",
     status: "active",
   },
+  {
+    id: "u-hari",
+    employeeId: "EMP-004",
+    name: "Hari",
+    email: "hari@achariya.ai",
+    role: "member",
+    password: "demo123",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hari",
+    department: "Design",
+    title: "Graphic Designer",
+    phone: "+91 98765 43218",
+    joinDate: "2024-07-01",
+    status: "active",
+  },
 ];
 
 export const seedData: CRMData = {
