@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useCRMStore } from "@/store/crm-store";
 import { CalendarReminderNotifier } from "@/components/calendar/calendar-reminder-notifier";
 import { CommandPalette } from "@/components/command-palette";
+import { FloatingChatWidget } from "@/components/chat/floating-chat-widget";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -56,6 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
       <CalendarReminderNotifier />
       <CommandPalette />
+      <FloatingChatWidget />
     </div>
   );
 }

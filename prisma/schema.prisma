@@ -231,3 +231,14 @@ model CalendarEvent {
   updatedAt        DateTime  @updatedAt @default(now())
 }
 
+model ChatMessage {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  status     String   @default("sent")
+  fileUrl    String?
+  fileName   String?
+  createdAt  DateTime @default(now())
+}
+

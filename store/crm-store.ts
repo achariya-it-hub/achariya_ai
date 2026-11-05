@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof, SocialPost, CalendarEvent } from "@/types";
+import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof, SocialPost, CalendarEvent, ChatMessage } from "@/types";
 import { seedData } from "@/lib/data";
 
 const STORAGE_KEY = "achariya_crm_store_v3";
@@ -40,6 +40,7 @@ function saveLocalData(data: {
   attendance: AttendanceRecord[];
   socialPosts?: SocialPost[];
   calendarEvents?: CalendarEvent[];
+  chatMessages?: ChatMessage[];
 }) {
   if (typeof window === "undefined") return;
   try {
@@ -70,6 +71,7 @@ interface CRMStore {
   attendance: AttendanceRecord[];
   socialPosts: SocialPost[];
   calendarEvents: CalendarEvent[];
+  chatMessages: ChatMessage[];
   load: () => Promise<void>;
   addMember: (member: Omit<TeamMember, "id">) => Promise<void>;
   updateMember: (id: string, updates: Partial<TeamMember>) => Promise<void>;
@@ -101,6 +103,8 @@ interface CRMStore {
   deleteSocialPost: (id: string) => Promise<void>;
   snoozeSocialPostReminder: (id: string, additionalMinutes?: number) => Promise<void>;
   toggleSocialPostProcessed: (id: string, isProcessed: boolean) => Promise<void>;
+  sendChatMessage: (msg: { senderId: string; receiverId: string; content: string; fileUrl?: string; fileName?: string }) => Promise<ChatMessage>;
+  loadChatMessages: (userId?: string, peerId?: string) => Promise<void>;
 }
 
 let isSyncing = false;
@@ -116,6 +120,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   attendance: [],
   socialPosts: seedData.socialPosts || [],
   calendarEvents: seedData.calendarEvents || [],
+  chatMessages: seedData.chatMessages || [],
 
   load: async (force?: boolean) => {
     const now = Date.now();
@@ -139,11 +144,12 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         attendance: cached.attendance || [],
         calendarEvents: (cached.calendarEvents?.length ? cached.calendarEvents : (seedData.calendarEvents || [])).filter((e: any) => !deleted.has(e.id)),
         socialPosts: (cached.socialPosts?.length ? cached.socialPosts : (seedData.socialPosts || [])).filter((s: any) => !deleted.has(s.id)),
+        chatMessages: cached.chatMessages?.length ? cached.chatMessages : (seedData.chatMessages || []),
       });
     }
 
     try {
-      const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes, calendarRes, socialRes] = await Promise.all([
+      const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes, calendarRes, socialRes, chatRes] = await Promise.all([
         fetch("/api/members").then((r) => r.ok ? r.json() : null).catch(() => null),
         fetch("/api/projects").then((r) => r.ok ? r.json() : null).then((projects) => (Array.isArray(projects) ? projects.map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] })) : null)).catch(() => null),
         fetch("/api/milestones").then((r) => r.ok ? r.json() : null).catch(() => null),
@@ -153,6 +159,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         fetch("/api/attendance").then((r) => r.ok ? r.json() : null).catch(() => null),
         fetch("/api/calendar").then((r) => r.ok ? r.json() : null).catch(() => null),
         fetch("/api/social").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/chat").then((r) => r.ok ? r.json() : null).catch(() => null),
       ]);
 
       const cur = get();
@@ -220,6 +227,16 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       const finalSocialPosts = isSame(mergedSocialPosts, cur.socialPosts) ? (cur.socialPosts || []) : mergedSocialPosts;
       const finalCalendarEvents = isSame(mergedCalendarEvents, cur.calendarEvents) ? (cur.calendarEvents || []) : mergedCalendarEvents;
 
+      let mergedChat = cur.chatMessages || [];
+      if (Array.isArray(chatRes) && chatRes.length > 0) {
+        const chatMap = new Map(mergedChat.map((m) => [m.id, m]));
+        for (const msg of chatRes) {
+          chatMap.set(msg.id, msg);
+        }
+        mergedChat = Array.from(chatMap.values()).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      }
+      const finalChatMessages = isSame(mergedChat, cur.chatMessages) ? cur.chatMessages : mergedChat;
+
       const hasChanged =
         finalMembers !== cur.members ||
         finalProjects !== cur.projects ||
@@ -229,7 +246,8 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
         finalActivities !== cur.activities ||
         finalAttendance !== cur.attendance ||
         finalSocialPosts !== cur.socialPosts ||
-        finalCalendarEvents !== cur.calendarEvents;
+        finalCalendarEvents !== cur.calendarEvents ||
+        finalChatMessages !== cur.chatMessages;
 
       if (hasChanged) {
         const newState = {
@@ -242,6 +260,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
           attendance: finalAttendance,
           socialPosts: finalSocialPosts,
           calendarEvents: finalCalendarEvents,
+          chatMessages: finalChatMessages,
         };
         set(newState);
         saveLocalData(newState as any);
@@ -775,6 +794,78 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     }).catch(() => {});
+  },
+
+  sendChatMessage: async ({ senderId, receiverId, content, fileUrl, fileName }) => {
+    const tempId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+    const newMsg: ChatMessage = {
+      id: tempId,
+      senderId,
+      receiverId,
+      content,
+      fileUrl,
+      fileName,
+      status: "sent",
+      timestamp: new Date().toISOString(),
+    };
+
+    set((s) => {
+      const next = {
+        ...s,
+        chatMessages: [...(s.chatMessages || []), newMsg],
+      };
+      saveLocalData(next as any);
+      return next;
+    });
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senderId, receiverId, content, fileUrl, fileName }),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        set((s) => {
+          const next = {
+            ...s,
+            chatMessages: (s.chatMessages || []).map((m) => (m.id === tempId ? { ...m, id: saved.id, status: saved.status || "delivered" } : m)),
+          };
+          saveLocalData(next as any);
+          return next;
+        });
+        return saved;
+      }
+    } catch (err) {
+      console.warn("Error sending chat message:", err);
+    }
+    return newMsg;
+  },
+
+  loadChatMessages: async (userId?: string, peerId?: string) => {
+    try {
+      const query = new URLSearchParams();
+      if (userId) query.set("userId", userId);
+      if (peerId) query.set("peerId", peerId);
+      const res = await fetch(`/api/chat?${query.toString()}`);
+      if (res.ok) {
+        const messages: ChatMessage[] = await res.json();
+        if (Array.isArray(messages) && messages.length > 0) {
+          set((s) => {
+            const map = new Map((s.chatMessages || []).map((m) => [m.id, m]));
+            for (const m of messages) {
+              map.set(m.id, m);
+            }
+            const updated = Array.from(map.values()).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+            const next = { ...s, chatMessages: updated };
+            saveLocalData(next as any);
+            return next;
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Error loading chat messages:", err);
+    }
   },
 }));
 

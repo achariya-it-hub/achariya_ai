@@ -201,6 +201,17 @@ export interface CalendarEvent {
   updatedAt: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: string;
+  status?: "sent" | "delivered" | "read";
+  fileUrl?: string;
+  fileName?: string;
+}
+
 export interface CRMData {
   members: TeamMember[];
   projects: Project[];
@@ -211,4 +222,5 @@ export interface CRMData {
   attendance: AttendanceRecord[];
   socialPosts?: SocialPost[];
   calendarEvents?: CalendarEvent[];
+  chatMessages?: ChatMessage[];
 }

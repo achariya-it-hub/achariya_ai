@@ -26,6 +26,7 @@ import {
   ChevronRight,
   MessageSquare,
   Calendar,
+  MessageCircle,
   KeyRound,
   ChevronsUpDown,
   Eye,
@@ -51,6 +52,7 @@ const navItems = [
   { href: "/dashboard/meetings", label: "Meetings", icon: Video, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/social", label: "Calendar", icon: Calendar, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/attendance", label: "Attendance", icon: Clock, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/chat", label: "Peer Chat", icon: MessageCircle, roles: ["admin", "manager", "member", "trainee"] },
 ];
 
 function NavItem({ href, label, icon: Icon, active, badge }: {
