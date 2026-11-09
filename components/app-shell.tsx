@@ -35,6 +35,7 @@ import {
   CheckCircle2,
   Plus,
   Gauge,
+  UserCog,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ const navItems = [
   { href: "/dashboard/social", label: "Calendar", icon: Calendar, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/attendance", label: "Attendance", icon: Clock, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/chat", label: "Peer Chat", icon: MessageCircle, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/profile", label: "My Profile", icon: UserCog, roles: ["admin", "manager", "member", "trainee"] },
 ];
 
 function NavItem({ href, label, icon: Icon, active, badge }: {
@@ -284,6 +286,15 @@ export function Sidebar() {
                 </div>
               </div>
 
+              <Link
+                href="/dashboard/profile"
+                onClick={() => setProfileMenuOpen(false)}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition-colors text-left"
+              >
+                <UserCog className="h-4 w-4 text-indigo-400 shrink-0" />
+                <span>Edit Profile</span>
+              </Link>
+
               <button
                 type="button"
                 onClick={() => {
@@ -360,6 +371,14 @@ export function Sidebar() {
 
         {/* Quick-action buttons underneath */}
         <div className="mt-2 flex items-center justify-between px-1">
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center gap-1.5 text-[11px] text-white/50 hover:text-indigo-300 hover:bg-white/10 px-2 py-1 rounded-lg transition-colors font-medium"
+            title="Edit profile"
+          >
+            <UserCog className="h-3.5 w-3.5" />
+            <span>Profile</span>
+          </Link>
           <button
             onClick={() => {
               setPasswordError("");

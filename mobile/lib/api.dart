@@ -21,6 +21,7 @@ class Api {
   /// Local in-memory cache so creations/updates reflect immediately even on serverless/offline
   static final List<Task> _localCreatedTasks = [];
   static final Map<String, Map<String, dynamic>> _localTaskPatches = {};
+  static final Map<String, Map<String, dynamic>> _localMemberPatches = {};
 
   static String get baseUrl => _baseUrl;
 
@@ -266,13 +267,117 @@ class Api {
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
         final list = jsonDecode(res.body) as List;
-        final parsed = list
-            .map((e) => Member.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final parsed = list.map((e) {
+          final map = Map<String, dynamic>.from(e as Map<String, dynamic>);
+          final id = '${map['id'] ?? ''}';
+          if (_localMemberPatches.containsKey(id)) {
+            map.addAll(_localMemberPatches[id]!);
+          }
+          return Member.fromJson(map);
+        }).toList();
         if (parsed.isNotEmpty) return parsed;
       }
     } catch (_) {}
-    return _seedMembers;
+    return _seedMembers.map((m) {
+      if (_localMemberPatches.containsKey(m.id)) {
+        return Member.fromJson({
+          'id': m.id,
+          'name': m.name,
+          'email': m.email,
+          'role': m.role,
+          'department': m.department,
+          'title': m.title,
+          'phone': m.phone,
+          'avatar': m.avatar,
+          'status': m.status,
+          'employeeId': m.employeeId,
+          ..._localMemberPatches[m.id]!,
+        });
+      }
+      return m;
+    }).toList();
+  }
+
+  static Future<User> updateMyProfile(Map<String, dynamic> payload) async {
+    final targetId = '${payload['id'] ?? currentUser?.id ?? '1'}';
+    final patch = {
+      'id': targetId,
+      if (payload['name'] != null) 'name': payload['name'],
+      if (payload['email'] != null) 'email': payload['email'],
+      if (payload['phone'] != null) 'phone': payload['phone'],
+      if (payload['department'] != null) 'department': payload['department'],
+      if (payload['title'] != null) 'title': payload['title'],
+      if (payload['avatar'] != null) 'avatar': payload['avatar'],
+    };
+    _localMemberPatches[targetId] = {
+      ...?_localMemberPatches[targetId],
+      ...patch,
+    };
+
+    final mirror = _mirrorUrl;
+    if (mirror != null) {
+      http
+          .put(
+            Uri.parse('$mirror/api/auth/me'),
+            headers: _headers(),
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+      http
+          .put(
+            Uri.parse('$mirror/api/members/$targetId'),
+            headers: _headers(),
+            body: jsonEncode(patch),
+          )
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+    }
+
+    try {
+      final res = await http
+          .put(
+            Uri.parse('$_baseUrl/api/auth/me'),
+            headers: _headers(),
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        _captureAuth(res, body);
+        if (body['user'] is Map<String, dynamic>) {
+          final updated = User.fromJson({
+            ...patch,
+            ...(body['user'] as Map<String, dynamic>),
+          });
+          currentUser = updated;
+          return updated;
+        }
+      }
+    } catch (_) {}
+
+    try {
+      await http
+          .put(
+            Uri.parse('$_baseUrl/api/members/$targetId'),
+            headers: _headers(),
+            body: jsonEncode(patch),
+          )
+          .timeout(const Duration(seconds: 8));
+    } catch (_) {}
+
+    final updated = User(
+      id: targetId,
+      name: '${patch['name'] ?? currentUser?.name ?? 'User'}',
+      email: '${patch['email'] ?? currentUser?.email ?? ''}',
+      role: currentUser?.role ?? 'member',
+      avatar: patch['avatar']?.toString() ?? currentUser?.avatar,
+      department: patch['department']?.toString() ?? currentUser?.department,
+      title: patch['title']?.toString() ?? currentUser?.title,
+      phone: patch['phone']?.toString() ?? currentUser?.phone,
+    );
+    currentUser = updated;
+    return updated;
   }
 
   static Future<List<AttendanceRecord>> attendance() async {

@@ -1,9 +1,10 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { seedData } from "@/lib/data";
+import { seedData, seedMembers } from "@/lib/data";
 
 const SYNC_FILE = path.join(os.tmpdir(), "cwms-tasks-sync-v1.json");
+const MEMBER_SYNC_FILE = path.join(os.tmpdir(), "cwms-members-sync-v1.json");
 
 interface SyncState {
   upserted: Record<string, Record<string, unknown>>;
@@ -167,4 +168,50 @@ export function mergeTasksWithSyncState<T extends { id: string }>(baseTasks: T[]
 
   return Array.from(map.values());
 }
+
+const globalForMemberSync = globalThis as unknown as {
+  cwmsMemberSync?: Record<string, Record<string, unknown>>;
+};
+
+function loadMemberSync(): Record<string, Record<string, unknown>> {
+  if (globalForMemberSync.cwmsMemberSync) {
+    return globalForMemberSync.cwmsMemberSync;
+  }
+  try {
+    if (fs.existsSync(MEMBER_SYNC_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(MEMBER_SYNC_FILE, "utf8"));
+      globalForMemberSync.cwmsMemberSync = parsed || {};
+      return globalForMemberSync.cwmsMemberSync!;
+    }
+  } catch {}
+  globalForMemberSync.cwmsMemberSync = {};
+  return globalForMemberSync.cwmsMemberSync;
+}
+
+export function recordSyncedMemberUpsert(member: Record<string, unknown>) {
+  const id = String(member.id || "");
+  if (!id) return;
+  const state = loadMemberSync();
+  state[id] = { ...(state[id] || {}), ...member };
+  globalForMemberSync.cwmsMemberSync = state;
+  try {
+    fs.writeFileSync(MEMBER_SYNC_FILE, JSON.stringify(state), "utf8");
+  } catch {}
+
+  const idx = seedMembers.findIndex((m) => m.id === id);
+  if (idx >= 0) {
+    seedMembers[idx] = { ...seedMembers[idx], ...(member as any) };
+  }
+}
+
+export function mergeMembersWithSyncState<T extends { id: string }>(
+  baseMembers: T[]
+): T[] {
+  const state = loadMemberSync();
+  return baseMembers.map((m) => {
+    const patch = state[m.id];
+    return patch ? ({ ...m, ...patch } as T) : m;
+  });
+}
+
 

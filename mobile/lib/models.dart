@@ -165,6 +165,8 @@ class User {
   final String role;
   final String? avatar;
   final String? department;
+  final String? title;
+  final String? phone;
 
   const User({
     required this.id,
@@ -173,6 +175,8 @@ class User {
     required this.role,
     this.avatar,
     this.department,
+    this.title,
+    this.phone,
   });
 
   bool get isElevated =>
@@ -187,6 +191,8 @@ class User {
         role: '${j['role'] ?? 'member'}',
         avatar: j['avatar']?.toString(),
         department: j['department']?.toString(),
+        title: j['title']?.toString(),
+        phone: j['phone']?.toString(),
       );
 }
 
@@ -196,6 +202,7 @@ class Member {
   final String email;
   final String role;
   final String department;
+  final String? title;
   final String? phone;
   final String? avatar;
   final String? status;
@@ -207,6 +214,7 @@ class Member {
     required this.email,
     required this.role,
     required this.department,
+    this.title,
     this.phone,
     this.avatar,
     this.status,
@@ -221,6 +229,7 @@ class Member {
         email: '${j['email'] ?? ''}',
         role: '${j['role'] ?? 'member'}',
         department: '${j['department'] ?? 'Creative'}',
+        title: j['title']?.toString(),
         phone: j['phone']?.toString(),
         avatar: j['avatar']?.toString(),
         status: j['status']?.toString() ?? 'active',

@@ -43,6 +43,7 @@ class _DigitalCrmAppState extends State<DigitalCrmApp> {
                 : HomeShell(
                     key: const ValueKey('home'),
                     user: _user!,
+                    onUserUpdated: (u) => setState(() => _user = u),
                     onSignedOut: () => setState(() => _user = null),
                   ),
       ),

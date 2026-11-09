@@ -8,8 +8,14 @@ import 'widgets.dart';
 
 class HomeShell extends StatefulWidget {
   final User user;
+  final ValueChanged<User>? onUserUpdated;
   final VoidCallback onSignedOut;
-  const HomeShell({super.key, required this.user, required this.onSignedOut});
+  const HomeShell({
+    super.key,
+    required this.user,
+    this.onUserUpdated,
+    required this.onSignedOut,
+  });
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -134,6 +140,27 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openProfileSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _ProfileEditSheet(
+        user: widget.user,
+        me: _me,
+        onSaved: (updatedUser) {
+          widget.onUserUpdated?.call(updatedUser);
+          _refresh();
+        },
+        onSignOut: () async {
+          Navigator.pop(ctx);
+          await Api.logout();
+          widget.onSignedOut();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final awaitingCount = _tasks.where((t) => t.isInReview).length;
@@ -215,15 +242,40 @@ class _HomeShellState extends State<HomeShell> {
             icon: const Icon(Icons.access_time_rounded, color: kSlate700, size: 21),
             onPressed: _openAttendanceSheet,
           ),
-          IconButton(
-            tooltip: 'Sign out',
-            icon: const Icon(Icons.logout_rounded, color: kSlate700, size: 20),
-            onPressed: () async {
-              await Api.logout();
-              widget.onSignedOut();
-            },
+          GestureDetector(
+            onTap: _openProfileSheet,
+            child: Tooltip(
+              message: 'My Profile & Account Settings',
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6),
+                height: 34,
+                width: 34,
+                decoration: BoxDecoration(
+                  gradient: kBrandGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: kIndigo.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    (widget.user.name.isNotEmpty ? widget.user.name[0] : 'U')
+                        .toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 6),
         ],
       ),
       body: _loading && _tasks.isEmpty
@@ -2689,4 +2741,415 @@ class _AttendanceSheetBody extends StatelessWidget {
     if (d == null) return '-';
     return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
+}
+
+// ============================================================================
+// MY PROFILE & ACCOUNT SETTINGS SHEET
+// ============================================================================
+class _ProfileEditSheet extends StatefulWidget {
+  final User user;
+  final Member? me;
+  final ValueChanged<User> onSaved;
+  final VoidCallback onSignOut;
+
+  const _ProfileEditSheet({
+    required this.user,
+    required this.me,
+    required this.onSaved,
+    required this.onSignOut,
+  });
+
+  @override
+  State<_ProfileEditSheet> createState() => _ProfileEditSheetState();
+}
+
+class _ProfileEditSheetState extends State<_ProfileEditSheet> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _emailCtrl;
+  late final TextEditingController _phoneCtrl;
+  late final TextEditingController _titleCtrl;
+  late final TextEditingController _passCtrl;
+  late String _department;
+  bool _saving = false;
+  String? _statusMsg;
+  bool _isError = false;
+
+  static const List<String> _departments = [
+    'Management',
+    'Digital Marketing',
+    'Creative Design',
+    'Content & Copy',
+    'Video Production',
+    'Social Media',
+    'Operations',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(
+      text: widget.me?.name ?? widget.user.name,
+    );
+    _emailCtrl = TextEditingController(
+      text: widget.me?.email ?? widget.user.email,
+    );
+    _phoneCtrl = TextEditingController(
+      text: widget.me?.phone ?? widget.user.phone ?? '',
+    );
+    _titleCtrl = TextEditingController(
+      text: widget.me?.title ?? widget.user.title ?? 'Creative Specialist',
+    );
+    _passCtrl = TextEditingController();
+    final initialDept =
+        widget.me?.department ?? widget.user.department ?? 'Creative Design';
+    _department = _departments.contains(initialDept)
+        ? initialDept
+        : _departments[2];
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
+    _titleCtrl.dispose();
+    _passCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final name = _nameCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
+    if (name.isEmpty || email.isEmpty) {
+      setState(() {
+        _isError = true;
+        _statusMsg = 'Full Name and Email Address are required.';
+      });
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _statusMsg = null;
+    });
+
+    try {
+      final updated = await Api.updateMyProfile({
+        'id': widget.me?.id ?? widget.user.id,
+        'name': name,
+        'email': email,
+        'phone': _phoneCtrl.text.trim(),
+        'department': _department,
+        'title': _titleCtrl.text.trim(),
+        if (_passCtrl.text.trim().isNotEmpty)
+          'newPassword': _passCtrl.text.trim(),
+      });
+      if (!mounted) return;
+      widget.onSaved(updated);
+      setState(() {
+        _isError = false;
+        _statusMsg = 'Profile updated & synced to database!';
+        _passCtrl.clear();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isError = true;
+        _statusMsg = 'Could not update profile: $e';
+      });
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = (_nameCtrl.text.isNotEmpty ? _nameCtrl.text[0] : 'U')
+        .toUpperCase();
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.88,
+      maxChildSize: 0.95,
+      minChildSize: 0.60,
+      builder: (ctx, scrollCtrl) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Navy Command Header
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 16, 18),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF1A3A5C),
+                    Color(0xFF1F3E68),
+                    Color(0xFF2B2A5A),
+                  ],
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: kBrandGradient,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Text(
+                            initials,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _nameCtrl.text.isEmpty
+                                  ? widget.user.name
+                                  : _nameCtrl.text,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${widget.user.role.toUpperCase()}  •  $_department',
+                              style: const TextStyle(
+                                color: Color(0xFFA5B4FC),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close, color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: ListView(
+                controller: scrollCtrl,
+                padding: const EdgeInsets.all(18),
+                children: [
+                  if (_statusMsg != null) ...[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _isError
+                            ? const Color(0xFFFEF2F2)
+                            : const Color(0xFFECFDF5),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: _isError
+                              ? const Color(0xFFFECACA)
+                              : const Color(0xFFA7F3D0),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _isError
+                                ? Icons.error_outline
+                                : Icons.check_circle_outline,
+                            size: 18,
+                            color: _isError
+                                ? const Color(0xFFDC2626)
+                                : const Color(0xFF059669),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _statusMsg!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: _isError
+                                    ? const Color(0xFFDC2626)
+                                    : const Color(0xFF065F46),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: kSlate200),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionTitle(
+                          'Edit My Profile',
+                          icon: Icons.manage_accounts_outlined,
+                        ),
+                        const SizedBox(height: 14),
+                        _label('Full Name *'),
+                        TextField(
+                          controller: _nameCtrl,
+                          onChanged: (_) => setState(() {}),
+                          decoration: fieldDecoration(
+                            'Your full name',
+                            icon: Icons.person_outline,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _label('Email Address *'),
+                        TextField(
+                          controller: _emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: fieldDecoration(
+                            'name@achariya.in',
+                            icon: Icons.mail_outline,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _label('Phone Number'),
+                        TextField(
+                          controller: _phoneCtrl,
+                          keyboardType: TextInputType.phone,
+                          decoration: fieldDecoration(
+                            '+91 98765 43210',
+                            icon: Icons.phone_outlined,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _label('Department'),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: kSlate100.withValues(alpha: 0.75),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: kSlate200),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _department,
+                              isExpanded: true,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: kSlate900,
+                              ),
+                              items: _departments
+                                  .map(
+                                    (d) => DropdownMenuItem(
+                                      value: d,
+                                      child: Text(d),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (v) => setState(
+                                () => _department = v ?? _department,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _label('Designation / Title'),
+                        TextField(
+                          controller: _titleCtrl,
+                          decoration: fieldDecoration(
+                            'e.g. Senior Creative Specialist',
+                            icon: Icons.badge_outlined,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _label('New Password (Optional — leave blank to keep)'),
+                        TextField(
+                          controller: _passCtrl,
+                          obscureText: true,
+                          decoration: fieldDecoration(
+                            'At least 4 characters',
+                            icon: Icons.lock_outline,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        GradientButton(
+                          label: 'Save Profile Changes',
+                          icon: Icons.save_outlined,
+                          loading: _saving,
+                          onPressed: _save,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFDC2626),
+                      side: const BorderSide(color: Color(0xFFFECACA)),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: widget.onSignOut,
+                    icon: const Icon(Icons.logout_rounded, size: 18),
+                    label: const Text(
+                      'Sign Out of Workspace',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: kSlate700,
+          ),
+        ),
+      );
 }
