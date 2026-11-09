@@ -44,7 +44,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationsPopover } from "@/components/notifications-popover";
 
 const navItems = [
-  { href: "/dashboard", label: "Executive Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/account", label: "Trainee Payouts", icon: Banknote, roles: ["admin"] },
   { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/tasks", label: "Tasks", icon: CheckSquare, roles: ["admin", "manager", "member", "trainee"] },

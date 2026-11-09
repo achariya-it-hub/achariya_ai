@@ -433,7 +433,7 @@ class _ExecutiveDashboardTabState extends State<_ExecutiveDashboardTab> {
           CommandBanner(
             badge: 'Digiventures · Creative Workflow OS',
             badgeIcon: Icons.auto_awesome,
-            title: 'Executive Dashboard',
+            title: 'Dashboard',
             subtitle:
                 'Live overview of creative workflow across the organization.',
             trailing: Container(

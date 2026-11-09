@@ -640,7 +640,7 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                  Executive Dashboard
+                  Dashboard
                 </h1>
                 <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-pink-200">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
