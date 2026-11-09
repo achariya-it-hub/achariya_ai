@@ -36,6 +36,7 @@ import {
   Plus,
   Gauge,
   UserCog,
+  Settings,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -44,33 +45,40 @@ import { Button } from "@/components/ui/button";
 import { NotificationsPopover } from "@/components/notifications-popover";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/account", label: "Trainee Payouts", icon: Banknote, roles: ["admin"] },
-  { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/tasks", label: "Tasks", icon: CheckSquare, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/approvals", label: "Approvals", icon: CheckCircle2, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/workload", label: "Workload", icon: Gauge, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/productivity", label: "Analytics", icon: BarChart3, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/timeline", label: "Timeline", icon: GanttChart, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/whatsapp", label: "WhatsApp Integration", icon: MessageSquare, roles: ["admin"] },
-  { href: "/dashboard/team", label: "Team", icon: Users, roles: ["admin", "manager"] },
-  { href: "/dashboard/meetings", label: "Meetings", icon: Video, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/social", label: "Calendar", icon: Calendar, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/attendance", label: "Attendance", icon: Clock, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/chat", label: "Peer Chat", icon: MessageCircle, roles: ["admin", "manager", "member", "trainee"] },
-  { href: "/dashboard/profile", label: "My Profile", icon: UserCog, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "dashboard", href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "account", href: "/dashboard/account", label: "Trainee Payouts", icon: Banknote, roles: ["admin"] },
+  { id: "projects", href: "/dashboard/projects", label: "Projects", icon: FolderKanban, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "tasks", href: "/dashboard/tasks", label: "Tasks", icon: CheckSquare, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "approvals", href: "/dashboard/approvals", label: "Approvals", icon: CheckCircle2, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "workload", href: "/dashboard/workload", label: "Workload", icon: Gauge, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "analytics", href: "/dashboard/productivity", label: "Analytics", icon: BarChart3, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "timeline", href: "/dashboard/timeline", label: "Timeline", icon: GanttChart, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "whatsapp", href: "/dashboard/whatsapp", label: "WhatsApp Integration", icon: MessageSquare, roles: ["admin"] },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users, roles: ["admin", "manager"] },
+  { id: "meetings", href: "/dashboard/meetings", label: "Meetings", icon: Video, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "social", href: "/dashboard/social", label: "Calendar", icon: Calendar, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "attendance", href: "/dashboard/attendance", label: "Attendance", icon: Clock, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "chat", href: "/dashboard/chat", label: "Peer Chat", icon: MessageCircle, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "profile", href: "/dashboard/profile", label: "My Profile", icon: UserCog, roles: ["admin", "manager", "member", "trainee"] },
+  { id: "settings", href: "/dashboard/settings", label: "Admin Settings", icon: Settings, roles: ["admin"] },
 ];
 
-function NavItem({ href, label, icon: Icon, active, badge }: {
+function NavItem({ href, label, icon: Icon, active, badge, accentColor }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
   badge?: number;
+  accentColor?: string;
 }) {
   return (
     <Link
       href={href}
+      style={
+        active && accentColor
+          ? { background: `linear-gradient(135deg, ${accentColor}, #6366f1)` }
+          : undefined
+      }
       className={cn(
         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
         active
@@ -143,7 +151,43 @@ export function Sidebar() {
   }, [profileMenuOpen]);
 
   const isAdmin = role === "admin";
-  const visibleNavItems = navItems.filter((item) => item.roles.includes(role));
+  const [wsSettings, setWsSettings] = useState<any>(null);
+
+  useEffect(() => {
+    const loadWs = () => {
+      fetch("/api/settings")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d) setWsSettings(d);
+        })
+        .catch(() => {});
+    };
+    loadWs();
+    window.addEventListener("cwms-settings-updated", loadWs);
+    return () => window.removeEventListener("cwms-settings-updated", loadWs);
+  }, []);
+
+  const visibleNavItems = navItems
+    .map((item) => {
+      if (item.id === "settings") return item;
+      const modCfg = wsSettings?.modules?.find((m: any) => m.id === item.id);
+      if (!modCfg) return item;
+      return {
+        ...item,
+        label: modCfg.label || item.label,
+        roles: Array.isArray(modCfg.roles) ? modCfg.roles : item.roles,
+        enabled: modCfg.enabled !== false,
+      };
+    })
+    .filter(
+      (item: any) => item.enabled !== false && item.roles.includes(role)
+    );
+
+  const entityName = wsSettings?.entityName || "Digiventures";
+  const entitySubtitle = wsSettings?.entitySubtitle || "CRM & Workspace";
+  const logoUrl = wsSettings?.logoUrl || "/logo.png";
+  const primaryColor = wsSettings?.primaryColor || "#1A3A5C";
+  const accentColor = wsSettings?.accentColor || "#E91E63";
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,18 +232,32 @@ export function Sidebar() {
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-[#1A3A5C] border-r border-white/10 w-64">
-      <div className="flex items-center justify-between gap-3 px-5 py-5 border-b border-white/10">
+    <div
+      className="flex h-full flex-col bg-[#1A3A5C] border-r border-white/10 w-64"
+      style={{ backgroundColor: primaryColor }}
+    >
+      <div className="flex items-center justify-between gap-2 px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-3 min-w-0">
-          <img src="/logo.png" alt="Digiventures" className="h-9 w-9 rounded-xl object-cover shrink-0" />
+          <img src={logoUrl} alt={entityName} className="h-9 w-9 rounded-xl object-cover shrink-0 bg-white/10" />
           <div className="min-w-0">
             <h1 className="text-base font-bold text-white truncate">
-              Digiventures
+              {entityName}
             </h1>
-            <p className="text-[10px] text-white/50 font-medium truncate">CRM & Workspace</p>
+            <p className="text-[10px] text-white/50 font-medium truncate">{entitySubtitle}</p>
           </div>
         </div>
-        <NotificationsPopover />
+        <div className="flex items-center gap-1 shrink-0">
+          {isAdmin && (
+            <Link
+              href="/dashboard/settings"
+              title="Admin Workspace Settings"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          )}
+          <NotificationsPopover />
+        </div>
       </div>
 
       {/* Quick Search / Command Bar Trigger */}
@@ -226,6 +284,7 @@ export function Sidebar() {
           <NavItem
             key={item.href}
             {...item}
+            accentColor={accentColor}
             badge={
               item.href === "/dashboard/social"
                 ? pendingSocialCount
@@ -310,14 +369,24 @@ export function Sidebar() {
               </button>
 
               {isAdmin && (
-                <Link
-                  href="/dashboard/account"
-                  onClick={() => setProfileMenuOpen(false)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition-colors text-left"
-                >
-                  <Banknote className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Trainee Payouts</span>
-                </Link>
+                <>
+                  <Link
+                    href="/dashboard/settings"
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition-colors text-left"
+                  >
+                    <Settings className="h-4 w-4 text-amber-400 shrink-0" />
+                    <span>Admin Settings</span>
+                  </Link>
+                  <Link
+                    href="/dashboard/account"
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-xl transition-colors text-left"
+                  >
+                    <Banknote className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span>Trainee Payouts</span>
+                  </Link>
+                </>
               )}
 
               <button

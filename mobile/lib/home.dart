@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'admin_settings_sheet.dart';
 import 'api.dart';
 import 'models.dart';
 import 'task_modals.dart';
@@ -28,6 +29,7 @@ class _HomeShellState extends State<HomeShell> {
   List<Task> _tasks = const [];
   List<Member> _members = const [];
   List<AttendanceRecord> _attendance = const [];
+  Map<String, dynamic> _settings = const {};
   Timer? _syncTimer;
 
   @override
@@ -52,6 +54,7 @@ class _HomeShellState extends State<HomeShell> {
         Api.tasks(),
         Api.members(),
         Api.attendance(),
+        Api.settings(),
       ]);
       if (!mounted) return;
       setState(() {
@@ -59,6 +62,7 @@ class _HomeShellState extends State<HomeShell> {
         _tasks = results[1] as List<Task>;
         _members = results[2] as List<Member>;
         _attendance = results[3] as List<AttendanceRecord>;
+        _settings = results[4] as Map<String, dynamic>;
       });
     } catch (_) {}
   }
@@ -71,6 +75,7 @@ class _HomeShellState extends State<HomeShell> {
         Api.tasks(),
         Api.members(),
         Api.attendance(),
+        Api.settings(),
       ]);
       if (!mounted) return;
       setState(() {
@@ -78,6 +83,7 @@ class _HomeShellState extends State<HomeShell> {
         _tasks = results[1] as List<Task>;
         _members = results[2] as List<Member>;
         _attendance = results[3] as List<AttendanceRecord>;
+        _settings = results[4] as Map<String, dynamic>;
       });
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -161,9 +167,24 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
+  void _openAdminSettingsSheet() {
+    showAdminSettingsSheet(
+      context: context,
+      initialSettings: _settings,
+      members: _members,
+      tasks: _tasks,
+      onSaved: (updated) {
+        if (!mounted) return;
+        setState(() => _settings = updated);
+      },
+      onMembersChanged: _refresh,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final awaitingCount = _tasks.where((t) => t.isInReview).length;
+    final isAdmin = widget.user.role == 'admin';
 
     final pages = [
       _ExecutiveDashboardTab(
@@ -171,6 +192,8 @@ class _HomeShellState extends State<HomeShell> {
         projects: _projects,
         tasks: _tasks,
         members: _members,
+        settings: _settings,
+        onOpenSettings: _openAdminSettingsSheet,
         onRefresh: _refresh,
         onNavigateTab: (idx) => setState(() => _tab = idx),
       ),
@@ -242,6 +265,16 @@ class _HomeShellState extends State<HomeShell> {
             icon: const Icon(Icons.access_time_rounded, color: kSlate700, size: 21),
             onPressed: _openAttendanceSheet,
           ),
+          if (isAdmin)
+            IconButton(
+              tooltip: 'Admin Workspace Settings',
+              icon: const Icon(
+                Icons.settings_suggest_rounded,
+                color: kIndigo,
+                size: 22,
+              ),
+              onPressed: _openAdminSettingsSheet,
+            ),
           GestureDetector(
             onTap: _openProfileSheet,
             child: Tooltip(
@@ -341,6 +374,8 @@ class _ExecutiveDashboardTab extends StatefulWidget {
   final List<Project> projects;
   final List<Task> tasks;
   final List<Member> members;
+  final Map<String, dynamic> settings;
+  final VoidCallback onOpenSettings;
   final Future<void> Function() onRefresh;
   final ValueChanged<int> onNavigateTab;
 
@@ -349,6 +384,8 @@ class _ExecutiveDashboardTab extends StatefulWidget {
     required this.projects,
     required this.tasks,
     required this.members,
+    required this.settings,
+    required this.onOpenSettings,
     required this.onRefresh,
     required this.onNavigateTab,
   });
@@ -556,6 +593,14 @@ class _ExecutiveDashboardTabState extends State<_ExecutiveDashboardTab> {
             ],
           ),
           const SizedBox(height: 14),
+
+          PeakPerformersAndLeaderboardSection(
+            settings: widget.settings,
+            members: widget.members,
+            tasks: tasks,
+            isAdmin: widget.user.role == 'admin',
+            onOpenSettings: widget.onOpenSettings,
+          ),
 
           // 4 Highlight Cards (Top Performer, Most Loaded, Top SBU, Avg Completion)
           Row(

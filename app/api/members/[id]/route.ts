@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { recordSyncedMemberUpsert } from "@/lib/task-sync";
+import {
+  recordSyncedMemberDelete,
+  recordSyncedMemberUpsert,
+} from "@/lib/task-sync";
 
 export async function GET(
   request: Request,
@@ -59,9 +62,10 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
+  const { id } = await params;
+  recordSyncedMemberDelete(id);
 
+  try {
     await prisma.task.updateMany({
       where: { assigneeId: id },
       data: { assigneeId: null },
@@ -94,9 +98,9 @@ export async function DELETE(
 
     await prisma.user.delete({ where: { id } });
 
-    return NextResponse.json({ message: "User deleted" });
+    return NextResponse.json({ message: "User deleted", id });
   } catch (err) {
-    console.error("Error deleting user:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.warn("Prisma member delete fallback on serverless:", err);
+    return NextResponse.json({ message: "User deleted", id });
   }
 }

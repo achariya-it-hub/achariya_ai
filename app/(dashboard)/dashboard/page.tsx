@@ -56,6 +56,9 @@ import {
   Share2,
   PieChart as PieChartIcon,
   Activity,
+  Settings,
+  Crown,
+  Star,
 } from "lucide-react";
 
 const SBU_CHART_COLORS: Record<string, string> = {
@@ -92,6 +95,21 @@ export default function DashboardPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const [wsSettings, setWsSettings] = useState<any>(null);
+  useEffect(() => {
+    const fetchSettings = () => {
+      fetch("/api/settings")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d) setWsSettings(d);
+        })
+        .catch(() => {});
+    };
+    fetchSettings();
+    window.addEventListener("cwms-settings-updated", fetchSettings);
+    return () => window.removeEventListener("cwms-settings-updated", fetchSettings);
+  }, []);
 
   const [period, setPeriod] = useState<PeriodFilterKey>("this-month");
 
@@ -679,6 +697,18 @@ export default function DashboardPage() {
               </span>
             </div>
 
+            {role === "admin" && (
+              <Link href="/dashboard/settings">
+                <Button
+                  variant="outline"
+                  className="h-10 px-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs font-bold gap-1.5 cursor-pointer"
+                >
+                  <Settings className="h-4 w-4 text-amber-300" />
+                  Settings
+                </Button>
+              </Link>
+            )}
+
             <Link href="/dashboard/tasks/new">
               <Button className="h-10 px-4 rounded-2xl bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-pink-600 hover:to-indigo-600 text-white text-xs font-bold gap-1.5 shadow-lg shadow-pink-500/25 border-0 cursor-pointer">
                 <Plus className="h-4 w-4" />
@@ -722,6 +752,172 @@ export default function DashboardPage() {
           );
         })}
       </div>
+
+      {/* PEAK PERFORMED USERS SPOTLIGHT & USER LEADERBOARD */}
+      {(wsSettings?.peakPerformersConfig?.showBannerOnDashboard !== false ||
+        wsSettings?.leaderboardConfig?.showOnDashboard !== false) &&
+        employeeAnalytics.list.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Peak Performed Users Podium */}
+            {wsSettings?.peakPerformersConfig?.showBannerOnDashboard !== false && (
+              <div className="lg:col-span-5 rounded-3xl bg-gradient-to-br from-[#1A3A5C] via-indigo-950 to-slate-900 p-5 sm:p-6 text-white shadow-lg flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 border border-amber-300/30 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-amber-300">
+                      <Crown className="h-3.5 w-3.5 text-amber-400" />
+                      <span>
+                        {wsSettings?.peakPerformersConfig?.badgeTitle ||
+                          "Peak Performed Users"}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-indigo-200">
+                      {wsSettings?.peakPerformersConfig?.periodLabel ||
+                        "Live Standings"}
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {(() => {
+                      const featuredIds: string[] =
+                        wsSettings?.peakPerformersConfig?.featuredUserIds || [];
+                      const peakList =
+                        featuredIds.length > 0
+                          ? employeeAnalytics.list.filter((e) =>
+                              featuredIds.includes(e.id)
+                            )
+                          : employeeAnalytics.list.slice(0, 3);
+                      return peakList.map((emp, idx) => (
+                        <div
+                          key={emp.id}
+                          className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-3.5 flex items-center justify-between gap-3"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                              {initials(emp.name)}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <p className="text-sm font-extrabold text-white truncate">
+                                  {emp.name}
+                                </p>
+                                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                              </div>
+                              <p className="text-[11px] text-white/70 truncate">
+                                {wsSettings?.peakPerformersConfig
+                                  ?.spotlightNotes?.[emp.id] ||
+                                  `${emp.completed} tasks completed · ${emp.rate}% velocity`}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="rounded-xl bg-amber-400/20 border border-amber-300/30 px-2.5 py-1 text-[11px] font-extrabold text-amber-300 shrink-0">
+                            #{idx + 1} Peak
+                          </span>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+
+                {role === "admin" && (
+                  <div className="mt-4 pt-3 border-t border-white/10 flex justify-end">
+                    <Link
+                      href="/dashboard/settings"
+                      className="text-[11px] font-bold text-pink-300 hover:text-white inline-flex items-center gap-1"
+                    >
+                      <span>Configure Peak Performers & Leaderboard</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Organization User Leaderboard */}
+            {wsSettings?.leaderboardConfig?.showOnDashboard !== false && (
+              <div className="lg:col-span-7 rounded-3xl bg-white p-5 sm:p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/60">
+                        <Trophy className="h-4.5 w-4.5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-extrabold text-slate-900">
+                          Organization User Leaderboard
+                        </h3>
+                        <p className="text-[11px] text-slate-500">
+                          Ranked by completed deliverables, on-time execution & admin bonus points
+                        </p>
+                      </div>
+                    </div>
+                    {role === "admin" && (
+                      <Link
+                        href="/dashboard/settings"
+                        className="rounded-xl bg-slate-100 hover:bg-slate-200 px-3 py-1.5 text-[11px] font-bold text-slate-700"
+                      >
+                        Manage Standings
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    {employeeAnalytics.list.slice(0, 5).map((emp, idx) => {
+                      const ptsCfg = wsSettings?.leaderboardConfig || {};
+                      const bonus = Number(
+                        ptsCfg.manualBonusByUserId?.[emp.id] || 0
+                      );
+                      const score =
+                        emp.completed * (ptsCfg.pointsPerCompleted || 10) +
+                        emp.onTime * (ptsCfg.pointsPerOnTime || 5) +
+                        bonus;
+                      return (
+                        <div
+                          key={emp.id}
+                          className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 px-3.5 py-2.5 hover:bg-slate-100/70 transition-colors"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span
+                              className={`h-7 w-7 rounded-lg text-xs font-extrabold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? "bg-amber-500 text-white"
+                                  : idx === 1
+                                  ? "bg-slate-400 text-white"
+                                  : idx === 2
+                                  ? "bg-orange-600 text-white"
+                                  : "bg-slate-200 text-slate-700"
+                              }`}
+                            >
+                              #{idx + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-extrabold text-slate-900 truncate">
+                                {emp.name}
+                              </p>
+                              <p className="text-[10px] text-slate-500 truncate">
+                                {emp.department} · {emp.completed}/{emp.total}{" "}
+                                tasks done ({emp.rate}%)
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {bonus > 0 && (
+                              <span className="rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-bold text-pink-600 border border-pink-200">
+                                +{bonus} bonus
+                              </span>
+                            )}
+                            <span className="rounded-xl bg-slate-900 px-2.5 py-1 text-xs font-extrabold text-white">
+                              {score} pts
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
       {/* ROW 2: 4 SPOTLIGHT INSIGHT CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

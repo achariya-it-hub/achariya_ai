@@ -22,6 +22,57 @@ class Api {
   static final List<Task> _localCreatedTasks = [];
   static final Map<String, Map<String, dynamic>> _localTaskPatches = {};
   static final Map<String, Map<String, dynamic>> _localMemberPatches = {};
+  static final List<Member> _localCreatedMembers = [];
+  static final Set<String> _localDeletedMemberIds = {};
+  static Map<String, dynamic> _localSettings = {
+    'entityName': 'Digiventures',
+    'entitySubtitle': 'CREATIVE WORKFLOW OS',
+    'entityTagline': 'CRM & Creative Operations Workspace',
+    'logoUrl': '/logo.png',
+    'entityEmail': 'ops@achariya.ai',
+    'entityPhone': '+91 98765 43210',
+    'entityAddress': 'Achariya World Class Education HQ, Puducherry',
+    'entityWebsite': 'https://achariya.ai',
+    'colorScheme': 'navy-pink',
+    'primaryColor': '#1A3A5C',
+    'accentColor': '#E91E63',
+    'secondaryColor': '#4F46E5',
+    'sbuList': [
+      {'id': 'sbu-1', 'name': 'Achariya', 'code': 'ACH', 'color': '#4F46E5', 'active': true},
+      {'id': 'sbu-2', 'name': 'Q School', 'code': 'QSC', 'color': '#EC4899', 'active': true},
+      {'id': 'sbu-3', 'name': 'Miway', 'code': 'MIW', 'color': '#0EA5E9', 'active': true},
+      {'id': 'sbu-4', 'name': 'WOW', 'code': 'WOW', 'color': '#F59E0B', 'active': true},
+      {'id': 'sbu-5', 'name': 'MINDS', 'code': 'MND', 'color': '#8B5CF6', 'active': true},
+      {'id': 'sbu-6', 'name': 'RAW', 'code': 'RAW', 'color': '#10B981', 'active': true},
+      {'id': 'sbu-7', 'name': 'Institute of Yoga', 'code': 'IOY', 'color': '#14B8A6', 'active': true},
+      {'id': 'sbu-8', 'name': 'WIN Real Estate', 'code': 'WIN', 'color': '#F97316', 'active': true},
+      {'id': 'sbu-9', 'name': 'DV IA', 'code': 'DVIA', 'color': '#6366F1', 'active': true},
+    ],
+    'modules': [
+      {'id': 'dashboard', 'label': 'Dashboard', 'href': '/dashboard', 'mobileTab': true, 'enabled': true, 'roles': ['admin', 'manager', 'member', 'trainee']},
+      {'id': 'tasks', 'label': 'Tasks', 'href': '/dashboard/tasks', 'mobileTab': true, 'enabled': true, 'roles': ['admin', 'manager', 'member', 'trainee']},
+      {'id': 'approvals', 'label': 'Approvals', 'href': '/dashboard/approvals', 'mobileTab': true, 'enabled': true, 'roles': ['admin', 'manager', 'member', 'trainee']},
+      {'id': 'workload', 'label': 'Workload', 'href': '/dashboard/workload', 'mobileTab': true, 'enabled': true, 'roles': ['admin', 'manager', 'member', 'trainee']},
+      {'id': 'analytics', 'label': 'Analytics', 'href': '/dashboard/productivity', 'mobileTab': true, 'enabled': true, 'roles': ['admin', 'manager', 'member', 'trainee']},
+    ],
+    'leaderboardConfig': {
+      'enabled': true,
+      'showOnDashboard': true,
+      'pointsPerCompleted': 10,
+      'pointsPerOnTime': 5,
+      'pointsPerUrgent': 5,
+      'penaltyPerCorrection': 2,
+      'manualBonusByUserId': <String, dynamic>{},
+    },
+    'peakPerformersConfig': {
+      'enabled': true,
+      'showBannerOnDashboard': true,
+      'badgeTitle': 'Peak Performer of the Month',
+      'periodLabel': 'November 2026',
+      'featuredUserIds': <String>[],
+      'spotlightNotes': <String, dynamic>{},
+    },
+  };
 
   static String get baseUrl => _baseUrl;
 
@@ -267,35 +318,167 @@ class Api {
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
         final list = jsonDecode(res.body) as List;
-        final parsed = list.map((e) {
-          final map = Map<String, dynamic>.from(e as Map<String, dynamic>);
-          final id = '${map['id'] ?? ''}';
-          if (_localMemberPatches.containsKey(id)) {
-            map.addAll(_localMemberPatches[id]!);
+        final parsed = list
+            .map((e) {
+              final map = Map<String, dynamic>.from(e as Map<String, dynamic>);
+              final id = '${map['id'] ?? ''}';
+              if (_localMemberPatches.containsKey(id)) {
+                map.addAll(_localMemberPatches[id]!);
+              }
+              return Member.fromJson(map);
+            })
+            .where((m) => !_localDeletedMemberIds.contains(m.id))
+            .toList();
+        for (final created in _localCreatedMembers) {
+          if (!parsed.any((x) => x.id == created.id) &&
+              !_localDeletedMemberIds.contains(created.id)) {
+            parsed.add(created);
           }
-          return Member.fromJson(map);
-        }).toList();
+        }
         if (parsed.isNotEmpty) return parsed;
       }
     } catch (_) {}
-    return _seedMembers.map((m) {
-      if (_localMemberPatches.containsKey(m.id)) {
-        return Member.fromJson({
-          'id': m.id,
-          'name': m.name,
-          'email': m.email,
-          'role': m.role,
-          'department': m.department,
-          'title': m.title,
-          'phone': m.phone,
-          'avatar': m.avatar,
-          'status': m.status,
-          'employeeId': m.employeeId,
-          ..._localMemberPatches[m.id]!,
-        });
+    final seeded = _seedMembers
+        .where((m) => !_localDeletedMemberIds.contains(m.id))
+        .map((m) {
+          if (_localMemberPatches.containsKey(m.id)) {
+            return Member.fromJson({
+              'id': m.id,
+              'name': m.name,
+              'email': m.email,
+              'role': m.role,
+              'department': m.department,
+              'title': m.title,
+              'phone': m.phone,
+              'avatar': m.avatar,
+              'status': m.status,
+              'employeeId': m.employeeId,
+              ..._localMemberPatches[m.id]!,
+            });
+          }
+          return m;
+        })
+        .toList();
+    for (final created in _localCreatedMembers) {
+      if (!seeded.any((x) => x.id == created.id) &&
+          !_localDeletedMemberIds.contains(created.id)) {
+        seeded.add(created);
       }
-      return m;
-    }).toList();
+    }
+    return seeded;
+  }
+
+  static Future<Member> createMember(Map<String, dynamic> payload) async {
+    final cleanEmail = '${payload['email'] ?? ''}'.contains('@')
+        ? '${'${payload['email']}'.split('@')[0].toLowerCase()}@achariya.ai'
+        : '${'${payload['name'] ?? 'user'}'.toLowerCase().replaceAll(' ', '')}@achariya.ai';
+    final body = {
+      'id': payload['id'] ?? 'u-${DateTime.now().millisecondsSinceEpoch}',
+      'name': payload['name'] ?? 'New User',
+      'email': cleanEmail,
+      'role': payload['role'] ?? 'member',
+      'department': payload['department'] ?? 'Design',
+      'title': payload['title'] ?? 'Creative Specialist',
+      'phone': payload['phone'] ?? '+91 98765 43220',
+      'password': payload['password'] ?? 'demo123',
+      'employeeId': payload['employeeId'] ?? 'EMP-100',
+      'status': 'active',
+    };
+    final created = Member.fromJson(body);
+    _localCreatedMembers.add(created);
+
+    final mirror = _mirrorUrl;
+    if (mirror != null) {
+      http
+          .post(
+            Uri.parse('$mirror/api/members'),
+            headers: _headers(),
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+    }
+    try {
+      final res = await http
+          .post(
+            Uri.parse('$_baseUrl/api/members'),
+            headers: _headers(),
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final map = jsonDecode(res.body) as Map<String, dynamic>;
+        return Member.fromJson({...body, ...map});
+      }
+    } catch (_) {}
+    return created;
+  }
+
+  static Future<void> deleteMember(String id) async {
+    _localDeletedMemberIds.add(id);
+    _localCreatedMembers.removeWhere((m) => m.id == id);
+
+    final mirror = _mirrorUrl;
+    if (mirror != null) {
+      http
+          .delete(Uri.parse('$mirror/api/members/$id'), headers: _headers())
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+    }
+    try {
+      await http
+          .delete(Uri.parse('$_baseUrl/api/members/$id'), headers: _headers())
+          .timeout(const Duration(seconds: 8));
+    } catch (_) {}
+  }
+
+  static Future<Map<String, dynamic>> settings() async {
+    try {
+      final res = await http
+          .get(Uri.parse('$_baseUrl/api/settings'), headers: _headers())
+          .timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final map = Map<String, dynamic>.from(
+          jsonDecode(res.body) as Map<String, dynamic>,
+        );
+        _localSettings = {..._localSettings, ...map};
+        return _localSettings;
+      }
+    } catch (_) {}
+    return _localSettings;
+  }
+
+  static Future<Map<String, dynamic>> saveSettings(
+    Map<String, dynamic> patch,
+  ) async {
+    _localSettings = {..._localSettings, ...patch};
+    final mirror = _mirrorUrl;
+    if (mirror != null) {
+      http
+          .put(
+            Uri.parse('$mirror/api/settings'),
+            headers: _headers(),
+            body: jsonEncode(_localSettings),
+          )
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+    }
+    try {
+      final res = await http
+          .put(
+            Uri.parse('$_baseUrl/api/settings'),
+            headers: _headers(),
+            body: jsonEncode(_localSettings),
+          )
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final map = Map<String, dynamic>.from(
+          jsonDecode(res.body) as Map<String, dynamic>,
+        );
+        _localSettings = {..._localSettings, ...map};
+      }
+    } catch (_) {}
+    return _localSettings;
   }
 
   static Future<User> updateMyProfile(Map<String, dynamic> payload) async {
