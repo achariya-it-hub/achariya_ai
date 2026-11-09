@@ -1,6 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { seedMembers } from "@/lib/data";
+import { isMemberDeleted, mergeMembersWithSyncState } from "@/lib/task-sync";
 import { signToken, verifyToken, COOKIE_NAME } from "./jwt";
 import type { JWTPayload } from "./jwt";
 
@@ -34,15 +35,17 @@ export async function authenticate(emailInput: string, password: string): Promis
   const clean = emailInput.trim().toLowerCase();
   const cleanNoDash = clean.replace(/[-_\s]/g, "");
 
-  // Match by Employee ID, email, username, or ID from seedMembers
-  const matchedMember = seedMembers.find(
+  // Match by Employee ID, email, username, or ID from live synced members + seedMembers
+  const liveRoster = mergeMembersWithSyncState(seedMembers);
+  const matchedMember = liveRoster.find(
     (m) =>
-      (m.employeeId && m.employeeId.toLowerCase() === clean) ||
-      (m.employeeId && m.employeeId.toLowerCase().replace(/[-_\s]/g, "") === cleanNoDash) ||
-      m.email.toLowerCase() === clean ||
-      m.id.toLowerCase() === clean ||
-      m.name.toLowerCase() === clean ||
-      m.email.split("@")[0].toLowerCase() === clean
+      !isMemberDeleted(m.id) &&
+      ((m.employeeId && m.employeeId.toLowerCase() === clean) ||
+        (m.employeeId && m.employeeId.toLowerCase().replace(/[-_\s]/g, "") === cleanNoDash) ||
+        m.email.toLowerCase() === clean ||
+        m.id.toLowerCase() === clean ||
+        m.name.toLowerCase() === clean ||
+        m.email.split("@")[0].toLowerCase() === clean)
   );
 
   let normalizedEmail = matchedMember ? matchedMember.email.toLowerCase() : clean;
@@ -66,7 +69,7 @@ export async function authenticate(emailInput: string, password: string): Promis
         ],
       },
     });
-    if (member) {
+    if (member && !isMemberDeleted(member.id)) {
       const normalizedMemberEmail =
         member.email.endsWith("@cwms.local") ||
         member.email.endsWith("@achariya.in") ||
@@ -80,8 +83,8 @@ export async function authenticate(emailInput: string, password: string): Promis
     console.warn("Prisma DB lookup error on serverless lambda, falling back to seed members:", err);
   }
 
-  // In-memory fallback
-  if (matchedMember) {
+  // In-memory / synced fallback
+  if (matchedMember && !isMemberDeleted(matchedMember.id)) {
     return {
       id: matchedMember.id,
       email: matchedMember.email,

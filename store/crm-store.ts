@@ -198,7 +198,12 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
       const isSame = (a: any, b: any) => JSON.stringify(a) === JSON.stringify(b);
 
-      const mergedMembers = merge(membersRes, cur.members, seedData.members);
+      // For members, trust the server response (/api/members) so deleted members
+      // are never resurrected on other devices!
+      const mergedMembers =
+        Array.isArray(membersRes) && membersRes.length > 0
+          ? membersRes.filter((item: any) => !deleted.has(item.id))
+          : merge(membersRes, cur.members, seedData.members);
       const mergedProjects = merge(projectsRes, cur.projects, seedData.projects);
       const mergedMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
       const rawMergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
@@ -274,13 +279,35 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
   },
 
   addMember: async (member) => {
-    const newMember: TeamMember = { ...member, id: `u-${Date.now()}` };
+    const generatedId = `u-${Date.now()}`;
+    const newMember: TeamMember = { ...member, id: generatedId };
     set((s) => {
       const next = { ...s, members: [newMember, ...s.members] };
       saveLocalData(next);
       return next;
     });
-    await fetch("/api/members", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(member) }).catch(() => {});
+    try {
+      const res = await fetch("/api/members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newMember),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        if (saved && saved.id) {
+          set((s) => {
+            const next = {
+              ...s,
+              members: s.members.map((m) =>
+                m.id === generatedId ? { ...m, ...saved } : m
+              ),
+            };
+            saveLocalData(next);
+            return next;
+          });
+        }
+      }
+    } catch {}
   },
 
   updateMember: async (id, updates) => {

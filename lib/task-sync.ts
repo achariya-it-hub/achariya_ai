@@ -437,6 +437,56 @@ export function recordSyncedMemberDelete(id: string) {
   }
 }
 
+export function isMemberDeleted(id: string): boolean {
+  return loadDeletedMembers().has(id);
+}
+
+export const PRISMA_USER_FIELDS = new Set([
+  "id",
+  "name",
+  "email",
+  "password",
+  "role",
+  "avatar",
+  "department",
+  "title",
+  "phone",
+  "joinDate",
+  "status",
+  "attendanceEnabled",
+]);
+
+export function sanitizeUserForPrisma(raw: Record<string, unknown>) {
+  const cleanEmail =
+    typeof raw.email === "string" && raw.email.includes("@")
+      ? `${raw.email.split("@")[0].trim().toLowerCase()}@achariya.ai`
+      : `${String(raw.name || "user")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "")}@achariya.ai`;
+
+  return {
+    ...(typeof raw.id === "string" && raw.id.trim() ? { id: raw.id.trim() } : {}),
+    name: String(raw.name || "New Member").trim(),
+    email: cleanEmail,
+    password: String(raw.password || "demo123"),
+    role: String(raw.role || "member"),
+    avatar:
+      typeof raw.avatar === "string" && raw.avatar.trim()
+        ? raw.avatar.trim()
+        : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
+            String(raw.name || "User")
+          )}`,
+    department: String(raw.department || "Design"),
+    title: String(raw.title || "Creative Specialist"),
+    phone: String(raw.phone || "+91 98765 43220"),
+    joinDate: String(raw.joinDate || new Date().toISOString().slice(0, 10)),
+    status: String(raw.status || "active"),
+    attendanceEnabled:
+      typeof raw.attendanceEnabled === "boolean" ? raw.attendanceEnabled : true,
+  };
+}
+
 export function mergeMembersWithSyncState<T extends { id: string }>(
   baseMembers: T[]
 ): T[] {
@@ -446,7 +496,11 @@ export function mergeMembersWithSyncState<T extends { id: string }>(
   const result: T[] = [];
 
   const normalizeMember = (raw: Record<string, unknown>): T => {
-    const merged = { ...raw };
+    const seedMatch = seedMembers.find((s) => s.id === raw.id);
+    const merged: Record<string, unknown> = {
+      ...(seedMatch?.employeeId ? { employeeId: seedMatch.employeeId } : {}),
+      ...raw,
+    };
     if (typeof merged.email === "string" && merged.email.includes("@")) {
       const localPart = merged.email.split("@")[0].trim().toLowerCase();
       const domain = merged.email.split("@")[1]?.trim().toLowerCase();
