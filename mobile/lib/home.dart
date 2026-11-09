@@ -3040,7 +3040,7 @@ class _ProfileEditSheetState extends State<_ProfileEditSheet> {
                           controller: _emailCtrl,
                           keyboardType: TextInputType.emailAddress,
                           decoration: fieldDecoration(
-                            'name@achariya.in',
+                            'name@achariya.ai',
                             icon: Icons.mail_outline,
                           ),
                         ),

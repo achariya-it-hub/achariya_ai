@@ -266,7 +266,7 @@ export default function ProfilePage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-10 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
-                    placeholder="name@achariya.in"
+                    placeholder="name@achariya.ai"
                   />
                 </div>
               </div>

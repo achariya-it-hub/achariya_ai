@@ -273,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _email,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: fieldDecoration(
-                                  'name@achariya.in',
+                                  'name@achariya.ai',
                                   icon: Icons.mail_outline,
                                 ),
                               ),

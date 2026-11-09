@@ -210,7 +210,20 @@ export function mergeMembersWithSyncState<T extends { id: string }>(
   const state = loadMemberSync();
   return baseMembers.map((m) => {
     const patch = state[m.id];
-    return patch ? ({ ...m, ...patch } as T) : m;
+    const merged = (patch ? { ...m, ...patch } : { ...m }) as Record<string, unknown>;
+    if (typeof merged.email === "string" && merged.email.includes("@")) {
+      const localPart = merged.email.split("@")[0].trim().toLowerCase();
+      const domain = merged.email.split("@")[1]?.trim().toLowerCase();
+      if (
+        domain === "cwms.local" ||
+        domain === "achariya.in" ||
+        domain === "achariya.org" ||
+        domain === "digital-crm.com"
+      ) {
+        merged.email = `${localPart}@achariya.ai`;
+      }
+    }
+    return merged as unknown as T;
   });
 }
 

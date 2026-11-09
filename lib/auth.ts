@@ -67,7 +67,14 @@ export async function authenticate(emailInput: string, password: string): Promis
       },
     });
     if (member) {
-      return { id: member.id, email: member.email, name: member.name, avatar: member.avatar ?? undefined, role: member.role };
+      const normalizedMemberEmail =
+        member.email.endsWith("@cwms.local") ||
+        member.email.endsWith("@achariya.in") ||
+        member.email.endsWith("@achariya.org") ||
+        member.email.endsWith("@digital-crm.com")
+          ? `${member.email.split("@")[0].toLowerCase()}@achariya.ai`
+          : member.email;
+      return { id: member.id, email: normalizedMemberEmail, name: member.name, avatar: member.avatar ?? undefined, role: member.role };
     }
   } catch (err) {
     console.warn("Prisma DB lookup error on serverless lambda, falling back to seed members:", err);
