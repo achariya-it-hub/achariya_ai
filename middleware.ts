@@ -1,26 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
-function isLocalDevOrigin(origin: string | null): origin is string {
-  if (!origin) return false;
-  try {
-    const { hostname } = new URL(origin);
-    return hostname === "localhost" || hostname === "127.0.0.1";
-  } catch {
-    return false;
-  }
-}
-
 export function middleware(req: NextRequest) {
   const origin = req.headers.get("origin");
   const res = NextResponse.next();
 
-  res.headers.set("Access-Control-Allow-Headers", "Content-Type, Cookie");
-  res.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Cookie, Authorization, X-Requested-With"
+  );
+  res.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
 
-  if (isLocalDevOrigin(origin)) {
+  if (origin) {
     res.headers.set("Access-Control-Allow-Origin", origin);
     res.headers.set("Vary", "Origin");
     res.headers.set("Access-Control-Allow-Credentials", "true");
+  } else {
+    res.headers.set("Access-Control-Allow-Origin", "*");
   }
 
   if (req.method === "OPTIONS") {

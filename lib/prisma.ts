@@ -1,10 +1,39 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { PrismaClient } from "./generated/prisma";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
+function resolveSqliteUrl(): string {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  const localDbPath = path.join(process.cwd(), "dev.db");
+  const isServerless =
+    Boolean(process.env.NETLIFY) ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
+    Boolean(process.env.VERCEL);
+
+  if (isServerless) {
+    const tmpDbPath = path.join(os.tmpdir(), "cwms-dev.db");
+    try {
+      if (!fs.existsSync(tmpDbPath) && fs.existsSync(localDbPath)) {
+        fs.copyFileSync(localDbPath, tmpDbPath);
+      }
+      if (fs.existsSync(tmpDbPath)) {
+        return `file:${tmpDbPath}`;
+      }
+    } catch (e) {
+      console.warn("Could not copy dev.db to tmpdir:", e);
+    }
+  }
+  return "file:dev.db";
+}
+
 function createPrismaClient() {
-  const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || "file:dev.db" });
+  const adapter = new PrismaBetterSqlite3({ url: resolveSqliteUrl() });
   return new PrismaClient({ adapter });
 }
 

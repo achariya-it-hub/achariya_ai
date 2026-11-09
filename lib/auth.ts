@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { seedMembers } from "@/lib/data";
 import { signToken, verifyToken, COOKIE_NAME } from "./jwt";
@@ -7,12 +7,27 @@ import type { JWTPayload } from "./jwt";
 export { signToken, verifyToken, COOKIE_NAME };
 export type { JWTPayload };
 
-
 export async function getUser(): Promise<JWTPayload | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return verifyToken(token);
+  try {
+    const headerStore = await headers();
+    const authHeader = headerStore.get("authorization");
+    if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+      const bearerToken = authHeader.slice(7).trim();
+      if (bearerToken) {
+        const verified = await verifyToken(bearerToken);
+        if (verified) return verified;
+      }
+    }
+  } catch {}
+
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+    if (!token) return null;
+    return verifyToken(token);
+  } catch {
+    return null;
+  }
 }
 
 export async function authenticate(emailInput: string, password: string): Promise<JWTPayload | null> {

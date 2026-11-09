@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
+import {
+  recordSyncedTaskDelete,
+  recordSyncedTaskUpsert,
+  sanitizePrismaTaskInput,
+} from "@/lib/task-sync";
 
 export async function GET(
   request: Request,
@@ -29,40 +34,27 @@ export async function PUT(
   try {
     const user = await getUser();
     const { id } = await params;
-    const body = await request.json();
-    const {
-      proofs,
-      project,
-      assignee,
-      milestone,
-      createdAt,
-      subtasks,
-      comments,
-      activityLog,
-      payoutPaidAt,
-      payoutTransactionRef,
-      ...cleanTaskData
-    } = body;
-    if (comments && !cleanTaskData.commentsJson) {
-      cleanTaskData.commentsJson = JSON.stringify(comments);
-    }
-    if (activityLog && !cleanTaskData.activityJson) {
-      cleanTaskData.activityJson = JSON.stringify(activityLog);
-    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const cleanTaskData = sanitizePrismaTaskInput(body, false);
+    delete cleanTaskData.id;
+
     if (!user || user.role !== "admin") {
       delete cleanTaskData.payout;
     } else if (cleanTaskData.assigneeId) {
       try {
-        const assigneeUser = await prisma.user.findUnique({ where: { id: cleanTaskData.assigneeId } });
+        const assigneeUser = await prisma.user.findUnique({
+          where: { id: String(cleanTaskData.assigneeId) },
+        });
         if (assigneeUser && assigneeUser.role !== "trainee") {
           cleanTaskData.payout = 0;
         }
       } catch {}
     }
+
     try {
       const task = await prisma.task.update({
         where: { id },
-        data: cleanTaskData,
+        data: cleanTaskData as any,
         include: {
           project: true,
           assignee: { select: { id: true, name: true, email: true, avatar: true } },
@@ -70,10 +62,13 @@ export async function PUT(
           proofs: true,
         },
       });
+      recordSyncedTaskUpsert(task as unknown as Record<string, unknown>);
       return NextResponse.json(task);
     } catch (dbErr) {
       console.warn("Prisma update fallback on serverless lambda:", dbErr);
-      return NextResponse.json({ id, ...cleanTaskData });
+      const updated = { id, ...cleanTaskData };
+      recordSyncedTaskUpsert(updated);
+      return NextResponse.json(updated);
     }
   } catch (err) {
     console.error("Prisma update task error:", err);
@@ -86,6 +81,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  recordSyncedTaskDelete(id);
   try {
     await prisma.task.delete({ where: { id } });
   } catch (err) {

@@ -393,7 +393,11 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       saveLocalData(next);
       return next;
     });
-    await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(task) }).catch(() => {});
+    await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...task, id: newTask.id }),
+    }).catch(() => {});
   },
 
   updateTask: async (id, updates) => {
