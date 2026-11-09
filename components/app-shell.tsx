@@ -33,6 +33,8 @@ import {
   EyeOff,
   AlertCircle,
   CheckCircle2,
+  Plus,
+  Gauge,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -41,14 +43,16 @@ import { Button } from "@/components/ui/button";
 import { NotificationsPopover } from "@/components/notifications-popover";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard", label: "Executive Dashboard", icon: LayoutDashboard, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/account", label: "Trainee Payouts", icon: Banknote, roles: ["admin"] },
   { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/tasks", label: "Tasks", icon: CheckSquare, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/approvals", label: "Approvals", icon: CheckCircle2, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/workload", label: "Workload", icon: Gauge, roles: ["admin", "manager", "member", "trainee"] },
+  { href: "/dashboard/productivity", label: "Analytics", icon: BarChart3, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/timeline", label: "Timeline", icon: GanttChart, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/whatsapp", label: "WhatsApp Integration", icon: MessageSquare, roles: ["admin"] },
   { href: "/dashboard/team", label: "Team", icon: Users, roles: ["admin", "manager"] },
-  { href: "/dashboard/productivity", label: "Productivity", icon: BarChart3, roles: ["admin", "manager"] },
   { href: "/dashboard/meetings", label: "Meetings", icon: Video, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/social", label: "Calendar", icon: Calendar, roles: ["admin", "manager", "member", "trainee"] },
   { href: "/dashboard/attendance", label: "Attendance", icon: Clock, roles: ["admin", "manager", "member", "trainee"] },
@@ -93,6 +97,15 @@ export function Sidebar() {
   const tasks = useCRMStore((s) => s.tasks);
   const socialPosts = useCRMStore((s) => s.socialPosts || []);
   const pendingSocialCount = socialPosts.filter((p) => !p.isProcessed && p.status !== "published" && p.status !== "archived").length;
+  const pendingApprovalsCount = tasks.filter(
+    (t) =>
+      t.workflowState !== "cancelled" &&
+      t.workflowState !== "rejected" &&
+      (t.status === "review" ||
+        t.workflowState === "awaiting-approval" ||
+        t.workflowState === "in-review" ||
+        t.workflowState === "correction-submitted")
+  ).length;
   const member = members.find((m) => m.email === user?.email);
   const role = user?.role || member?.role || "trainee";
   const userTasks = tasks.filter((t) => t.assigneeId === (user?.id || member?.id));
@@ -206,15 +219,39 @@ export function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {visibleNavItems.map((item) => (
           <NavItem
             key={item.href}
             {...item}
-            badge={item.href === "/dashboard/social" ? pendingSocialCount : undefined}
-            active={pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))}
+            badge={
+              item.href === "/dashboard/social"
+                ? pendingSocialCount
+                : item.href === "/dashboard/approvals"
+                ? pendingApprovalsCount
+                : undefined
+            }
+            active={
+              pathname === item.href ||
+              (item.href !== "/dashboard" && pathname.startsWith(item.href)) ||
+              (item.href === "/dashboard/productivity" &&
+                pathname.startsWith("/dashboard/analytics"))
+            }
           />
         ))}
+
+        <div className="pt-4 mt-4 border-t border-white/10">
+          <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            Quick actions
+          </p>
+          <Link
+            href="/dashboard/tasks/new"
+            className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            <Plus className="h-4 w-4 text-emerald-400" />
+            <span>New task</span>
+          </Link>
+        </div>
       </nav>
 
       {/* User profile section with menu & actions */}

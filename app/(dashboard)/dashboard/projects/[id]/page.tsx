@@ -188,54 +188,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 </div>
               </DialogContent>
             </Dialog>
-            <Dialog open={taskOpen} onOpenChange={setTaskOpen}>
-              <DialogTrigger render={<Button size="sm" className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white" />}>
-                <Plus className="h-4 w-4 mr-1" />Task
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader><DialogTitle>Add Task</DialogTitle></DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <div><Label>Title</Label><Input className="mt-1.5" value={tForm.title} onChange={(e) => setTForm({ ...tForm, title: e.target.value })} /></div>
-                  <div><Label>Description</Label><Textarea className="mt-1.5" value={tForm.description} onChange={(e) => setTForm({ ...tForm, description: e.target.value })} /></div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Milestone</Label>
-                      <Select value={tForm.milestoneId} onValueChange={(v) => v && setTForm({ ...tForm, milestoneId: v })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Optional" /></SelectTrigger>
-                        <SelectContent>
-                          {projectMilestones.map((m) => <SelectItem key={m.id} value={m.id}>{m.title}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Assignee</Label>
-                      <Select value={tForm.assigneeId} onValueChange={(v) => v && setTForm({ ...tForm, assigneeId: v })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                        <SelectContent>
-                          {teamMembers.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Priority</Label>
-                      <Select value={tForm.priority} onValueChange={(v) => v && setTForm({ ...tForm, priority: v as Priority })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="urgent">Urgent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div><Label>Due Date</Label><Input type="date" className="mt-1.5" value={tForm.dueDate} onChange={(e) => setTForm({ ...tForm, dueDate: e.target.value })} /></div>
-                  </div>
-                  <Button onClick={handleAddTask} className="w-full">Add Task</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Link href={`/dashboard/tasks/new?projectId=${id}`}>
+              <Button size="sm" className="bg-[#4ea832] hover:bg-[#43932a] text-white shadow-sm">
+                <Plus className="h-4 w-4 mr-1" />New Task
+              </Button>
+            </Link>
             {isElevated && (
               <Button onClick={handleDeleteProject} variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
                 <Trash2 className="h-4 w-4 mr-1" />Delete Project
@@ -323,7 +280,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                       {task.status === "done" ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <Circle className="h-5 w-5 text-slate-300 hover:text-indigo-500" />}
                     </button>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${task.status === "done" ? "text-slate-400 line-through" : "text-slate-800"}`}>{task.title}</p>
+                      <Link href={`/dashboard/tasks/${task.id}`} className={`text-sm font-medium hover:text-emerald-700 hover:underline ${task.status === "done" ? "text-slate-400 line-through" : "text-slate-800"}`}>{task.title}</Link>
                       {task.dueDate && <p className="text-xs text-slate-400 mt-0.5">Due {formatDate(task.dueDate)}</p>}
                     </div>
                     <Badge variant="secondary" className={`text-[10px] ${taskStatusColors[task.status]}`}>{task.status}</Badge>

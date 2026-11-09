@@ -148,7 +148,17 @@ export function EnhancedProofDialog({ task, onClose, isAdmin, isElevated }: Enha
   };
 
   const handleSaveDetails = async () => {
-    const updates: Partial<Task> = { proofNote: proofNote || null };
+    const updates: Partial<Task> = {
+      proofNote: proofNote || null,
+      platform,
+      creativeType,
+      sbu: sbu || undefined,
+      referenceLink: referenceLink || null,
+      driveLink: driveLink || null,
+      finalOutputLink: finalOutputLink || null,
+      estimatedHours: estimatedHours === "" ? undefined : Number(estimatedHours),
+      actualHours: actualHours === "" ? undefined : Number(actualHours),
+    };
     if (isAdmin && isTraineeTask) {
       updates.payout = Number(payoutDraft) || 0;
     }

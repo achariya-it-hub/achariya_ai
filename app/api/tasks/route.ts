@@ -40,7 +40,25 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const user = await getUser();
   const body = await request.json();
-  const { proofs, project, assignee, milestone, createdAt, ...cleanTaskData } = body;
+  const {
+    proofs,
+    project,
+    assignee,
+    milestone,
+    createdAt,
+    subtasks,
+    comments,
+    activityLog,
+    payoutPaidAt,
+    payoutTransactionRef,
+    ...cleanTaskData
+  } = body;
+  if (comments && !cleanTaskData.commentsJson) {
+    cleanTaskData.commentsJson = JSON.stringify(comments);
+  }
+  if (activityLog && !cleanTaskData.activityJson) {
+    cleanTaskData.activityJson = JSON.stringify(activityLog);
+  }
   if (!user || user.role !== "admin") {
     cleanTaskData.payout = 0;
   } else if (cleanTaskData.assigneeId) {

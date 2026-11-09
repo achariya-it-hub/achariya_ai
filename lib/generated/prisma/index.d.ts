@@ -7145,11 +7145,17 @@ export namespace Prisma {
   export type TaskAvgAggregateOutputType = {
     order: number | null
     payout: number | null
+    workloadPercent: number | null
+    estimatedHours: number | null
+    actualHours: number | null
   }
 
   export type TaskSumAggregateOutputType = {
     order: number | null
     payout: number | null
+    workloadPercent: number | null
+    estimatedHours: number | null
+    actualHours: number | null
   }
 
   export type TaskMinAggregateOutputType = {
@@ -7159,12 +7165,40 @@ export namespace Prisma {
     title: string | null
     description: string | null
     status: string | null
+    workflowState: string | null
+    isPaused: boolean | null
     priority: string | null
     assigneeId: string | null
+    assignedByName: string | null
     dueDate: string | null
+    dueTime: string | null
+    completedAt: string | null
     order: number | null
     payout: number | null
+    payoutStatus: string | null
+    reviewFeedback: string | null
+    submissionRemarks: string | null
     proofNote: string | null
+    marketingType: string | null
+    creativeType: string | null
+    platform: string | null
+    sbu: string | null
+    assetCode: string | null
+    taskCode: string | null
+    workloadPercent: number | null
+    isManualWorkload: boolean | null
+    estimatedHours: number | null
+    actualHours: number | null
+    assignedAt: string | null
+    officialDeadline: string | null
+    warningDeadline: string | null
+    criticalDeadline: string | null
+    referenceLink: string | null
+    driveLink: string | null
+    finalOutputLink: string | null
+    remarks: string | null
+    commentsJson: string | null
+    activityJson: string | null
     createdAt: Date | null
   }
 
@@ -7175,12 +7209,40 @@ export namespace Prisma {
     title: string | null
     description: string | null
     status: string | null
+    workflowState: string | null
+    isPaused: boolean | null
     priority: string | null
     assigneeId: string | null
+    assignedByName: string | null
     dueDate: string | null
+    dueTime: string | null
+    completedAt: string | null
     order: number | null
     payout: number | null
+    payoutStatus: string | null
+    reviewFeedback: string | null
+    submissionRemarks: string | null
     proofNote: string | null
+    marketingType: string | null
+    creativeType: string | null
+    platform: string | null
+    sbu: string | null
+    assetCode: string | null
+    taskCode: string | null
+    workloadPercent: number | null
+    isManualWorkload: boolean | null
+    estimatedHours: number | null
+    actualHours: number | null
+    assignedAt: string | null
+    officialDeadline: string | null
+    warningDeadline: string | null
+    criticalDeadline: string | null
+    referenceLink: string | null
+    driveLink: string | null
+    finalOutputLink: string | null
+    remarks: string | null
+    commentsJson: string | null
+    activityJson: string | null
     createdAt: Date | null
   }
 
@@ -7191,12 +7253,40 @@ export namespace Prisma {
     title: number
     description: number
     status: number
+    workflowState: number
+    isPaused: number
     priority: number
     assigneeId: number
+    assignedByName: number
     dueDate: number
+    dueTime: number
+    completedAt: number
     order: number
     payout: number
+    payoutStatus: number
+    reviewFeedback: number
+    submissionRemarks: number
     proofNote: number
+    marketingType: number
+    creativeType: number
+    platform: number
+    sbu: number
+    assetCode: number
+    taskCode: number
+    workloadPercent: number
+    isManualWorkload: number
+    estimatedHours: number
+    actualHours: number
+    assignedAt: number
+    officialDeadline: number
+    warningDeadline: number
+    criticalDeadline: number
+    referenceLink: number
+    driveLink: number
+    finalOutputLink: number
+    remarks: number
+    commentsJson: number
+    activityJson: number
     createdAt: number
     _all: number
   }
@@ -7205,11 +7295,17 @@ export namespace Prisma {
   export type TaskAvgAggregateInputType = {
     order?: true
     payout?: true
+    workloadPercent?: true
+    estimatedHours?: true
+    actualHours?: true
   }
 
   export type TaskSumAggregateInputType = {
     order?: true
     payout?: true
+    workloadPercent?: true
+    estimatedHours?: true
+    actualHours?: true
   }
 
   export type TaskMinAggregateInputType = {
@@ -7219,12 +7315,40 @@ export namespace Prisma {
     title?: true
     description?: true
     status?: true
+    workflowState?: true
+    isPaused?: true
     priority?: true
     assigneeId?: true
+    assignedByName?: true
     dueDate?: true
+    dueTime?: true
+    completedAt?: true
     order?: true
     payout?: true
+    payoutStatus?: true
+    reviewFeedback?: true
+    submissionRemarks?: true
     proofNote?: true
+    marketingType?: true
+    creativeType?: true
+    platform?: true
+    sbu?: true
+    assetCode?: true
+    taskCode?: true
+    workloadPercent?: true
+    isManualWorkload?: true
+    estimatedHours?: true
+    actualHours?: true
+    assignedAt?: true
+    officialDeadline?: true
+    warningDeadline?: true
+    criticalDeadline?: true
+    referenceLink?: true
+    driveLink?: true
+    finalOutputLink?: true
+    remarks?: true
+    commentsJson?: true
+    activityJson?: true
     createdAt?: true
   }
 
@@ -7235,12 +7359,40 @@ export namespace Prisma {
     title?: true
     description?: true
     status?: true
+    workflowState?: true
+    isPaused?: true
     priority?: true
     assigneeId?: true
+    assignedByName?: true
     dueDate?: true
+    dueTime?: true
+    completedAt?: true
     order?: true
     payout?: true
+    payoutStatus?: true
+    reviewFeedback?: true
+    submissionRemarks?: true
     proofNote?: true
+    marketingType?: true
+    creativeType?: true
+    platform?: true
+    sbu?: true
+    assetCode?: true
+    taskCode?: true
+    workloadPercent?: true
+    isManualWorkload?: true
+    estimatedHours?: true
+    actualHours?: true
+    assignedAt?: true
+    officialDeadline?: true
+    warningDeadline?: true
+    criticalDeadline?: true
+    referenceLink?: true
+    driveLink?: true
+    finalOutputLink?: true
+    remarks?: true
+    commentsJson?: true
+    activityJson?: true
     createdAt?: true
   }
 
@@ -7251,12 +7403,40 @@ export namespace Prisma {
     title?: true
     description?: true
     status?: true
+    workflowState?: true
+    isPaused?: true
     priority?: true
     assigneeId?: true
+    assignedByName?: true
     dueDate?: true
+    dueTime?: true
+    completedAt?: true
     order?: true
     payout?: true
+    payoutStatus?: true
+    reviewFeedback?: true
+    submissionRemarks?: true
     proofNote?: true
+    marketingType?: true
+    creativeType?: true
+    platform?: true
+    sbu?: true
+    assetCode?: true
+    taskCode?: true
+    workloadPercent?: true
+    isManualWorkload?: true
+    estimatedHours?: true
+    actualHours?: true
+    assignedAt?: true
+    officialDeadline?: true
+    warningDeadline?: true
+    criticalDeadline?: true
+    referenceLink?: true
+    driveLink?: true
+    finalOutputLink?: true
+    remarks?: true
+    commentsJson?: true
+    activityJson?: true
     createdAt?: true
     _all?: true
   }
@@ -7354,12 +7534,40 @@ export namespace Prisma {
     title: string
     description: string
     status: string
+    workflowState: string | null
+    isPaused: boolean
     priority: string
     assigneeId: string | null
+    assignedByName: string | null
     dueDate: string | null
+    dueTime: string | null
+    completedAt: string | null
     order: number
     payout: number
+    payoutStatus: string | null
+    reviewFeedback: string | null
+    submissionRemarks: string | null
     proofNote: string | null
+    marketingType: string | null
+    creativeType: string | null
+    platform: string | null
+    sbu: string | null
+    assetCode: string | null
+    taskCode: string | null
+    workloadPercent: number | null
+    isManualWorkload: boolean
+    estimatedHours: number | null
+    actualHours: number | null
+    assignedAt: string | null
+    officialDeadline: string | null
+    warningDeadline: string | null
+    criticalDeadline: string | null
+    referenceLink: string | null
+    driveLink: string | null
+    finalOutputLink: string | null
+    remarks: string | null
+    commentsJson: string | null
+    activityJson: string | null
     createdAt: Date
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
@@ -7389,12 +7597,40 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     status?: boolean
+    workflowState?: boolean
+    isPaused?: boolean
     priority?: boolean
     assigneeId?: boolean
+    assignedByName?: boolean
     dueDate?: boolean
+    dueTime?: boolean
+    completedAt?: boolean
     order?: boolean
     payout?: boolean
+    payoutStatus?: boolean
+    reviewFeedback?: boolean
+    submissionRemarks?: boolean
     proofNote?: boolean
+    marketingType?: boolean
+    creativeType?: boolean
+    platform?: boolean
+    sbu?: boolean
+    assetCode?: boolean
+    taskCode?: boolean
+    workloadPercent?: boolean
+    isManualWorkload?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
+    assignedAt?: boolean
+    officialDeadline?: boolean
+    warningDeadline?: boolean
+    criticalDeadline?: boolean
+    referenceLink?: boolean
+    driveLink?: boolean
+    finalOutputLink?: boolean
+    remarks?: boolean
+    commentsJson?: boolean
+    activityJson?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     milestone?: boolean | Task$milestoneArgs<ExtArgs>
@@ -7410,12 +7646,40 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     status?: boolean
+    workflowState?: boolean
+    isPaused?: boolean
     priority?: boolean
     assigneeId?: boolean
+    assignedByName?: boolean
     dueDate?: boolean
+    dueTime?: boolean
+    completedAt?: boolean
     order?: boolean
     payout?: boolean
+    payoutStatus?: boolean
+    reviewFeedback?: boolean
+    submissionRemarks?: boolean
     proofNote?: boolean
+    marketingType?: boolean
+    creativeType?: boolean
+    platform?: boolean
+    sbu?: boolean
+    assetCode?: boolean
+    taskCode?: boolean
+    workloadPercent?: boolean
+    isManualWorkload?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
+    assignedAt?: boolean
+    officialDeadline?: boolean
+    warningDeadline?: boolean
+    criticalDeadline?: boolean
+    referenceLink?: boolean
+    driveLink?: boolean
+    finalOutputLink?: boolean
+    remarks?: boolean
+    commentsJson?: boolean
+    activityJson?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     milestone?: boolean | Task$milestoneArgs<ExtArgs>
@@ -7429,12 +7693,40 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     status?: boolean
+    workflowState?: boolean
+    isPaused?: boolean
     priority?: boolean
     assigneeId?: boolean
+    assignedByName?: boolean
     dueDate?: boolean
+    dueTime?: boolean
+    completedAt?: boolean
     order?: boolean
     payout?: boolean
+    payoutStatus?: boolean
+    reviewFeedback?: boolean
+    submissionRemarks?: boolean
     proofNote?: boolean
+    marketingType?: boolean
+    creativeType?: boolean
+    platform?: boolean
+    sbu?: boolean
+    assetCode?: boolean
+    taskCode?: boolean
+    workloadPercent?: boolean
+    isManualWorkload?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
+    assignedAt?: boolean
+    officialDeadline?: boolean
+    warningDeadline?: boolean
+    criticalDeadline?: boolean
+    referenceLink?: boolean
+    driveLink?: boolean
+    finalOutputLink?: boolean
+    remarks?: boolean
+    commentsJson?: boolean
+    activityJson?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     milestone?: boolean | Task$milestoneArgs<ExtArgs>
@@ -7448,16 +7740,44 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     status?: boolean
+    workflowState?: boolean
+    isPaused?: boolean
     priority?: boolean
     assigneeId?: boolean
+    assignedByName?: boolean
     dueDate?: boolean
+    dueTime?: boolean
+    completedAt?: boolean
     order?: boolean
     payout?: boolean
+    payoutStatus?: boolean
+    reviewFeedback?: boolean
+    submissionRemarks?: boolean
     proofNote?: boolean
+    marketingType?: boolean
+    creativeType?: boolean
+    platform?: boolean
+    sbu?: boolean
+    assetCode?: boolean
+    taskCode?: boolean
+    workloadPercent?: boolean
+    isManualWorkload?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
+    assignedAt?: boolean
+    officialDeadline?: boolean
+    warningDeadline?: boolean
+    criticalDeadline?: boolean
+    referenceLink?: boolean
+    driveLink?: boolean
+    finalOutputLink?: boolean
+    remarks?: boolean
+    commentsJson?: boolean
+    activityJson?: boolean
     createdAt?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "milestoneId" | "title" | "description" | "status" | "priority" | "assigneeId" | "dueDate" | "order" | "payout" | "proofNote" | "createdAt", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "milestoneId" | "title" | "description" | "status" | "workflowState" | "isPaused" | "priority" | "assigneeId" | "assignedByName" | "dueDate" | "dueTime" | "completedAt" | "order" | "payout" | "payoutStatus" | "reviewFeedback" | "submissionRemarks" | "proofNote" | "marketingType" | "creativeType" | "platform" | "sbu" | "assetCode" | "taskCode" | "workloadPercent" | "isManualWorkload" | "estimatedHours" | "actualHours" | "assignedAt" | "officialDeadline" | "warningDeadline" | "criticalDeadline" | "referenceLink" | "driveLink" | "finalOutputLink" | "remarks" | "commentsJson" | "activityJson" | "createdAt", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     milestone?: boolean | Task$milestoneArgs<ExtArgs>
@@ -7491,12 +7811,40 @@ export namespace Prisma {
       title: string
       description: string
       status: string
+      workflowState: string | null
+      isPaused: boolean
       priority: string
       assigneeId: string | null
+      assignedByName: string | null
       dueDate: string | null
+      dueTime: string | null
+      completedAt: string | null
       order: number
       payout: number
+      payoutStatus: string | null
+      reviewFeedback: string | null
+      submissionRemarks: string | null
       proofNote: string | null
+      marketingType: string | null
+      creativeType: string | null
+      platform: string | null
+      sbu: string | null
+      assetCode: string | null
+      taskCode: string | null
+      workloadPercent: number | null
+      isManualWorkload: boolean
+      estimatedHours: number | null
+      actualHours: number | null
+      assignedAt: string | null
+      officialDeadline: string | null
+      warningDeadline: string | null
+      criticalDeadline: string | null
+      referenceLink: string | null
+      driveLink: string | null
+      finalOutputLink: string | null
+      remarks: string | null
+      commentsJson: string | null
+      activityJson: string | null
       createdAt: Date
     }, ExtArgs["result"]["task"]>
     composites: {}
@@ -7931,12 +8279,40 @@ export namespace Prisma {
     readonly title: FieldRef<"Task", 'String'>
     readonly description: FieldRef<"Task", 'String'>
     readonly status: FieldRef<"Task", 'String'>
+    readonly workflowState: FieldRef<"Task", 'String'>
+    readonly isPaused: FieldRef<"Task", 'Boolean'>
     readonly priority: FieldRef<"Task", 'String'>
     readonly assigneeId: FieldRef<"Task", 'String'>
+    readonly assignedByName: FieldRef<"Task", 'String'>
     readonly dueDate: FieldRef<"Task", 'String'>
+    readonly dueTime: FieldRef<"Task", 'String'>
+    readonly completedAt: FieldRef<"Task", 'String'>
     readonly order: FieldRef<"Task", 'Int'>
     readonly payout: FieldRef<"Task", 'Float'>
+    readonly payoutStatus: FieldRef<"Task", 'String'>
+    readonly reviewFeedback: FieldRef<"Task", 'String'>
+    readonly submissionRemarks: FieldRef<"Task", 'String'>
     readonly proofNote: FieldRef<"Task", 'String'>
+    readonly marketingType: FieldRef<"Task", 'String'>
+    readonly creativeType: FieldRef<"Task", 'String'>
+    readonly platform: FieldRef<"Task", 'String'>
+    readonly sbu: FieldRef<"Task", 'String'>
+    readonly assetCode: FieldRef<"Task", 'String'>
+    readonly taskCode: FieldRef<"Task", 'String'>
+    readonly workloadPercent: FieldRef<"Task", 'Float'>
+    readonly isManualWorkload: FieldRef<"Task", 'Boolean'>
+    readonly estimatedHours: FieldRef<"Task", 'Float'>
+    readonly actualHours: FieldRef<"Task", 'Float'>
+    readonly assignedAt: FieldRef<"Task", 'String'>
+    readonly officialDeadline: FieldRef<"Task", 'String'>
+    readonly warningDeadline: FieldRef<"Task", 'String'>
+    readonly criticalDeadline: FieldRef<"Task", 'String'>
+    readonly referenceLink: FieldRef<"Task", 'String'>
+    readonly driveLink: FieldRef<"Task", 'String'>
+    readonly finalOutputLink: FieldRef<"Task", 'String'>
+    readonly remarks: FieldRef<"Task", 'String'>
+    readonly commentsJson: FieldRef<"Task", 'String'>
+    readonly activityJson: FieldRef<"Task", 'String'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
   }
     
@@ -19561,12 +19937,40 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     status: 'status',
+    workflowState: 'workflowState',
+    isPaused: 'isPaused',
     priority: 'priority',
     assigneeId: 'assigneeId',
+    assignedByName: 'assignedByName',
     dueDate: 'dueDate',
+    dueTime: 'dueTime',
+    completedAt: 'completedAt',
     order: 'order',
     payout: 'payout',
+    payoutStatus: 'payoutStatus',
+    reviewFeedback: 'reviewFeedback',
+    submissionRemarks: 'submissionRemarks',
     proofNote: 'proofNote',
+    marketingType: 'marketingType',
+    creativeType: 'creativeType',
+    platform: 'platform',
+    sbu: 'sbu',
+    assetCode: 'assetCode',
+    taskCode: 'taskCode',
+    workloadPercent: 'workloadPercent',
+    isManualWorkload: 'isManualWorkload',
+    estimatedHours: 'estimatedHours',
+    actualHours: 'actualHours',
+    assignedAt: 'assignedAt',
+    officialDeadline: 'officialDeadline',
+    warningDeadline: 'warningDeadline',
+    criticalDeadline: 'criticalDeadline',
+    referenceLink: 'referenceLink',
+    driveLink: 'driveLink',
+    finalOutputLink: 'finalOutputLink',
+    remarks: 'remarks',
+    commentsJson: 'commentsJson',
+    activityJson: 'activityJson',
     createdAt: 'createdAt'
   };
 
@@ -20129,12 +20533,40 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     description?: StringFilter<"Task"> | string
     status?: StringFilter<"Task"> | string
+    workflowState?: StringNullableFilter<"Task"> | string | null
+    isPaused?: BoolFilter<"Task"> | boolean
     priority?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    assignedByName?: StringNullableFilter<"Task"> | string | null
     dueDate?: StringNullableFilter<"Task"> | string | null
+    dueTime?: StringNullableFilter<"Task"> | string | null
+    completedAt?: StringNullableFilter<"Task"> | string | null
     order?: IntFilter<"Task"> | number
     payout?: FloatFilter<"Task"> | number
+    payoutStatus?: StringNullableFilter<"Task"> | string | null
+    reviewFeedback?: StringNullableFilter<"Task"> | string | null
+    submissionRemarks?: StringNullableFilter<"Task"> | string | null
     proofNote?: StringNullableFilter<"Task"> | string | null
+    marketingType?: StringNullableFilter<"Task"> | string | null
+    creativeType?: StringNullableFilter<"Task"> | string | null
+    platform?: StringNullableFilter<"Task"> | string | null
+    sbu?: StringNullableFilter<"Task"> | string | null
+    assetCode?: StringNullableFilter<"Task"> | string | null
+    taskCode?: StringNullableFilter<"Task"> | string | null
+    workloadPercent?: FloatNullableFilter<"Task"> | number | null
+    isManualWorkload?: BoolFilter<"Task"> | boolean
+    estimatedHours?: FloatNullableFilter<"Task"> | number | null
+    actualHours?: FloatNullableFilter<"Task"> | number | null
+    assignedAt?: StringNullableFilter<"Task"> | string | null
+    officialDeadline?: StringNullableFilter<"Task"> | string | null
+    warningDeadline?: StringNullableFilter<"Task"> | string | null
+    criticalDeadline?: StringNullableFilter<"Task"> | string | null
+    referenceLink?: StringNullableFilter<"Task"> | string | null
+    driveLink?: StringNullableFilter<"Task"> | string | null
+    finalOutputLink?: StringNullableFilter<"Task"> | string | null
+    remarks?: StringNullableFilter<"Task"> | string | null
+    commentsJson?: StringNullableFilter<"Task"> | string | null
+    activityJson?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     milestone?: XOR<MilestoneNullableScalarRelationFilter, MilestoneWhereInput> | null
@@ -20149,12 +20581,40 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    workflowState?: SortOrderInput | SortOrder
+    isPaused?: SortOrder
     priority?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    assignedByName?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
+    dueTime?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     order?: SortOrder
     payout?: SortOrder
+    payoutStatus?: SortOrderInput | SortOrder
+    reviewFeedback?: SortOrderInput | SortOrder
+    submissionRemarks?: SortOrderInput | SortOrder
     proofNote?: SortOrderInput | SortOrder
+    marketingType?: SortOrderInput | SortOrder
+    creativeType?: SortOrderInput | SortOrder
+    platform?: SortOrderInput | SortOrder
+    sbu?: SortOrderInput | SortOrder
+    assetCode?: SortOrderInput | SortOrder
+    taskCode?: SortOrderInput | SortOrder
+    workloadPercent?: SortOrderInput | SortOrder
+    isManualWorkload?: SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
+    actualHours?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    officialDeadline?: SortOrderInput | SortOrder
+    warningDeadline?: SortOrderInput | SortOrder
+    criticalDeadline?: SortOrderInput | SortOrder
+    referenceLink?: SortOrderInput | SortOrder
+    driveLink?: SortOrderInput | SortOrder
+    finalOutputLink?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    commentsJson?: SortOrderInput | SortOrder
+    activityJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
     milestone?: MilestoneOrderByWithRelationInput
@@ -20172,12 +20632,40 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     description?: StringFilter<"Task"> | string
     status?: StringFilter<"Task"> | string
+    workflowState?: StringNullableFilter<"Task"> | string | null
+    isPaused?: BoolFilter<"Task"> | boolean
     priority?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    assignedByName?: StringNullableFilter<"Task"> | string | null
     dueDate?: StringNullableFilter<"Task"> | string | null
+    dueTime?: StringNullableFilter<"Task"> | string | null
+    completedAt?: StringNullableFilter<"Task"> | string | null
     order?: IntFilter<"Task"> | number
     payout?: FloatFilter<"Task"> | number
+    payoutStatus?: StringNullableFilter<"Task"> | string | null
+    reviewFeedback?: StringNullableFilter<"Task"> | string | null
+    submissionRemarks?: StringNullableFilter<"Task"> | string | null
     proofNote?: StringNullableFilter<"Task"> | string | null
+    marketingType?: StringNullableFilter<"Task"> | string | null
+    creativeType?: StringNullableFilter<"Task"> | string | null
+    platform?: StringNullableFilter<"Task"> | string | null
+    sbu?: StringNullableFilter<"Task"> | string | null
+    assetCode?: StringNullableFilter<"Task"> | string | null
+    taskCode?: StringNullableFilter<"Task"> | string | null
+    workloadPercent?: FloatNullableFilter<"Task"> | number | null
+    isManualWorkload?: BoolFilter<"Task"> | boolean
+    estimatedHours?: FloatNullableFilter<"Task"> | number | null
+    actualHours?: FloatNullableFilter<"Task"> | number | null
+    assignedAt?: StringNullableFilter<"Task"> | string | null
+    officialDeadline?: StringNullableFilter<"Task"> | string | null
+    warningDeadline?: StringNullableFilter<"Task"> | string | null
+    criticalDeadline?: StringNullableFilter<"Task"> | string | null
+    referenceLink?: StringNullableFilter<"Task"> | string | null
+    driveLink?: StringNullableFilter<"Task"> | string | null
+    finalOutputLink?: StringNullableFilter<"Task"> | string | null
+    remarks?: StringNullableFilter<"Task"> | string | null
+    commentsJson?: StringNullableFilter<"Task"> | string | null
+    activityJson?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     milestone?: XOR<MilestoneNullableScalarRelationFilter, MilestoneWhereInput> | null
@@ -20192,12 +20680,40 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    workflowState?: SortOrderInput | SortOrder
+    isPaused?: SortOrder
     priority?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    assignedByName?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
+    dueTime?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     order?: SortOrder
     payout?: SortOrder
+    payoutStatus?: SortOrderInput | SortOrder
+    reviewFeedback?: SortOrderInput | SortOrder
+    submissionRemarks?: SortOrderInput | SortOrder
     proofNote?: SortOrderInput | SortOrder
+    marketingType?: SortOrderInput | SortOrder
+    creativeType?: SortOrderInput | SortOrder
+    platform?: SortOrderInput | SortOrder
+    sbu?: SortOrderInput | SortOrder
+    assetCode?: SortOrderInput | SortOrder
+    taskCode?: SortOrderInput | SortOrder
+    workloadPercent?: SortOrderInput | SortOrder
+    isManualWorkload?: SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
+    actualHours?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    officialDeadline?: SortOrderInput | SortOrder
+    warningDeadline?: SortOrderInput | SortOrder
+    criticalDeadline?: SortOrderInput | SortOrder
+    referenceLink?: SortOrderInput | SortOrder
+    driveLink?: SortOrderInput | SortOrder
+    finalOutputLink?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    commentsJson?: SortOrderInput | SortOrder
+    activityJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
@@ -20216,12 +20732,40 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Task"> | string
     description?: StringWithAggregatesFilter<"Task"> | string
     status?: StringWithAggregatesFilter<"Task"> | string
+    workflowState?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    isPaused?: BoolWithAggregatesFilter<"Task"> | boolean
     priority?: StringWithAggregatesFilter<"Task"> | string
     assigneeId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    assignedByName?: StringNullableWithAggregatesFilter<"Task"> | string | null
     dueDate?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    dueTime?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    completedAt?: StringNullableWithAggregatesFilter<"Task"> | string | null
     order?: IntWithAggregatesFilter<"Task"> | number
     payout?: FloatWithAggregatesFilter<"Task"> | number
+    payoutStatus?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    reviewFeedback?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    submissionRemarks?: StringNullableWithAggregatesFilter<"Task"> | string | null
     proofNote?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    marketingType?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    creativeType?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    platform?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    sbu?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    assetCode?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    taskCode?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    workloadPercent?: FloatNullableWithAggregatesFilter<"Task"> | number | null
+    isManualWorkload?: BoolWithAggregatesFilter<"Task"> | boolean
+    estimatedHours?: FloatNullableWithAggregatesFilter<"Task"> | number | null
+    actualHours?: FloatNullableWithAggregatesFilter<"Task"> | number | null
+    assignedAt?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    officialDeadline?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    warningDeadline?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    criticalDeadline?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    referenceLink?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    driveLink?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    finalOutputLink?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    remarks?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    commentsJson?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    activityJson?: StringNullableWithAggregatesFilter<"Task"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
   }
 
@@ -21393,11 +21937,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
     milestone?: MilestoneCreateNestedOneWithoutTasksInput
@@ -21412,12 +21984,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     proofs?: TaskProofUncheckedCreateNestedManyWithoutTaskInput
   }
@@ -21427,11 +22027,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
     milestone?: MilestoneUpdateOneWithoutTasksNestedInput
@@ -21446,12 +22074,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     proofs?: TaskProofUncheckedUpdateManyWithoutTaskNestedInput
   }
@@ -21463,12 +22119,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
   }
 
@@ -21477,11 +22161,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21492,12 +22204,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -22800,6 +23540,17 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type MilestoneNullableScalarRelationFilter = {
     is?: MilestoneWhereInput | null
     isNot?: MilestoneWhereInput | null
@@ -22827,18 +23578,49 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    workflowState?: SortOrder
+    isPaused?: SortOrder
     priority?: SortOrder
     assigneeId?: SortOrder
+    assignedByName?: SortOrder
     dueDate?: SortOrder
+    dueTime?: SortOrder
+    completedAt?: SortOrder
     order?: SortOrder
     payout?: SortOrder
+    payoutStatus?: SortOrder
+    reviewFeedback?: SortOrder
+    submissionRemarks?: SortOrder
     proofNote?: SortOrder
+    marketingType?: SortOrder
+    creativeType?: SortOrder
+    platform?: SortOrder
+    sbu?: SortOrder
+    assetCode?: SortOrder
+    taskCode?: SortOrder
+    workloadPercent?: SortOrder
+    isManualWorkload?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
+    assignedAt?: SortOrder
+    officialDeadline?: SortOrder
+    warningDeadline?: SortOrder
+    criticalDeadline?: SortOrder
+    referenceLink?: SortOrder
+    driveLink?: SortOrder
+    finalOutputLink?: SortOrder
+    remarks?: SortOrder
+    commentsJson?: SortOrder
+    activityJson?: SortOrder
     createdAt?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
     order?: SortOrder
     payout?: SortOrder
+    workloadPercent?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
   }
 
   export type TaskMaxOrderByAggregateInput = {
@@ -22848,12 +23630,40 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    workflowState?: SortOrder
+    isPaused?: SortOrder
     priority?: SortOrder
     assigneeId?: SortOrder
+    assignedByName?: SortOrder
     dueDate?: SortOrder
+    dueTime?: SortOrder
+    completedAt?: SortOrder
     order?: SortOrder
     payout?: SortOrder
+    payoutStatus?: SortOrder
+    reviewFeedback?: SortOrder
+    submissionRemarks?: SortOrder
     proofNote?: SortOrder
+    marketingType?: SortOrder
+    creativeType?: SortOrder
+    platform?: SortOrder
+    sbu?: SortOrder
+    assetCode?: SortOrder
+    taskCode?: SortOrder
+    workloadPercent?: SortOrder
+    isManualWorkload?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
+    assignedAt?: SortOrder
+    officialDeadline?: SortOrder
+    warningDeadline?: SortOrder
+    criticalDeadline?: SortOrder
+    referenceLink?: SortOrder
+    driveLink?: SortOrder
+    finalOutputLink?: SortOrder
+    remarks?: SortOrder
+    commentsJson?: SortOrder
+    activityJson?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -22864,18 +23674,49 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    workflowState?: SortOrder
+    isPaused?: SortOrder
     priority?: SortOrder
     assigneeId?: SortOrder
+    assignedByName?: SortOrder
     dueDate?: SortOrder
+    dueTime?: SortOrder
+    completedAt?: SortOrder
     order?: SortOrder
     payout?: SortOrder
+    payoutStatus?: SortOrder
+    reviewFeedback?: SortOrder
+    submissionRemarks?: SortOrder
     proofNote?: SortOrder
+    marketingType?: SortOrder
+    creativeType?: SortOrder
+    platform?: SortOrder
+    sbu?: SortOrder
+    assetCode?: SortOrder
+    taskCode?: SortOrder
+    workloadPercent?: SortOrder
+    isManualWorkload?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
+    assignedAt?: SortOrder
+    officialDeadline?: SortOrder
+    warningDeadline?: SortOrder
+    criticalDeadline?: SortOrder
+    referenceLink?: SortOrder
+    driveLink?: SortOrder
+    finalOutputLink?: SortOrder
+    remarks?: SortOrder
+    commentsJson?: SortOrder
+    activityJson?: SortOrder
     createdAt?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
     order?: SortOrder
     payout?: SortOrder
+    workloadPercent?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -22892,6 +23733,22 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type TaskScalarRelationFilter = {
@@ -23927,6 +24784,14 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ProjectUpdateOneRequiredWithoutTasksNestedInput = {
     create?: XOR<ProjectCreateWithoutTasksInput, ProjectUncheckedCreateWithoutTasksInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutTasksInput
@@ -24262,6 +25127,17 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[]
@@ -24276,6 +25152,22 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -24370,11 +25262,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
     milestone?: MilestoneCreateNestedOneWithoutTasksInput
@@ -24388,11 +25308,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     proofs?: TaskProofUncheckedCreateNestedManyWithoutTaskInput
   }
@@ -24587,12 +25535,40 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     description?: StringFilter<"Task"> | string
     status?: StringFilter<"Task"> | string
+    workflowState?: StringNullableFilter<"Task"> | string | null
+    isPaused?: BoolFilter<"Task"> | boolean
     priority?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    assignedByName?: StringNullableFilter<"Task"> | string | null
     dueDate?: StringNullableFilter<"Task"> | string | null
+    dueTime?: StringNullableFilter<"Task"> | string | null
+    completedAt?: StringNullableFilter<"Task"> | string | null
     order?: IntFilter<"Task"> | number
     payout?: FloatFilter<"Task"> | number
+    payoutStatus?: StringNullableFilter<"Task"> | string | null
+    reviewFeedback?: StringNullableFilter<"Task"> | string | null
+    submissionRemarks?: StringNullableFilter<"Task"> | string | null
     proofNote?: StringNullableFilter<"Task"> | string | null
+    marketingType?: StringNullableFilter<"Task"> | string | null
+    creativeType?: StringNullableFilter<"Task"> | string | null
+    platform?: StringNullableFilter<"Task"> | string | null
+    sbu?: StringNullableFilter<"Task"> | string | null
+    assetCode?: StringNullableFilter<"Task"> | string | null
+    taskCode?: StringNullableFilter<"Task"> | string | null
+    workloadPercent?: FloatNullableFilter<"Task"> | number | null
+    isManualWorkload?: BoolFilter<"Task"> | boolean
+    estimatedHours?: FloatNullableFilter<"Task"> | number | null
+    actualHours?: FloatNullableFilter<"Task"> | number | null
+    assignedAt?: StringNullableFilter<"Task"> | string | null
+    officialDeadline?: StringNullableFilter<"Task"> | string | null
+    warningDeadline?: StringNullableFilter<"Task"> | string | null
+    criticalDeadline?: StringNullableFilter<"Task"> | string | null
+    referenceLink?: StringNullableFilter<"Task"> | string | null
+    driveLink?: StringNullableFilter<"Task"> | string | null
+    finalOutputLink?: StringNullableFilter<"Task"> | string | null
+    remarks?: StringNullableFilter<"Task"> | string | null
+    commentsJson?: StringNullableFilter<"Task"> | string | null
+    activityJson?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
   }
 
@@ -24805,11 +25781,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     milestone?: MilestoneCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutAssignedTasksInput
@@ -24822,12 +25826,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     proofs?: TaskProofUncheckedCreateNestedManyWithoutTaskInput
   }
@@ -25188,11 +26220,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutAssignedTasksInput
@@ -25205,12 +26265,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     proofs?: TaskProofUncheckedCreateNestedManyWithoutTaskInput
   }
@@ -25583,11 +26671,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
     milestone?: MilestoneCreateNestedOneWithoutTasksInput
@@ -25601,12 +26717,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
   }
 
@@ -25631,11 +26775,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
     milestone?: MilestoneUpdateOneWithoutTasksNestedInput
@@ -25649,12 +26821,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -26195,11 +27395,39 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
   }
 
@@ -26300,11 +27528,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
     milestone?: MilestoneUpdateOneWithoutTasksNestedInput
@@ -26318,11 +27574,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     proofs?: TaskProofUncheckedUpdateManyWithoutTaskNestedInput
   }
@@ -26334,11 +27618,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -26450,12 +27762,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
   }
 
@@ -26505,11 +27845,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     milestone?: MilestoneUpdateOneWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
@@ -26522,12 +27890,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     proofs?: TaskProofUncheckedUpdateManyWithoutTaskNestedInput
   }
@@ -26538,12 +27934,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -26553,12 +27977,40 @@ export namespace Prisma {
     title: string
     description: string
     status?: string
+    workflowState?: string | null
+    isPaused?: boolean
     priority?: string
     assigneeId?: string | null
+    assignedByName?: string | null
     dueDate?: string | null
+    dueTime?: string | null
+    completedAt?: string | null
     order?: number
     payout?: number
+    payoutStatus?: string | null
+    reviewFeedback?: string | null
+    submissionRemarks?: string | null
     proofNote?: string | null
+    marketingType?: string | null
+    creativeType?: string | null
+    platform?: string | null
+    sbu?: string | null
+    assetCode?: string | null
+    taskCode?: string | null
+    workloadPercent?: number | null
+    isManualWorkload?: boolean
+    estimatedHours?: number | null
+    actualHours?: number | null
+    assignedAt?: string | null
+    officialDeadline?: string | null
+    warningDeadline?: string | null
+    criticalDeadline?: string | null
+    referenceLink?: string | null
+    driveLink?: string | null
+    finalOutputLink?: string | null
+    remarks?: string | null
+    commentsJson?: string | null
+    activityJson?: string | null
     createdAt?: Date | string
   }
 
@@ -26567,11 +28019,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
@@ -26584,12 +28064,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     proofs?: TaskProofUncheckedUpdateManyWithoutTaskNestedInput
   }
@@ -26600,12 +28108,40 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    workflowState?: NullableStringFieldUpdateOperationsInput | string | null
+    isPaused?: BoolFieldUpdateOperationsInput | boolean
     priority?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedByName?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    dueTime?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     payout?: FloatFieldUpdateOperationsInput | number
+    payoutStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    submissionRemarks?: NullableStringFieldUpdateOperationsInput | string | null
     proofNote?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingType?: NullableStringFieldUpdateOperationsInput | string | null
+    creativeType?: NullableStringFieldUpdateOperationsInput | string | null
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    sbu?: NullableStringFieldUpdateOperationsInput | string | null
+    assetCode?: NullableStringFieldUpdateOperationsInput | string | null
+    taskCode?: NullableStringFieldUpdateOperationsInput | string | null
+    workloadPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    isManualWorkload?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    assignedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    officialDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    warningDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    criticalDeadline?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceLink?: NullableStringFieldUpdateOperationsInput | string | null
+    driveLink?: NullableStringFieldUpdateOperationsInput | string | null
+    finalOutputLink?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    commentsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    activityJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

@@ -83,6 +83,17 @@ export function CommandPalette() {
         },
       },
       {
+        id: "act-new-task",
+        type: "Action",
+        title: "Create New Task",
+        subtitle: "Open creative workload & deadline task builder",
+        icon: Sparkles,
+        action: () => {
+          router.push("/dashboard/tasks/new");
+          setOpen(false);
+        },
+      },
+      {
         id: "act-tasks",
         type: "Navigation",
         title: "Go to Tasks Kanban",

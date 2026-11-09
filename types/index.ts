@@ -56,8 +56,72 @@ export interface Subtask {
 
 export type PayoutStatus = "pending" | "approved" | "paid";
 
-export type CreativeType = "poster" | "reel" | "video" | "carousel" | "article" | "banner";
-export type CreativePlatform = "instagram" | "youtube" | "linkedin" | "meta" | "website" | "twitter";
+export type CreativeType =
+  | "poster"
+  | "reel"
+  | "video"
+  | "carousel"
+  | "article"
+  | "banner"
+  | "brochure"
+  | "motion"
+  | "thumbnail"
+  | "campaign"
+  | "presentation"
+  | "full-day-shoot"
+  | "half-day-shoot"
+  | "social-creative"
+  | "landing-page"
+  | "reel-script";
+
+export type TaskStage =
+  | "created"
+  | "assigned"
+  | "accepted"
+  | "in-progress"
+  | "in-review"
+  | "approved"
+  | "completed"
+  | "correction-required"
+  | "correction-submitted"
+  | "awaiting-approval"
+  | "cancelled";
+
+export type CreativePlatform =
+  | "instagram"
+  | "youtube"
+  | "linkedin"
+  | "meta"
+  | "website"
+  | "twitter"
+  | "whatsapp"
+  | "print"
+  | "all";
+
+export type MarketingType =
+  | "Digital Marketing"
+  | "Brand Marketing"
+  | "Performance Marketing"
+  | "Content Marketing"
+  | "Event / Offline Marketing"
+  | "Internal Communications"
+  | "PR & Influencer Marketing";
+
+export interface TaskComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  attachmentUrl?: string;
+  createdAt: string;
+}
+
+export interface TaskActivityLog {
+  id: string;
+  actorName: string;
+  action: string;
+  createdAt: string;
+}
 
 export interface TaskProof {
   id: string;
@@ -75,29 +139,47 @@ export interface Task {
   title: string;
   description: string;
   status: TaskStatus;
+  workflowState?: "active" | "paused" | "returned" | "rejected" | "cancelled" | string | null;
+  isPaused?: boolean;
   priority: Priority;
   assigneeId?: string;
+  assignedByName?: string | null;
   dueDate?: string;
+  dueTime?: string;
   createdAt: string;
+  completedAt?: string | null;
   order: number;
   payout: number;
   payoutStatus?: PayoutStatus;
   payoutPaidAt?: string | null;
   payoutTransactionRef?: string | null;
   reviewFeedback?: string | null;
+  submissionRemarks?: string | null;
   proofNote?: string | null;
   proofs: TaskProof[];
   subtasks?: Subtask[];
+  comments?: TaskComment[];
+  commentsJson?: string | null;
+  activityLog?: TaskActivityLog[];
+  activityJson?: string | null;
+  marketingType?: MarketingType | string;
   creativeType?: CreativeType;
   platform?: CreativePlatform;
   sbu?: string;
   assetCode?: string;
   taskCode?: string;
+  workloadPercent?: number;
+  isManualWorkload?: boolean;
   estimatedHours?: number;
   actualHours?: number;
+  assignedAt?: string;
+  officialDeadline?: string;
+  warningDeadline?: string;
+  criticalDeadline?: string;
   referenceLink?: string | null;
   driveLink?: string | null;
   finalOutputLink?: string | null;
+  remarks?: string | null;
 }
 
 export interface CRMNotification {

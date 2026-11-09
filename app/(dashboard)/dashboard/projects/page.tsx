@@ -19,6 +19,7 @@ import { formatDate, initials } from "@/lib/utils";
 import { Project, ProjectStatus, Priority } from "@/types";
 import { Plus, Search, FolderKanban, ArrowUpRight, Users, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { SBU_OPTIONS } from "@/lib/task-workflow";
 import { calculateProjectHealth } from "@/lib/project-health";
 import ProjectScatter from "@/components/project-scatter";
 
@@ -55,7 +56,7 @@ export default function ProjectsPage() {
   const [filter, setFilter] = useState("all");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    name: "", description: "", priority: "medium" as Priority, startDate: "", endDate: "",
+    name: "", description: "", business: "Achariya", priority: "medium" as Priority, startDate: "", endDate: "",
     memberIds: [] as string[], color: "#6366f1",
   });
 
@@ -95,7 +96,7 @@ export default function ProjectsPage() {
     const finalMembers = form.memberIds.includes(user.id) ? form.memberIds : [user.id, ...form.memberIds];
     addProject({
       name: form.name,
-      description: form.description,
+      description: form.description, business: form.business || "Achariya",
       status: "active",
       priority: form.priority,
       startDate: form.startDate || new Date().toISOString().split("T")[0],
@@ -106,7 +107,7 @@ export default function ProjectsPage() {
       color: form.color,
     });
     setOpen(false);
-    setForm({ name: "", description: "", priority: "medium", startDate: "", endDate: "", memberIds: [], color: "#6366f1" });
+    setForm({ name: "", description: "", business: "Achariya", priority: "medium", startDate: "", endDate: "", memberIds: [], color: "#6366f1" });
   }
 
   return (
@@ -128,7 +129,7 @@ export default function ProjectsPage() {
             <div className="space-y-4 mt-4">
               <div>
                 <Label>Project Name</Label>
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Website Redesign" className="mt-1.5" />
+                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Website Redesign" className="mt-1.5" /></div><div><Label>SBU / Business</Label><select value={form.business} onChange={(e) => setForm({ ...form, business: e.target.value })} className="mt-1.5 w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-indigo-500">{SBU_OPTIONS.map((sbu) => (<option key={sbu} value={sbu}>{sbu}</option>))}</select>
               </div>
               <div>
                 <Label>Description</Label>

@@ -75,19 +75,47 @@ model Milestone {
 }
 
 model Task {
-  id          String   @id @default(cuid())
-  projectId   String
-  milestoneId String?
-  title       String
-  description String
-  status      String   @default("todo")
-  priority    String   @default("medium")
-  assigneeId  String?
-  dueDate     String?
-  order       Int      @default(0)
-  payout      Float    @default(0)
-  proofNote   String?
-  createdAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  projectId         String
+  milestoneId       String?
+  title             String
+  description       String
+  status            String   @default("todo")
+  workflowState     String?
+  isPaused          Boolean  @default(false)
+  priority          String   @default("medium")
+  assigneeId        String?
+  assignedByName    String?
+  dueDate           String?
+  dueTime           String?
+  completedAt       String?
+  order             Int      @default(0)
+  payout            Float    @default(0)
+  payoutStatus      String?
+  reviewFeedback    String?
+  submissionRemarks String?
+  proofNote         String?
+  marketingType     String?
+  creativeType      String?
+  platform          String?
+  sbu               String?
+  assetCode         String?
+  taskCode          String?
+  workloadPercent   Float?
+  isManualWorkload  Boolean  @default(false)
+  estimatedHours    Float?
+  actualHours       Float?
+  assignedAt        String?
+  officialDeadline  String?
+  warningDeadline   String?
+  criticalDeadline  String?
+  referenceLink     String?
+  driveLink         String?
+  finalOutputLink   String?
+  remarks           String?
+  commentsJson      String?
+  activityJson      String?
+  createdAt         DateTime @default(now())
 
   project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   milestone Milestone?  @relation(fields: [milestoneId], references: [id], onDelete: SetNull)

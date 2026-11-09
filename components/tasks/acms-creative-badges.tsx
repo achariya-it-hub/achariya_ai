@@ -20,6 +20,8 @@ import {
   Award,
 } from "lucide-react";
 
+export const OFFICE_DAY_HOURS = 8.5; // Mon–Sat, 09:00–17:30
+
 export const platformMeta: Record<
   CreativePlatform,
   { label: string; bg: string; text: string; border: string; icon: React.ReactNode }
@@ -46,7 +48,7 @@ export const platformMeta: Record<
     icon: <Share2 className="h-3 w-3 text-blue-600" />,
   },
   meta: {
-    label: "Meta / FB",
+    label: "Meta / Facebook",
     bg: "bg-indigo-50",
     text: "text-indigo-700",
     border: "border-indigo-200",
@@ -66,41 +68,128 @@ export const platformMeta: Record<
     border: "border-slate-200",
     icon: <Share2 className="h-3 w-3 text-slate-600" />,
   },
+  whatsapp: {
+    label: "WhatsApp",
+    bg: "bg-green-50",
+    text: "text-green-700",
+    border: "border-green-200",
+    icon: <Share2 className="h-3 w-3 text-green-600" />,
+  },
+  print: {
+    label: "Print / Offline",
+    bg: "bg-amber-50",
+    text: "text-amber-700",
+    border: "border-amber-200",
+    icon: <FileText className="h-3 w-3 text-amber-600" />,
+  },
+  all: {
+    label: "Multi-Platform",
+    bg: "bg-violet-50",
+    text: "text-violet-700",
+    border: "border-violet-200",
+    icon: <Layers className="h-3 w-3 text-violet-600" />,
+  },
 };
 
 export const creativeTypeMeta: Record<
   CreativeType,
-  { label: string; bg: string; icon: React.ReactNode }
+  { label: string; bg: string; icon: React.ReactNode; defaultWorkloadPct: number }
 > = {
-  reel: {
-    label: "Reel",
-    bg: "bg-purple-100 text-purple-800",
-    icon: <Film className="h-3 w-3 mr-1" />,
-  },
   poster: {
-    label: "Poster",
+    label: "Poster / Graphic",
     bg: "bg-emerald-100 text-emerald-800",
     icon: <ImageIcon className="h-3 w-3 mr-1" />,
-  },
-  video: {
-    label: "Video",
-    bg: "bg-amber-100 text-amber-800",
-    icon: <Play className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 25,
   },
   carousel: {
     label: "Carousel",
     bg: "bg-blue-100 text-blue-800",
     icon: <Layers className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 40,
   },
-  article: {
-    label: "Article",
-    bg: "bg-rose-100 text-rose-800",
-    icon: <FileText className="h-3 w-3 mr-1" />,
+  reel: {
+    label: "Reel / Short Video",
+    bg: "bg-purple-100 text-purple-800",
+    icon: <Film className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  video: {
+    label: "Video (Long-form)",
+    bg: "bg-amber-100 text-amber-800",
+    icon: <Play className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 100,
   },
   banner: {
-    label: "Banner",
+    label: "Web / Event Banner",
     bg: "bg-cyan-100 text-cyan-800",
     icon: <ImageIcon className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 25,
+  },
+  article: {
+    label: "Article / Copy / Script",
+    bg: "bg-rose-100 text-rose-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 30,
+  },
+  brochure: {
+    label: "Brochure / Flyer",
+    bg: "bg-teal-100 text-teal-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 75,
+  },
+  motion: {
+    label: "Motion Graphics",
+    bg: "bg-fuchsia-100 text-fuchsia-800",
+    icon: <Sparkles className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 80,
+  },
+  thumbnail: {
+    label: "Thumbnail / Adaptation",
+    bg: "bg-orange-100 text-orange-800",
+    icon: <ImageIcon className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 15,
+  },
+  campaign: {
+    label: "Full Campaign Kit",
+    bg: "bg-indigo-100 text-indigo-800",
+    icon: <Award className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 100,
+  },
+  presentation: {
+    label: "Presentation Content",
+    bg: "bg-lime-100 text-lime-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  "full-day-shoot": {
+    label: "Full Day Shooting",
+    bg: "bg-amber-100 text-amber-800",
+    icon: <Camera className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 100,
+  },
+  "half-day-shoot": {
+    label: "Half Day Shooting",
+    bg: "bg-yellow-100 text-yellow-800",
+    icon: <Camera className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  "social-creative": {
+    label: "Social Media Creative",
+    bg: "bg-pink-100 text-pink-800",
+    icon: <Sparkles className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 30,
+  },
+  "landing-page": {
+    label: "Landing Page",
+    bg: "bg-sky-100 text-sky-800",
+    icon: <Globe className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 80,
+  },
+  "reel-script": {
+    label: "Reel Script",
+    bg: "bg-violet-100 text-violet-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 25,
   },
 };
 

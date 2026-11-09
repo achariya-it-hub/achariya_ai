@@ -1,1452 +1,833 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useCRMStore } from "@/store/crm-store";
 import { useAuth } from "@/components/providers/auth-context";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { initials, formatDate } from "@/lib/utils";
-import { Task, TaskStatus, Priority, TeamMember, Project } from "@/types";
-import { Plus, CheckCircle2, Circle, GripVertical, Filter, Banknote, Paperclip, Link2, Trash2, Upload, Layers, ChevronDown, ChevronUp, Sparkles, LayoutGrid, List, Calendar as CalendarIcon, GanttChart, Users, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { EnhancedProofDialog } from "@/components/tasks/enhanced-proof-dialog";
+import { initials } from "@/lib/utils";
+import { TaskStage } from "@/types";
 import {
-  PlatformBadge,
-  CreativeTypeBadge,
-  calculateACMSMetrics,
-  platformMeta,
-  creativeTypeMeta,
-} from "@/components/tasks/acms-creative-badges";
-import { CreativePlatform, CreativeType } from "@/types";
-import { Clock4, RefreshCw, Award, AlertTriangle } from "lucide-react";
+  SBU_OPTIONS,
+  TASK_STAGE_LIST,
+  getTaskStage,
+  getTaskCode,
+  getTaskDeadlineMetrics,
+  getTaskStatusDisplay,
+  getTaskPriorityDisplay,
+} from "@/lib/task-workflow";
+import {
+  Plus,
+  Search,
+  Filter,
+  List,
+  LayoutGrid,
+  Calendar as CalendarIcon,
+  ExternalLink,
+  ChevronDown,
+  Check,
+  CheckSquare,
+  X,
+} from "lucide-react";
 
-type ViewMode = "kanban" | "table" | "calendar" | "timeline" | "workload";
+type TasksViewMode = "list" | "kanban";
 
-const columns: { status: TaskStatus; label: string; color: string; headerColor: string; chart: string }[] = [
-  { status: "backlog", label: "Backlog", color: "bg-slate-100 border-slate-200", headerColor: "bg-slate-500", chart: "#94a3b8" },
-  { status: "todo", label: "To Do", color: "bg-blue-50/50 border-blue-200", headerColor: "bg-blue-500", chart: "#3b82f6" },
-  { status: "in-progress", label: "In Progress", color: "bg-amber-50/50 border-amber-200", headerColor: "bg-amber-500", chart: "#f59e0b" },
-  { status: "review", label: "Review", color: "bg-purple-50/50 border-purple-200", headerColor: "bg-purple-500", chart: "#8b5cf6" },
-  { status: "done", label: "Done", color: "bg-emerald-50/50 border-emerald-200", headerColor: "bg-emerald-500", chart: "#10b981" },
-];
-
-const priorityBadge: Record<Priority, string> = {
-  urgent: "bg-red-100 text-red-700",
-  high: "bg-orange-100 text-orange-700",
-  medium: "bg-blue-100 text-blue-700",
-  low: "bg-slate-100 text-slate-600",
-};
-
-interface TaskCollageCardProps {
-  tasks: Task[];
-  assignee?: TeamMember;
-  project?: Project;
-  members: TeamMember[];
-  projects: Project[];
-  priorityBadge: Record<Priority, string>;
-  handleMove: (task: Task, newStatus: TaskStatus) => void;
-  openProofDialog: (task: Task) => void;
-  columnStatus: TaskStatus;
+interface DropdownOption {
+  value: string;
+  label: string;
 }
 
-function formatTaskTitles(tasks: Task[]): string {
-  const titles = tasks.map((t) => t.title);
-  const dayNums = titles.map((t) => {
-    const m = t.match(/^DAY(\d+)$/i);
-    return m ? parseInt(m[1], 10) : null;
-  });
+function FilterDropdown({
+  value,
+  onChange,
+  options,
+  leftIcon,
+  minMenuWidth = "min-w-[205px]",
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  options: DropdownOption[];
+  leftIcon?: React.ReactNode;
+  minMenuWidth?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  if (dayNums.length > 0 && dayNums.every((n) => n !== null)) {
-    const nums = dayNums as number[];
-    const min = Math.min(...nums);
-    const max = Math.max(...nums);
-    return `DAY${min} – DAY${max}`;
-  }
+  useEffect(() => {
+    if (!open) return;
+    function handleOutside(e: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [open]);
 
-  if (titles.length <= 3) return titles.join(", ");
-  return `${titles.slice(0, 2).join(", ")} (+${titles.length - 2} more)`;
-}
-
-function TaskCollageCard({
-  tasks,
-  assignee,
-  project,
-  members,
-  projects,
-  priorityBadge,
-  handleMove,
-  openProofDialog,
-  columnStatus,
-}: TaskCollageCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isClickExpanded, setIsClickExpanded] = useState(false);
-
-  const isExpanded = isHovered || isClickExpanded;
-
-  const priorities: Priority[] = ["urgent", "high", "medium", "low"];
-  const highestPriority = priorities.find((p) => tasks.some((t) => t.priority === p)) || "medium";
-
-  const totalPayout = tasks.reduce((sum, t) => sum + (t.payout || 0), 0);
-  const totalProofs = tasks.reduce((sum, t) => sum + (t.proofs?.length || 0), 0);
-  const titleRange = formatTaskTitles(tasks);
+  const activeOption = options.find((o) => o.value === value) || options[0];
+  const isFiltered = value !== "all";
 
   return (
-    <div
-      className="relative group transition-all duration-300 my-2"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {!isExpanded ? (
-        /* Collapsed Collage Stack View */
-        <motion.div
-          layout
-          initial={{ opacity: 0.9, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={() => setIsClickExpanded(true)}
-          className="relative cursor-pointer transition-all duration-300"
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        className={`h-9 rounded-xl border px-3 text-xs font-semibold outline-none transition-all inline-flex items-center justify-between gap-2.5 cursor-pointer shadow-2xs ${
+          isFiltered
+            ? "border-indigo-300 bg-indigo-50/80 text-indigo-800"
+            : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-slate-900"
+        } ${leftIcon ? "pl-2.5" : ""}`}
+      >
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+          {leftIcon}
+          <span>{activeOption?.label}</span>
+        </span>
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform ${
+            isFiltered ? "text-indigo-500" : "text-slate-400"
+          } ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div
+          className={`absolute left-0 top-full mt-1.5 z-50 ${minMenuWidth} max-h-[380px] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white py-1.5 shadow-2xl shadow-slate-900/10`}
         >
-          <div className="absolute inset-x-2 -bottom-2 h-full rounded-xl bg-indigo-100/60 border border-indigo-200 shadow-xs pointer-events-none transform translate-y-1 scale-[0.94]" />
-          <div className="absolute inset-x-1 -bottom-1 h-full rounded-xl bg-indigo-50/80 border border-indigo-200 shadow-xs pointer-events-none transform translate-y-0.5 scale-[0.97]" />
-
-          <div className="relative bg-gradient-to-br from-white via-slate-50/50 to-indigo-50/30 rounded-xl p-3.5 border border-indigo-200/80 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs">
-                  <Layers className="h-2.5 w-2.5" />
-                  {tasks.length} Collaged
-                </span>
-                <Badge className={`text-[10px] ${priorityBadge[highestPriority]}`}>{highestPriority}</Badge>
-              </div>
-              <span className="text-[10px] text-indigo-500 font-semibold group-hover:translate-y-0.5 transition-transform flex items-center gap-0.5">
-                Expand <ChevronDown className="h-3 w-3" />
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 mb-1.5">
-              {assignee && (
-                <Avatar className="h-6 w-6 border border-indigo-100">
-                  <AvatarImage src={assignee.avatar} />
-                  <AvatarFallback className="text-[9px] bg-indigo-50 text-indigo-700">{initials(assignee.name)}</AvatarFallback>
-                </Avatar>
-              )}
-              <div>
-                <p className="text-xs font-bold text-slate-800 leading-tight">{titleRange}</p>
-                <p className="text-[10px] font-medium text-slate-500">{assignee?.name || "Unassigned"} {project ? `· ${project.name}` : ""}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-1 border-t border-slate-100/80 text-[10px] text-slate-400">
-              <span className="flex items-center gap-1 text-indigo-600 font-medium">
-                <Sparkles className="h-2.5 w-2.5 text-indigo-500" />
-                Hover to expand {tasks.length} tasks
-              </span>
-              <div className="flex items-center gap-1.5">
-                {totalPayout > 0 && (
-                  <span className="font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                    ₹{totalPayout.toLocaleString()}
-                  </span>
+          {options.map((opt) => {
+            const selected = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                className={`w-full px-3.5 py-2 text-left text-[13px] flex items-center justify-between gap-3 transition-colors cursor-pointer ${
+                  selected
+                    ? "bg-indigo-50/80 font-semibold text-indigo-900"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <span className="whitespace-nowrap">{opt.label}</span>
+                {selected && (
+                  <Check className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
                 )}
-                {totalProofs > 0 && (
-                  <span className="font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded-full">
-                    📎 {totalProofs}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        /* Expanded Collage List View */
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="rounded-xl border-2 border-indigo-300 bg-indigo-50/40 p-2.5 shadow-lg space-y-2 relative transition-all duration-300"
-        >
-          <div
-            className="flex items-center justify-between px-2 py-1 bg-white/90 rounded-lg border border-indigo-100 cursor-pointer shadow-2xs"
-            onClick={() => setIsClickExpanded(false)}
-          >
-            <div className="flex items-center gap-2">
-              {assignee && (
-                <Avatar className="h-5 w-5">
-                  <AvatarImage src={assignee.avatar} />
-                  <AvatarFallback className="text-[8px]">{initials(assignee.name)}</AvatarFallback>
-                </Avatar>
-              )}
-              <span className="text-xs font-bold text-indigo-950">
-                {assignee?.name || "Collaged Stack"} ({tasks.length} tasks)
-              </span>
-            </div>
-            <button
-              className="text-[10px] text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-0.5"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsClickExpanded(false);
-                setIsHovered(false);
-              }}
-            >
-              Collapse <ChevronUp className="h-3 w-3" />
-            </button>
-          </div>
-
-          <div className="space-y-2 max-h-[380px] overflow-y-auto pr-0.5">
-            {tasks.map((task, idx) => {
-              const taskAssignee = members.find((m) => m.id === task.assigneeId);
-              const taskProject = projects.find((p) => p.id === task.projectId);
-              return (
-                <motion.div
-                  key={task.id}
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.03 }}
-                  className="bg-white rounded-xl p-3 shadow-xs border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all duration-150 cursor-pointer group"
-                  onClick={() =>
-                    handleMove(
-                      task,
-                      columnStatus === "done"
-                        ? "todo"
-                        : columnStatus === "backlog"
-                        ? "todo"
-                        : columnStatus === "todo"
-                        ? "in-progress"
-                        : columnStatus === "in-progress"
-                        ? "review"
-                        : "done"
-                    )
-                  }
-                >
-                  <div className="flex items-start justify-between mb-1.5">
-                    <Badge className={`text-[10px] ${priorityBadge[task.priority]}`}>{task.priority}</Badge>
-                    <GripVertical className="h-3.5 w-3.5 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <p className="text-xs font-semibold text-slate-800 mb-0.5">{task.title}</p>
-                  {taskProject && <p className="text-[10px] text-slate-400 mb-1.5">{taskProject.name}</p>}
-
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-50">
-                    <div className="flex items-center gap-1.5">
-                      {task.dueDate && (
-                        <span className="text-[10px] text-slate-400">
-                          {formatDate(task.dueDate, { month: "short", day: "numeric" })}
-                        </span>
-                      )}
-                      {task.payout > 0 && taskAssignee?.role === "trainee" && (
-                        <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
-                          <Banknote className="h-2.5 w-2.5" />
-                          {task.payout.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {taskAssignee && (
-                        <Avatar className="h-4 w-4">
-                          <AvatarImage src={taskAssignee.avatar} />
-                          <AvatarFallback className="text-[7px]">{initials(taskAssignee.name)}</AvatarFallback>
-                        </Avatar>
-                      )}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openProofDialog(task);
-                        }}
-                        className="rounded-lg p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                        title="Proof & payout"
-                      >
-                        <Paperclip className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 }
 
-function TaskTableView({
-  tasks,
-  projects,
-  members,
-  priorityBadge,
-  handleMove,
-  openProofDialog,
-}: {
-  tasks: Task[];
-  projects: Project[];
-  members: TeamMember[];
-  priorityBadge: Record<Priority, string>;
-  handleMove: (task: Task, newStatus: TaskStatus) => void;
-  openProofDialog: (task: Task) => void;
-}) {
-  const [search, setSearch] = useState("");
+const SBU_PILL_STYLES: Record<string, string> = {
+  Achariya: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+  AGOC: "bg-amber-50 text-amber-800 border-amber-200/80",
+  Miway: "bg-cyan-50 text-cyan-700 border-cyan-200/80",
+  "Q School": "bg-violet-50 text-violet-700 border-violet-200/80",
+  "WIN Real Estate": "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+  WOW: "bg-pink-50 text-pink-700 border-pink-200/80",
+};
 
-  const filtered = tasks.filter(
-    (t) =>
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.description.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <Card className="border-0 shadow-md bg-white overflow-hidden">
-      <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search tasks by title..."
-            className="pl-9 bg-white text-xs h-9"
-          />
-        </div>
-        <div className="text-xs text-slate-500 font-medium">
-          Showing <span className="font-bold text-slate-800">{filtered.length}</span> tasks
-        </div>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
-            <tr>
-              <th className="px-4 py-3">Task Title</th>
-              <th className="px-4 py-3">Project</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Assignee</th>
-              <th className="px-4 py-3">Priority</th>
-              <th className="px-4 py-3">Due Date</th>
-              <th className="px-4 py-3 text-right">Payout</th>
-              <th className="px-4 py-3 text-center">Proofs</th>
-              <th className="px-4 py-3 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filtered.map((task) => {
-              const project = projects.find((p) => p.id === task.projectId);
-              const assignee = members.find((m) => m.id === task.assigneeId);
-              return (
-                <tr key={task.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                      {task.assetCode && (
-                        <span className="text-[9px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded border border-slate-200">
-                          {task.assetCode}
-                        </span>
-                      )}
-                      <PlatformBadge platform={task.platform} />
-                      <CreativeTypeBadge type={task.creativeType} />
-                      {task.reviewFeedback && task.status !== "done" && (
-                        <span className="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded border border-amber-200">
-                          ⚠️ Needs Correction
-                        </span>
-                      )}
-                    </div>
-                    <p className="font-semibold text-slate-800">{task.title}</p>
-                    {task.description && (
-                      <p className="text-[10px] text-slate-400 line-clamp-1">{task.description}</p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {project ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700">
-                        {project.name}
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Select value={task.status} onValueChange={(v) => handleMove(task, v as TaskStatus)}>
-                      <SelectTrigger className="h-7 text-[11px] w-28 bg-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="backlog">Backlog</SelectItem>
-                        <SelectItem value="todo">To Do</SelectItem>
-                        <SelectItem value="in-progress">In Progress</SelectItem>
-                        <SelectItem value="review">Review</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="px-4 py-3">
-                    {assignee ? (
-                      <div className="flex items-center gap-1.5">
-                        <Avatar className="h-5 w-5">
-                          <AvatarImage src={assignee.avatar} />
-                          <AvatarFallback className="text-[8px]">{initials(assignee.name)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-slate-700">{assignee.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-slate-400 italic">Unassigned</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge className={`text-[10px] ${priorityBadge[task.priority]}`}>{task.priority}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {task.dueDate ? formatDate(task.dueDate, { month: "short", day: "numeric", year: "numeric" }) : "-"}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold text-emerald-600">
-                    {task.payout > 0 && assignee?.role === "trainee" ? `₹${task.payout.toLocaleString()}` : "-"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {task.proofs?.length > 0 ? (
-                      <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 text-[10px]">
-                        📎 {task.proofs.length}
-                      </Badge>
-                    ) : (
-                      <span className="text-slate-300">-</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 text-xs text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50"
-                      onClick={() => openProofDialog(task)}
-                    >
-                      Proof & Payout
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-}
-
-function TaskCalendarView({
-  tasks,
-  projects,
-  members,
-  openProofDialog,
-}: {
-  tasks: Task[];
-  projects: Project[];
-  members: TeamMember[];
-  openProofDialog: (task: Task) => void;
-}) {
-  const [currentDate, setCurrentDate] = useState(new Date("2025-07-01"));
-
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
-
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
-  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
-
-  const tasksByDate = new Map<string, Task[]>();
-  for (const t of tasks) {
-    if (t.dueDate) {
-      const dStr = t.dueDate.slice(0, 10);
-      if (!tasksByDate.has(dStr)) tasksByDate.set(dStr, []);
-      tasksByDate.get(dStr)!.push(t);
-    }
-  }
-
-  const daysGrid = [];
-  for (let i = 0; i < firstDayOfWeek; i++) {
-    daysGrid.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    daysGrid.push(day);
-  }
-
-  return (
-    <Card className="border-0 shadow-md bg-white p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-800">
-          {monthNames[month]} {year}
-        </h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={prevMonth} className="h-8 px-2 text-slate-600">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date("2025-07-01"))} className="h-8 text-xs">
-            Tasks Date View
-          </Button>
-          <Button variant="outline" size="sm" onClick={nextMonth} className="h-8 px-2 text-slate-600">
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-7 gap-px bg-slate-200 rounded-xl overflow-hidden text-xs">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="bg-slate-50 p-2 font-semibold text-center text-slate-600">
-            {day}
-          </div>
-        ))}
-        {daysGrid.map((day, idx) => {
-          if (!day) {
-            return <div key={`empty-${idx}`} className="bg-slate-50/50 min-h-[90px]" />;
-          }
-
-          const mStr = String(month + 1).padStart(2, "0");
-          const dStr = String(day).padStart(2, "0");
-          const fullDateStr = `${year}-${mStr}-${dStr}`;
-
-          const dayTasks = tasksByDate.get(fullDateStr) || [];
-
-          return (
-            <div key={day} className="bg-white min-h-[90px] p-1.5 flex flex-col justify-start hover:bg-indigo-50/20 transition-colors">
-              <span className="font-semibold text-slate-700 text-[11px] mb-1">{day}</span>
-              <div className="space-y-1 overflow-y-auto max-h-[70px]">
-                {dayTasks.map((t) => {
-                  const assignee = members.find((m) => m.id === t.assigneeId);
-                  return (
-                    <div
-                      key={t.id}
-                      onClick={() => openProofDialog(t)}
-                      className="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 rounded px-1.5 py-0.5 text-[10px] cursor-pointer truncate flex items-center justify-between"
-                      title={`${t.title} (${assignee?.name || "Unassigned"})`}
-                    >
-                      <span className="truncate font-medium">{t.title}</span>
-                      {assignee && (
-                        <span className="text-[8px] bg-white text-indigo-700 font-bold px-1 rounded ml-1">
-                          {initials(assignee.name)}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Card>
-  );
-}
-
-function TaskTimelineView({
-  tasks,
-  projects,
-  members,
-  priorityBadge,
-  openProofDialog,
-}: {
-  tasks: Task[];
-  projects: Project[];
-  members: TeamMember[];
-  priorityBadge: Record<Priority, string>;
-  openProofDialog: (task: Task) => void;
-}) {
-  return (
-    <Card className="border-0 shadow-md bg-white p-5 space-y-6">
-      <div>
-        <h2 className="text-lg font-bold text-slate-800">Project Tasks Timeline</h2>
-        <p className="text-xs text-slate-500">Visual schedule and status across project timelines</p>
-      </div>
-
-      <div className="space-y-6">
-        {projects.map((proj) => {
-          const projTasks = tasks.filter((t) => t.projectId === proj.id);
-          if (projTasks.length === 0) return null;
-
-          return (
-            <div key={proj.id} className="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: proj.color || "#6366f1" }} />
-                  <h3 className="font-semibold text-slate-800 text-sm">{proj.name}</h3>
-                  <Badge variant="outline" className="text-[10px]">{projTasks.length} tasks</Badge>
-                </div>
-                <span className="text-xs text-slate-400">{proj.startDate} to {proj.endDate}</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                {projTasks.map((t) => {
-                  const assignee = members.find((m) => m.id === t.assigneeId);
-                  return (
-                    <div
-                      key={t.id}
-                      onClick={() => openProofDialog(t)}
-                      className="bg-white p-3 rounded-lg border border-slate-200 hover:border-indigo-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <Badge className={`text-[9px] ${priorityBadge[t.priority]}`}>{t.priority}</Badge>
-                        <span className="text-[10px] font-bold uppercase text-slate-400">{t.status}</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-800">{t.title}</p>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span>Due: {t.dueDate || "No date"}</span>
-                        {assignee && (
-                          <div className="flex items-center gap-1">
-                            <Avatar className="h-4 w-4">
-                              <AvatarImage src={assignee.avatar} />
-                              <AvatarFallback className="text-[7px]">{initials(assignee.name)}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-slate-600 font-medium">{assignee.name}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Card>
-  );
-}
-
-function TaskWorkloadView({
-  tasks,
-  members,
-  openProofDialog,
-}: {
-  tasks: Task[];
-  members: TeamMember[];
-  openProofDialog: (task: Task) => void;
-}) {
-  return (
-    <Card className="border-0 shadow-md bg-white p-5 space-y-6">
-      <div>
-        <h2 className="text-lg font-bold text-slate-800">Team Member Workload Matrix</h2>
-        <p className="text-xs text-slate-500">Task distribution, status breakdown and payouts by team member</p>
-      </div>
-
-      <div className="space-y-4 divide-y divide-slate-100">
-        {members.map((member) => {
-          const memberTasks = tasks.filter((t) => t.assigneeId === member.id);
-          const doneTasks = memberTasks.filter((t) => t.status === "done");
-          const inProgTasks = memberTasks.filter((t) => t.status === "in-progress" || t.status === "review");
-          const totalEarned = member.role === "trainee" ? memberTasks.reduce((sum, t) => sum + (t.payout || 0), 0) : 0;
-          const activeCount = inProgTasks.length + memberTasks.filter((t) => t.status === "todo").length;
-          const capacityStatus =
-            activeCount === 0
-              ? { label: "Available", color: "bg-emerald-100 text-emerald-800 border-emerald-200" }
-              : activeCount <= 4
-              ? { label: "Optimal Capacity", color: "bg-blue-100 text-blue-800 border-blue-200" }
-              : activeCount <= 7
-              ? { label: "Heavy Load", color: "bg-amber-100 text-amber-800 border-amber-200" }
-              : { label: "Overloaded", color: "bg-rose-100 text-rose-800 border-rose-200" };
-
-          return (
-            <div key={member.id} className="pt-4 first:pt-0 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={member.avatar} />
-                    <AvatarFallback className="text-xs">{initials(member.name)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-800 text-sm">{member.name}</h3>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border ${capacityStatus.color}`}>
-                        {capacityStatus.label}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-400">{member.title} · {member.department} ({member.role})</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 text-xs">
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-400">Total Tasks</p>
-                    <p className="font-bold text-slate-800">{memberTasks.length}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-400">Done</p>
-                    <p className="font-bold text-emerald-600">{doneTasks.length}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-400">In Progress</p>
-                    <p className="font-bold text-amber-600">{inProgTasks.length}</p>
-                  </div>
-                  {member.role === "trainee" && (
-                    <div className="text-center">
-                      <p className="text-[10px] text-slate-400">Trainee Payout</p>
-                      <p className="font-bold text-indigo-600">₹{totalEarned.toLocaleString()}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                {memberTasks.slice(0, 8).map((t) => (
-                  <div
-                    key={t.id}
-                    onClick={() => openProofDialog(t)}
-                    className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/80 hover:bg-white hover:border-indigo-200 transition-all cursor-pointer text-xs space-y-1 shadow-2xs"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-slate-800 truncate">{t.title}</span>
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                        t.status === "done" ? "bg-emerald-100 text-emerald-800" :
-                        t.status === "in-progress" ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"
-                      }`}>{t.status}</span>
-                    </div>
-                    {t.payout > 0 && <p className="text-[10px] text-emerald-600 font-semibold">₹{t.payout}</p>}
-                  </div>
-                ))}
-                {memberTasks.length > 8 && (
-                  <div className="flex items-center justify-center p-2 rounded-lg bg-indigo-50/50 text-indigo-600 font-semibold text-xs border border-indigo-100">
-                    +{memberTasks.length - 8} more tasks
-                  </div>
-                )}
-                {memberTasks.length === 0 && (
-                  <p className="text-xs text-slate-400 italic">No assigned tasks</p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Card>
-  );
-}
+const kanbanColumns: {
+  id: string;
+  label: string;
+  stages: TaskStage[];
+  headerBg: string;
+  bodyBg: string;
+}[] = [
+  {
+    id: "assigned",
+    label: "Created / Assigned",
+    stages: ["created", "assigned"],
+    headerBg: "bg-gradient-to-r from-[#1A3A5C] to-slate-700",
+    bodyBg: "bg-slate-50/70 border-slate-200/80",
+  },
+  {
+    id: "in-progress",
+    label: "Accepted / In Progress",
+    stages: ["accepted", "in-progress"],
+    headerBg: "bg-gradient-to-r from-indigo-500 to-blue-600",
+    bodyBg: "bg-indigo-50/30 border-indigo-200/70",
+  },
+  {
+    id: "corrections",
+    label: "Correction Required",
+    stages: ["correction-required"],
+    headerBg: "bg-gradient-to-r from-pink-500 to-rose-600",
+    bodyBg: "bg-rose-50/30 border-rose-200/70",
+  },
+  {
+    id: "review",
+    label: "In Review / Approval",
+    stages: ["in-review", "correction-submitted", "awaiting-approval"],
+    headerBg: "bg-gradient-to-r from-violet-500 to-purple-600",
+    bodyBg: "bg-violet-50/30 border-violet-200/70",
+  },
+  {
+    id: "completed",
+    label: "Approved / Completed",
+    stages: ["approved", "completed"],
+    headerBg: "bg-gradient-to-r from-emerald-500 to-teal-600",
+    bodyBg: "bg-emerald-50/30 border-emerald-200/70",
+  },
+];
 
 export default function TasksPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const tasks = useCRMStore((s) => s.tasks);
   const projects = useCRMStore((s) => s.projects);
   const members = useCRMStore((s) => s.members);
-  const updateTask = useCRMStore((s) => s.updateTask);
-  const addTask = useCRMStore((s) => s.addTask);
-  const addTaskProof = useCRMStore((s) => s.addTaskProof);
-  const removeTaskProof = useCRMStore((s) => s.removeTaskProof);
   const load = useCRMStore((s) => s.load);
-  useEffect(() => { load(); }, [load]);
 
-  const [open, setOpen] = useState(false);
-  const [filterProject, setFilterProject] = useState("all");
-  const [filterAssignee, setFilterAssignee] = useState("all");
-  const [filterPlatform, setFilterPlatform] = useState("all");
-  const [filterCreativeType, setFilterCreativeType] = useState("all");
-  const [filterNeedsCorrection, setFilterNeedsCorrection] = useState(false);
-  const [filterOverdue, setFilterOverdue] = useState(false);
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  // Sync filters from URL search params (e.g. ?assignee=me or ?overdue=true from Dashboard cards)
+  const [viewMode, setViewMode] = useState<TasksViewMode>("list");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [dueFilter, setDueFilter] = useState("all");
+  const [sbuFilter, setSbuFilter] = useState("all");
+  const [assigneeFilter, setAssigneeFilter] = useState("all");
+  const [dateRangeFilter, setDateRangeFilter] = useState("all");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const assigneeParam = params.get("assignee");
       if (assigneeParam === "me" && user?.id) {
-        setFilterAssignee(user.id);
+        setAssigneeFilter(user.id);
       } else if (assigneeParam) {
-        setFilterAssignee(assigneeParam);
+        setAssigneeFilter(assigneeParam);
       }
       if (params.get("overdue") === "true") {
-        setFilterOverdue(true);
+        setDueFilter("overdue");
       }
-      if (params.get("project")) {
-        setFilterProject(params.get("project")!);
+      const stageOrStatus = params.get("stage") || params.get("status");
+      if (stageOrStatus) {
+        if (stageOrStatus === "review") {
+          setStatusFilter("awaiting-approval");
+        } else if (stageOrStatus === "done") {
+          setStatusFilter("completed");
+        } else {
+          setStatusFilter(stageOrStatus);
+        }
+      }
+      if (params.get("priority")) {
+        setPriorityFilter(params.get("priority")!);
+      }
+      if (params.get("sbu")) {
+        setSbuFilter(params.get("sbu")!);
       }
     }
   }, [user?.id]);
-  const [viewMode, setViewMode] = useState<ViewMode>("kanban");
-  const [isCollagedView, setIsCollagedView] = useState(true);
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    projectId: "",
-    priority: "medium" as Priority,
-    assigneeId: "",
-    dueDate: "",
-    payout: 0,
-    platform: "" as CreativePlatform | "",
-    creativeType: "" as CreativeType | "",
-    sbu: "",
-  });
-  const [proofTask, setProofTask] = useState<Task | null>(null);
-  const [proofUrl, setProofUrl] = useState("");
-  const [proofNote, setProofNote] = useState("");
-  const [payoutDraft, setPayoutDraft] = useState(0);
-  const [saveMsg, setSaveMsg] = useState("");
 
   const role = user?.role || "trainee";
   const isElevated = role === "admin" || role === "manager";
-  const isAdmin = role === "admin";
 
-  // Engaged projects for the user
-  const engagedProjects = projects.filter((p) => isElevated || p.memberIds.includes(user?.id || "") || p.ownerId === user?.id);
-  const engagedProjectIds = engagedProjects.map((p) => p.id);
+  const engagedProjects = useMemo(
+    () =>
+      projects.filter(
+        (p) =>
+          isElevated ||
+          p.memberIds.includes(user?.id || "") ||
+          p.ownerId === user?.id
+      ),
+    [projects, isElevated, user?.id]
+  );
 
-  // Role-isolated tasks
-  const userAllowedTasks = tasks.filter((t) => {
-    if (isElevated) return true;
-    // Trainees & Members: Only tasks assigned to them or in engaged projects
-    return t.assigneeId === user?.id || engagedProjectIds.includes(t.projectId);
-  });
+  const engagedProjectIds = useMemo(
+    () => new Set(engagedProjects.map((p) => p.id)),
+    [engagedProjects]
+  );
 
-  const filtered = userAllowedTasks.filter((t) => {
-    if (filterProject !== "all" && t.projectId !== filterProject) return false;
-    if (filterAssignee !== "all" && t.assigneeId !== filterAssignee) return false;
-    if (filterPlatform !== "all" && t.platform !== filterPlatform) return false;
-    if (filterCreativeType !== "all" && t.creativeType !== filterCreativeType) return false;
-    if (filterNeedsCorrection && (!t.reviewFeedback || t.status === "done")) return false;
-    if (filterOverdue) {
-      const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== "done";
-      if (!isOverdue) return false;
-    }
-    return true;
-  });
-
-  function handleMove(task: Task, newStatus: TaskStatus) {
-    if (task.status === newStatus) return;
-    const taskAssignee = members.find((m) => m.id === task.assigneeId);
-    const isTrainee = taskAssignee?.role === "trainee";
-    const newPayout = isTrainee ? (task.payout || 0) : 0;
-    updateTask(task.id, { status: newStatus, payout: newPayout });
-  }
-
-  function handleCreate() {
-    if (!form.title || !form.projectId || !user?.id) return;
-    addTask({
-      projectId: form.projectId,
-      title: form.title,
-      description: form.description,
-      status: "todo",
-      priority: form.priority,
-      assigneeId: form.assigneeId || undefined,
-      dueDate: form.dueDate || undefined,
-      payout: isAdmin && members.find((m) => m.id === form.assigneeId)?.role === "trainee" ? (Number(form.payout) || 0) : 0,
-      platform: (form.platform as CreativePlatform) || undefined,
-      creativeType: (form.creativeType as CreativeType) || undefined,
-      sbu: form.sbu || undefined,
-      assetCode: `CR-${Date.now().toString().slice(-4)}`,
+  const accessibleTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      if (isElevated) return true;
+      return t.assigneeId === user?.id || engagedProjectIds.has(t.projectId);
     });
-    setOpen(false);
-    setForm({ title: "", description: "", projectId: "", priority: "medium", assigneeId: "", dueDate: "", payout: 0, platform: "", creativeType: "", sbu: "" });
-  }
+  }, [tasks, isElevated, user?.id, engagedProjectIds]);
 
-  function openProofDialog(task: Task) {
-    setProofTask(task);
-    setProofUrl("");
-    setProofNote(task.proofNote || "");
-    setPayoutDraft(task.payout || 0);
-    setSaveMsg("");
-  }
+  const statusOptions: DropdownOption[] = useMemo(
+    () => [
+      { value: "all", label: "All statuses" },
+      ...TASK_STAGE_LIST.map((s) => ({ value: s.value, label: s.label })),
+    ],
+    []
+  );
 
-  async function handleAddProofUrl() {
-    if (!proofTask || !proofUrl.trim()) return;
-    await addTaskProof(proofTask.id, { name: proofUrl.trim().split("/").pop(), url: proofUrl.trim(), type: "link" });
-    setProofUrl("");
-  }
+  const priorityOptions: DropdownOption[] = [
+    { value: "all", label: "All priorities" },
+    { value: "urgent", label: "Critical" },
+    { value: "high", label: "High" },
+    { value: "medium", label: "Medium" },
+    { value: "low", label: "Low" },
+  ];
 
-  async function handleUploadProof(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!proofTask || !e.target.files?.[0]) return;
-    const file = e.target.files[0];
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    if (res.ok) {
-      const data = await res.json();
-      await addTaskProof(proofTask.id, { name: data.name || file.name, url: data.url, type: "upload" });
-    }
-    e.target.value = "";
-  }
+  const dueOptions: DropdownOption[] = [
+    { value: "all", label: "Any due date" },
+    { value: "today", label: "Due Today" },
+    { value: "week", label: "Due This Week" },
+    { value: "overdue", label: "Overdue" },
+  ];
 
-  async function handleSaveProofDetails() {
-    if (!proofTask) return;
-    await updateTask(proofTask.id, { payout: Number(payoutDraft) || 0, proofNote: proofNote || null });
-    setSaveMsg("Saved ✓");
-  }
+  const sbuOptions: DropdownOption[] = useMemo(
+    () => [
+      { value: "all", label: "All SBUs" },
+      ...SBU_OPTIONS.map((sbu) => ({ value: sbu, label: sbu })),
+    ],
+    []
+  );
 
-  const pipelineData = columns.map((col) => ({
-    name: col.label,
-    count: filtered.filter((t) => t.status === col.status).length,
-    color: col.chart,
-  }));
+  const assigneeOptions: DropdownOption[] = useMemo(
+    () => [
+      { value: "all", label: "All assignees" },
+      ...members.map((m) => ({ value: m.id, label: m.name })),
+    ],
+    [members]
+  );
 
-  const acmsMetrics = calculateACMSMetrics(userAllowedTasks);
-  const totalTasks = filtered.length;
-  const doneCount = filtered.filter((t) => t.status === "done").length;
+  const dateRangeOptions: DropdownOption[] = [
+    { value: "all", label: "Last 3 Months" },
+    { value: "90d", label: "Last 90 Days" },
+    { value: "30d", label: "Last 30 Days" },
+    { value: "7d", label: "Last 7 Days" },
+  ];
 
-  type TaskItemOrGroup =
-    | { type: "single"; task: Task }
-    | { type: "group"; key: string; assigneeId?: string; projectId?: string; tasks: Task[] };
+  const filteredTasks = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
 
-  function groupTasks(colTasks: Task[]): TaskItemOrGroup[] {
-    if (!isCollagedView) {
-      return colTasks.map((t) => ({ type: "single", task: t }));
-    }
+    return accessibleTasks
+      .filter((t, idx) => {
+        const code = getTaskCode(t, 2600 - idx);
+        const stage = getTaskStage(t);
+        const metrics = getTaskDeadlineMetrics(t, now);
 
-    const groupsMap = new Map<string, Task[]>();
-    const orderList: string[] = [];
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const match =
+            t.title.toLowerCase().includes(q) ||
+            (t.description || "").toLowerCase().includes(q) ||
+            code.toLowerCase().includes(q) ||
+            (t.sbu || "").toLowerCase().includes(q);
+          if (!match) return false;
+        }
 
-    for (const task of colTasks) {
-      const groupKey = `${task.assigneeId || "unassigned"}_${task.projectId || "none"}`;
-      if (!groupsMap.has(groupKey)) {
-        groupsMap.set(groupKey, []);
-        orderList.push(groupKey);
-      }
-      groupsMap.get(groupKey)!.push(task);
-    }
+        if (statusFilter !== "all") {
+          if (statusFilter === "in-review") {
+            if (
+              stage !== "in-review" &&
+              stage !== "awaiting-approval" &&
+              stage !== "correction-submitted"
+            ) {
+              return false;
+            }
+          } else if (stage !== statusFilter) {
+            return false;
+          }
+        }
 
-    const result: TaskItemOrGroup[] = [];
-    for (const key of orderList) {
-      const groupTasksList = groupsMap.get(key)!;
-      if (groupTasksList.length === 1) {
-        result.push({ type: "single", task: groupTasksList[0] });
-      } else {
-        result.push({
-          type: "group",
-          key,
-          assigneeId: groupTasksList[0].assigneeId || undefined,
-          projectId: groupTasksList[0].projectId || undefined,
-          tasks: groupTasksList,
-        });
-      }
-    }
+        if (priorityFilter !== "all" && t.priority !== priorityFilter) {
+          return false;
+        }
 
-    return result;
-  }
+        if (sbuFilter !== "all") {
+          const proj = projects.find((p) => p.id === t.projectId);
+          const taskSbu = t.sbu || proj?.business || "";
+          if (taskSbu.toLowerCase() !== sbuFilter.toLowerCase()) return false;
+        }
+
+        if (assigneeFilter !== "all" && t.assigneeId !== assigneeFilter) {
+          return false;
+        }
+
+        if (dueFilter !== "all") {
+          if (dueFilter === "today" && t.dueDate?.slice(0, 10) !== todayStr) {
+            return false;
+          }
+          if (dueFilter === "overdue" && !metrics.isOverdue) {
+            return false;
+          }
+          if (dueFilter === "week") {
+            if (!metrics.deadline) return false;
+            const diffDays =
+              (metrics.deadline.getTime() - now.getTime()) / 86400000;
+            if (diffDays < -1 || diffDays > 7) return false;
+          }
+        }
+
+        if (dateRangeFilter !== "all") {
+          const created = new Date(t.assignedAt || t.createdAt);
+          if (!isNaN(created.getTime())) {
+            const ageDays = (now.getTime() - created.getTime()) / 86400000;
+            if (dateRangeFilter === "7d" && ageDays > 7) return false;
+            if (dateRangeFilter === "30d" && ageDays > 30) return false;
+            if (dateRangeFilter === "90d" && ageDays > 90) return false;
+          }
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        const da = new Date(a.assignedAt || a.createdAt).getTime();
+        const db = new Date(b.assignedAt || b.createdAt).getTime();
+        return db - da;
+      });
+  }, [
+    accessibleTasks,
+    searchQuery,
+    statusFilter,
+    priorityFilter,
+    sbuFilter,
+    assigneeFilter,
+    dueFilter,
+    dateRangeFilter,
+    projects,
+  ]);
+
+  const hasActiveFilters =
+    searchQuery.trim() !== "" ||
+    statusFilter !== "all" ||
+    priorityFilter !== "all" ||
+    dueFilter !== "all" ||
+    sbuFilter !== "all" ||
+    assigneeFilter !== "all" ||
+    dateRangeFilter !== "all";
+
+  const resetAllFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setPriorityFilter("all");
+    setDueFilter("all");
+    setSbuFilter("all");
+    setAssigneeFilter("all");
+    setDateRangeFilter("all");
+  };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Tasks</h1>
-          <p className="text-slate-500 mt-1">Switch between Kanban, Table List, Calendar, Timeline, and Workload views</p>
-        </div>
+    <div className="space-y-5 pb-8">
+      {/* HERO HEADER BANNER */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#1A3A5C] via-[#1f3e68] to-[#2b2a5a] p-6 sm:p-7 text-white shadow-xl shadow-slate-900/10"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-14 -top-16 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/3 -bottom-20 h-48 w-48 rounded-full bg-indigo-400/20 blur-3xl"
+        />
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Segmented View Mode Switcher */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-0.5 border border-slate-200">
-            <button
-              onClick={() => setViewMode("kanban")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === "kanban" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" /> Kanban
-            </button>
-
-            <button
-              onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === "table" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <List className="h-3.5 w-3.5" /> Table List
-            </button>
-
-            <button
-              onClick={() => setViewMode("calendar")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === "calendar" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <CalendarIcon className="h-3.5 w-3.5" /> Calendar
-            </button>
-
-            <button
-              onClick={() => setViewMode("timeline")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === "timeline" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <GanttChart className="h-3.5 w-3.5" /> Timeline
-            </button>
-
-            <button
-              onClick={() => setViewMode("workload")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === "workload" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <Users className="h-3.5 w-3.5" /> Workload Matrix
-            </button>
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-indigo-500 text-white shadow-lg shadow-pink-500/25 ring-1 ring-white/25 shrink-0">
+              <CheckSquare className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                  Tasks
+                </h1>
+                <span className="rounded-full bg-white/15 border border-white/15 px-2.5 py-0.5 text-[11px] font-bold text-pink-200">
+                  {accessibleTasks.length} total
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-white/70 mt-1">
+                All tasks across the workspace.
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {viewMode === "kanban" && (
-              <Button
-                variant={isCollagedView ? "default" : "outline"}
-                onClick={() => setIsCollagedView(!isCollagedView)}
-                className={`h-9 gap-1.5 text-xs font-semibold ${
-                  isCollagedView ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm" : "bg-white text-slate-700 border-slate-200"
+          <div className="flex items-center gap-3">
+            {/* View Toggle Pill */}
+            <div className="inline-flex items-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={`px-2.5 py-1.5 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 text-xs font-semibold ${
+                  viewMode === "list"
+                    ? "bg-white text-[#1A3A5C] shadow-xs"
+                    : "text-white/70 hover:text-white"
                 }`}
-                title="Collage similar tasks into expandable stacks on hover"
+                title="List View"
               >
-                <Layers className="h-3.5 w-3.5" />
-                {isCollagedView ? "Collage ON" : "Collage OFF"}
+                <List className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">List</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("kanban")}
+                className={`px-2.5 py-1.5 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 text-xs font-semibold ${
+                  viewMode === "kanban"
+                    ? "bg-white text-[#1A3A5C] shadow-xs"
+                    : "text-white/70 hover:text-white"
+                }`}
+                title="Board View"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Board</span>
+              </button>
+            </div>
+
+            <Link href="/dashboard/tasks/new">
+              <Button className="h-10 px-4 rounded-2xl bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-pink-600 hover:to-indigo-600 text-white text-xs sm:text-sm font-bold shadow-lg shadow-pink-500/25 gap-1.5 border-0 cursor-pointer">
+                <Plus className="h-4 w-4" />
+                New task
               </Button>
-            )}
-
-            <Select value={filterProject} onValueChange={(v) => v && setFilterProject(v)}>
-              <SelectTrigger className="w-44 bg-white text-xs h-9"><Filter className="h-3.5 w-3.5 mr-2 text-slate-400" /><SelectValue placeholder="All Projects" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                {engagedProjects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-
-            {isElevated && (
-              <Select value={filterAssignee} onValueChange={(v) => v && setFilterAssignee(v)}>
-                <SelectTrigger className="w-44 bg-white text-xs h-9">
-                  <Users className="h-3.5 w-3.5 mr-2 text-slate-400" />
-                  <SelectValue placeholder="Everyone's Tasks" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Everyone&apos;s Tasks</SelectItem>
-                  {members.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name} ({m.role})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger render={<Button className="h-9 text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25" />}>
-                <Plus className="h-3.5 w-3.5 mr-1.5" /> New Task
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader><DialogTitle className="text-xl font-semibold">Create New Task</DialogTitle></DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <div><Label>Task Name</Label><Input className="mt-1.5" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Design homepage hero" /></div>
-                  <div><Label>Description</Label><Textarea className="mt-1.5" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Project</Label>
-                      <Select value={form.projectId} onValueChange={(v) => v && setForm({ ...form, projectId: v })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select project" /></SelectTrigger>
-                        <SelectContent>{engagedProjects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Priority</Label>
-                      <Select value={form.priority} onValueChange={(v) => v && setForm({ ...form, priority: v as Priority })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="urgent">Urgent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Assignee</Label>
-                      <Select value={form.assigneeId} onValueChange={(v) => v && setForm({ ...form, assigneeId: v })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                        <SelectContent>{members.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
-                    <div><Label>Due Date</Label><Input type="date" className="mt-1.5" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Platform (ACMS)</Label>
-                      <Select value={form.platform} onValueChange={(v) => v && setForm({ ...form, platform: v as CreativePlatform })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Platform" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="instagram">📸 Instagram</SelectItem>
-                          <SelectItem value="youtube">▶️ YouTube</SelectItem>
-                          <SelectItem value="linkedin">💼 LinkedIn</SelectItem>
-                          <SelectItem value="meta">👥 Meta / FB</SelectItem>
-                          <SelectItem value="website">🌐 Website</SelectItem>
-                          <SelectItem value="twitter">🐦 X (Twitter)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Creative Format</Label>
-                      <Select value={form.creativeType} onValueChange={(v) => v && setForm({ ...form, creativeType: v as CreativeType })}>
-                        <SelectTrigger className="mt-1.5"><SelectValue placeholder="Format" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="reel">🎬 Reel</SelectItem>
-                          <SelectItem value="poster">🖼️ Poster</SelectItem>
-                          <SelectItem value="video">📹 Video</SelectItem>
-                          <SelectItem value="carousel">📑 Carousel</SelectItem>
-                          <SelectItem value="article">📝 Article</SelectItem>
-                          <SelectItem value="banner">🏷️ Banner</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  {isAdmin && (
-                    <div>
-                      {members.find((m) => m.id === form.assigneeId)?.role === "trainee" ? (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label>Trainee Payout (₹)</Label>
-                            <Input
-                              type="number"
-                              min={0}
-                              step="0.01"
-                              className="mt-1.5"
-                              value={form.payout || ""}
-                              onChange={(e) => setForm({ ...form, payout: Number(e.target.value) || 0 })}
-                              placeholder="0.00"
-                            />
-                          </div>
-                          <div className="flex items-end">
-                            <p className="text-xs text-slate-400 pb-2">Credited to trainee upon completion & approval.</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
-                          💡 <strong>Trainee Payout Policy:</strong> Task payouts apply exclusively to Trainees. Salaried employees receive monthly compensation.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  <Button onClick={handleCreate} className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white">Create Task</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card className="border-0 shadow-md bg-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg font-semibold text-slate-800">Pipeline Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={pipelineData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} interval={0} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <Tooltip cursor={{ fill: "rgba(99,102,241,0.08)" }} contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
-                  <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={50}>
-                    {pipelineData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+      {/* FILTER BAR WITH 12-STAGE POPOVER DROPDOWN */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-2xs flex flex-wrap items-center gap-2.5">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name, code, description..."
+            className="h-9 pl-9 rounded-xl border-slate-200 bg-slate-50/70 text-xs focus-visible:border-indigo-500 focus-visible:ring-indigo-500/15"
+          />
         </div>
-        <Card className="border-0 shadow-md bg-white">
-          <CardContent className="p-5 h-full flex flex-col justify-center">
-            <p className="text-sm font-medium text-slate-500">Pipeline Completion</p>
-            <p className="text-3xl font-bold text-slate-900 mt-1">
-              {totalTasks > 0 ? Math.round((doneCount / totalTasks) * 100) : 0}%
-            </p>
-            <p className="text-xs text-slate-400 mt-1">{doneCount}/{totalTasks} tasks across {columns.length} stages</p>
-            <div className="mt-4 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-500" style={{ width: `${totalTasks > 0 ? (doneCount / totalTasks) * 100 : 0}%` }} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      
-      {/* ACMS Creative Operations & Workflow Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <Card className="border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30 p-3 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-indigo-100 text-indigo-700">
-              <Clock4 className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Avg TAT</p>
-              <p className="text-base font-bold text-slate-900">{acmsMetrics.avgTatDays} days</p>
-            </div>
-          </div>
-        </Card>
+        <FilterDropdown
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={statusOptions}
+          minMenuWidth="min-w-[215px]"
+        />
 
-        <Card className="border border-amber-100 bg-gradient-to-br from-white to-amber-50/30 p-3 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-amber-100 text-amber-700">
-              <RefreshCw className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision Rate</p>
-              <p className="text-base font-bold text-slate-900">{acmsMetrics.revisionRate}% rework</p>
-            </div>
-          </div>
-        </Card>
+        <FilterDropdown
+          value={priorityFilter}
+          onChange={setPriorityFilter}
+          options={priorityOptions}
+          minMenuWidth="min-w-[165px]"
+        />
 
-        <Card className="border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/30 p-3 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
-              <Award className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Delivered</p>
-              <p className="text-base font-bold text-slate-900">{acmsMetrics.completed} Assets</p>
-            </div>
-          </div>
-        </Card>
+        <FilterDropdown
+          value={dueFilter}
+          onChange={setDueFilter}
+          options={dueOptions}
+          minMenuWidth="min-w-[175px]"
+        />
 
-        <Card className="border border-purple-100 bg-gradient-to-br from-white to-purple-50/30 p-3 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-purple-100 text-purple-700">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Top Platform</p>
-              <p className="text-base font-bold text-slate-900 capitalize">{acmsMetrics.topPlatform}</p>
-            </div>
-          </div>
-        </Card>
+        <FilterDropdown
+          value={sbuFilter}
+          onChange={setSbuFilter}
+          options={sbuOptions}
+          minMenuWidth="min-w-[185px]"
+        />
 
-        <Card
-          onClick={() => setFilterNeedsCorrection(!filterNeedsCorrection)}
-          className={`border p-3 shadow-2xs cursor-pointer transition-all ${
-            filterNeedsCorrection
-              ? "border-amber-400 bg-amber-500 text-white shadow-sm ring-2 ring-amber-300"
-              : "border-slate-200 bg-white hover:border-amber-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <div className={`p-1.5 rounded-lg ${filterNeedsCorrection ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"}`}>
-              <AlertTriangle className="h-4 w-4" />
-            </div>
-            <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-wider ${filterNeedsCorrection ? "text-white/80" : "text-slate-500"}`}>
-                Needs Correction
-              </p>
-              <p className={`text-base font-bold ${filterNeedsCorrection ? "text-white" : "text-slate-900"}`}>
-                {acmsMetrics.needsCorrection} {filterNeedsCorrection ? "Active" : "Tasks"}
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
+        <FilterDropdown
+          value={assigneeFilter}
+          onChange={setAssigneeFilter}
+          options={assigneeOptions}
+          minMenuWidth="min-w-[195px]"
+        />
 
-      {/* ACMS Creative Platform & Format Quick Filters */}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
-        <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-          <Filter className="h-3 w-3" /> Filters:
-        </span>
+        <FilterDropdown
+          value={dateRangeFilter}
+          onChange={setDateRangeFilter}
+          options={dateRangeOptions}
+          leftIcon={<CalendarIcon className="h-3.5 w-3.5 text-indigo-500" />}
+          minMenuWidth="min-w-[175px]"
+        />
 
-        <Select value={filterPlatform} onValueChange={(v) => v && setFilterPlatform(v)}>
-          <SelectTrigger className="w-36 bg-white text-xs h-8 border-slate-200">
-            <SelectValue placeholder="All Platforms" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Platforms</SelectItem>
-            <SelectItem value="instagram">📸 Instagram</SelectItem>
-            <SelectItem value="youtube">▶️ YouTube</SelectItem>
-            <SelectItem value="linkedin">💼 LinkedIn</SelectItem>
-            <SelectItem value="meta">👥 Meta / FB</SelectItem>
-            <SelectItem value="website">🌐 Website</SelectItem>
-            <SelectItem value="twitter">🐦 X (Twitter)</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={filterCreativeType} onValueChange={(v) => v && setFilterCreativeType(v)}>
-          <SelectTrigger className="w-36 bg-white text-xs h-8 border-slate-200">
-            <SelectValue placeholder="All Formats" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Formats</SelectItem>
-            <SelectItem value="reel">🎬 Reel</SelectItem>
-            <SelectItem value="poster">🖼️ Poster</SelectItem>
-            <SelectItem value="video">📹 Video</SelectItem>
-            <SelectItem value="carousel">📑 Carousel</SelectItem>
-            <SelectItem value="article">📝 Article</SelectItem>
-            <SelectItem value="banner">🏷️ Banner</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {filterNeedsCorrection && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full border border-amber-300">
-            ⚠️ Showing Needs Correction Only
-            <button onClick={() => setFilterNeedsCorrection(false)} className="ml-1 hover:text-amber-950">×</button>
-          </span>
-        )}
-
-        {(filterPlatform !== "all" || filterCreativeType !== "all" || filterNeedsCorrection || filterProject !== "all" || filterAssignee !== "all") && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setFilterPlatform("all");
-              setFilterCreativeType("all");
-              setFilterNeedsCorrection(false);
-              setFilterProject("all");
-              setFilterAssignee("all");
-            }}
-            className="h-8 text-xs text-slate-500 hover:text-slate-800"
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetAllFilters}
+            className="inline-flex items-center gap-1 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 cursor-pointer transition-colors"
           >
-            Reset Filters
-          </Button>
+            <X className="h-3 w-3" />
+            Reset
+          </button>
         )}
+
+        <div className="ml-auto flex items-center gap-1.5 rounded-xl bg-slate-100/80 px-2.5 py-1.5 text-xs text-slate-600 font-semibold">
+          <Filter className="h-3.5 w-3.5 text-indigo-500" />
+          <span>
+            {filteredTasks.length} of {accessibleTasks.length}
+          </span>
+        </div>
       </div>
 
-      {/* Render View based on viewMode state */}
-      {viewMode === "kanban" && (
-        <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 lg:mx-0 lg:px-0">
-          {columns.map((col) => {
-            const colTasks = filtered.filter((t) => t.status === col.status).sort((a, b) => a.order - b.order);
-            const groupedItems = groupTasks(colTasks);
+      {/* LIST VIEW TABLE */}
+      {viewMode === "list" ? (
+        <div className="rounded-3xl border border-slate-200/80 bg-white shadow-2xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200/70 bg-gradient-to-r from-slate-50 via-indigo-50/30 to-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <th className="py-3.5 pl-5 pr-3 w-28">Code</th>
+                  <th className="py-3.5 px-3 min-w-[280px]">Task</th>
+                  <th className="py-3.5 px-3 w-36">SBU</th>
+                  <th className="py-3.5 px-3 w-40">Assignee</th>
+                  <th className="py-3.5 px-3 w-24">Priority</th>
+                  <th className="py-3.5 px-3 w-44">Stage</th>
+                  <th className="py-3.5 px-3 w-44">Hours</th>
+                  <th className="py-3.5 pl-3 pr-5 w-36">Due</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {filteredTasks.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="py-16 text-center text-slate-400 text-sm"
+                    >
+                      No tasks match the current filters.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTasks.map((task, idx) => {
+                    const code = getTaskCode(
+                      task,
+                      2600 - Math.min(idx, 500)
+                    );
+                    const assignee = members.find(
+                      (m) => m.id === task.assigneeId
+                    );
+                    const project = projects.find(
+                      (p) => p.id === task.projectId
+                    );
+                    const sbuLabel = task.sbu || project?.business || "Achariya";
+                    const sbuStyle =
+                      SBU_PILL_STYLES[sbuLabel] ||
+                      "bg-indigo-50 text-indigo-700 border-indigo-200/80";
+                    const priorityMeta = getTaskPriorityDisplay(task.priority);
+                    const statusMeta = getTaskStatusDisplay(task);
+                    const metrics = getTaskDeadlineMetrics(task);
+
+                    return (
+                      <tr
+                        key={task.id}
+                        onClick={() =>
+                          router.push(`/dashboard/tasks/${task.id}`)
+                        }
+                        className="hover:bg-indigo-50/35 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-3.5 pl-5 pr-3 align-middle">
+                          <span className="inline-flex items-center rounded-lg bg-indigo-50 border border-indigo-100 px-2 py-0.5 font-mono text-[11px] font-bold text-indigo-700 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            {code}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle">
+                          <p className="font-bold text-slate-900 text-xs sm:text-[13px] leading-snug group-hover:text-indigo-700 transition-colors">
+                            {task.title}
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
+                            {task.description
+                              ? task.description
+                              : `Task assigned by ${task.assignedByName || "Admin"}.`}
+                          </p>
+                          {task.finalOutputLink && (
+                            <a
+                              href={task.finalOutputLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-pink-600 hover:text-pink-700 underline"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              <span>Final output</span>
+                            </a>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap ${sbuStyle}`}
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-75" />
+                            {sbuLabel}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle">
+                          {assignee ? (
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-6 w-6 ring-1 ring-indigo-500/20">
+                                <AvatarImage src={assignee.avatar} />
+                                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-pink-500 text-white text-[9px] font-bold">
+                                  {initials(assignee.name)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-semibold text-slate-800 truncate max-w-[115px]">
+                                {assignee.name}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-400">Unassigned</span>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${priorityMeta.className}`}
+                          >
+                            {priorityMeta.label}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap ${statusMeta.className}`}
+                            >
+                              {statusMeta.label}
+                            </span>
+                            {metrics.isOverdue && task.status !== "review" && (
+                              <span className="inline-flex items-center rounded-full bg-rose-100 border border-rose-200 px-2 py-0.5 text-[10px] font-semibold text-rose-700 whitespace-nowrap">
+                                Overdue
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-3 align-middle whitespace-nowrap">
+                          <span className="font-semibold text-slate-800">
+                            {metrics.workedLabel}
+                          </span>
+                          {metrics.remainingShortLabel && (
+                            <>
+                              <span className="text-slate-300 mx-1">/</span>
+                              <span
+                                className={`text-[11px] font-medium ${
+                                  metrics.isOverdue
+                                    ? "text-rose-600"
+                                    : "text-indigo-600"
+                                }`}
+                              >
+                                {metrics.remainingShortLabel}
+                              </span>
+                            </>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 pl-3 pr-5 align-middle text-slate-500 font-medium whitespace-nowrap">
+                          {metrics.dueColumnLabel}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* BOARD / KANBAN VIEW */
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+          {kanbanColumns.map((col) => {
+            const colItems = filteredTasks.filter((t) =>
+              col.stages.includes(getTaskStage(t))
+            );
 
             return (
-              <div key={col.status} className="flex-shrink-0 w-72 lg:flex-1 lg:w-auto">
-                <div className={`rounded-t-xl ${col.headerColor} px-4 py-3 flex items-center justify-between`}>
-                  <h3 className="text-sm font-semibold text-white">{col.label}</h3>
-                  <span className="text-xs font-medium text-white/70 bg-white/20 px-2 py-0.5 rounded-full">{colTasks.length}</span>
+              <div key={col.id} className="flex flex-col">
+                <div
+                  className={`rounded-t-2xl ${col.headerBg} px-4 py-3 flex items-center justify-between text-white shadow-xs`}
+                >
+                  <span className="text-xs font-bold truncate">
+                    {col.label}
+                  </span>
+                  <span className="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full shrink-0">
+                    {colItems.length}
+                  </span>
                 </div>
-                <div className={`${col.color} border border-t-0 rounded-b-xl p-3 min-h-[400px] space-y-2`}>
-                  {groupedItems.map((item) => {
-                    if (item.type === "group") {
-                      const assignee = members.find((m) => m.id === item.assigneeId);
-                      const project = projects.find((p) => p.id === item.projectId);
-                      return (
-                        <TaskCollageCard
-                          key={item.key}
-                          tasks={item.tasks}
-                          assignee={assignee}
-                          project={project}
-                          members={members}
-                          projects={projects}
-                          priorityBadge={priorityBadge}
-                          handleMove={handleMove}
-                          openProofDialog={openProofDialog}
-                          columnStatus={col.status}
-                        />
-                      );
-                    }
+                <div
+                  className={`flex-1 rounded-b-2xl border border-t-0 ${col.bodyBg} p-3 space-y-2.5 min-h-[420px]`}
+                >
+                  {colItems.map((task, idx) => {
+                    const code = getTaskCode(task, 2600 - idx);
+                    const assignee = members.find(
+                      (m) => m.id === task.assigneeId
+                    );
+                    const priorityMeta = getTaskPriorityDisplay(task.priority);
+                    const statusMeta = getTaskStatusDisplay(task);
+                    const metrics = getTaskDeadlineMetrics(task);
 
-                    const task = item.task;
-                    const assignee = members.find((m) => m.id === task.assigneeId);
-                    const project = projects.find((p) => p.id === task.projectId);
                     return (
-                      <motion.div
+                      <div
                         key={task.id}
-                        layout
-                        className="bg-white rounded-xl p-3 shadow-xs border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all duration-200 cursor-pointer group my-1.5"
                         onClick={() =>
-                          handleMove(
-                            task,
-                            col.status === "done"
-                              ? "todo"
-                              : col.status === "backlog"
-                              ? "todo"
-                              : col.status === "todo"
-                              ? "in-progress"
-                              : col.status === "in-progress"
-                              ? "review"
-                              : "done"
-                          )
+                          router.push(`/dashboard/tasks/${task.id}`)
                         }
+                        className="rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-2xs hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer space-y-2"
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <Badge className={`text-[10px] ${priorityBadge[task.priority]}`}>{task.priority}</Badge>
-                          <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex items-center justify-between gap-1.5">
+                          <span className="font-mono text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">
+                            {code}
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${priorityMeta.className}`}
+                          >
+                            {priorityMeta.label}
+                          </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                          {task.assetCode && (
-                            <span className="text-[9px] font-mono font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200">
-                              {task.assetCode}
-                            </span>
+
+                        <p className="text-xs font-bold text-slate-900 leading-snug">
+                          {task.title}
+                        </p>
+
+                        <div>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusMeta.className}`}
+                          >
+                            {statusMeta.label}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 text-[11px] text-slate-500">
+                          <span>{metrics.dueColumnLabel}</span>
+                          {assignee && (
+                            <div className="flex items-center gap-1.5">
+                              <Avatar className="h-5 w-5">
+                                <AvatarImage src={assignee.avatar} />
+                                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-pink-500 text-white text-[8px] font-bold">
+                                  {initials(assignee.name)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-[11px] font-semibold text-slate-700 truncate max-w-[80px]">
+                                {assignee.name}
+                              </span>
+                            </div>
                           )}
-                          <PlatformBadge platform={task.platform} />
-                          <CreativeTypeBadge type={task.creativeType} />
                         </div>
-                        {task.reviewFeedback && task.status !== "done" && (
-                          <div className="mb-2 p-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-medium flex items-center gap-1">
-                            <AlertTriangle className="h-3 w-3 text-amber-600 shrink-0" />
-                            <span className="truncate">Needs Correction</span>
-                          </div>
-                        )}
-                        <p className="text-sm font-medium text-slate-800 mb-1">{task.title}</p>
-                        {project && <p className="text-[10px] text-slate-400 mb-2">{project.name}</p>}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {task.dueDate && <span className="text-[10px] text-slate-400">{formatDate(task.dueDate, { month: "short", day: "numeric" })}</span>}
-                            {task.payout > 0 && assignee?.role === "trainee" && (
-                              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
-                                <Banknote className="h-2.5 w-2.5" />{task.payout.toLocaleString()}
-                              </span>
-                            )}
-                            {task.proofs && task.proofs.length > 0 && (
-                              <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
-                                <Paperclip className="h-2.5 w-2.5" />{task.proofs.length}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {assignee && <Avatar className="h-5 w-5"><AvatarImage src={assignee.avatar} /><AvatarFallback className="text-[8px]">{initials(assignee.name)}</AvatarFallback></Avatar>}
-                            <button
-                              onClick={(e) => { e.stopPropagation(); openProofDialog(task); }}
-                              className="rounded-lg p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                              title="Proof & payout"
-                            >
-                              <Paperclip className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
-                  {groupedItems.length === 0 && <div className="flex items-center justify-center h-24 text-sm text-slate-400">No tasks</div>}
+                  {colItems.length === 0 && (
+                    <div className="h-28 flex items-center justify-center text-xs text-slate-400">
+                      No tasks
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       )}
-
-      {viewMode === "table" && (
-        <TaskTableView
-          tasks={filtered}
-          projects={projects}
-          members={members}
-          priorityBadge={priorityBadge}
-          handleMove={handleMove}
-          openProofDialog={openProofDialog}
-        />
-      )}
-
-      {viewMode === "calendar" && (
-        <TaskCalendarView
-          tasks={filtered}
-          projects={projects}
-          members={members}
-          openProofDialog={openProofDialog}
-        />
-      )}
-
-      {viewMode === "timeline" && (
-        <TaskTimelineView
-          tasks={filtered}
-          projects={projects}
-          members={members}
-          priorityBadge={priorityBadge}
-          openProofDialog={openProofDialog}
-        />
-      )}
-
-      {viewMode === "workload" && (
-        <TaskWorkloadView
-          tasks={filtered}
-          members={members}
-          openProofDialog={openProofDialog}
-        />
-      )}
-
-      {/* Enhanced Proof, Subtasks & Review dialog */}
-      <EnhancedProofDialog
-        task={proofTask}
-        onClose={() => setProofTask(null)}
-        isAdmin={isAdmin}
-        isElevated={isElevated}
-      />
-    </motion.div>
+    </div>
   );
 }
-
