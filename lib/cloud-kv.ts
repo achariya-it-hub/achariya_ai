@@ -8,17 +8,35 @@ const LOCAL_KV_FILE = path.join(process.cwd(), ".cwms-local-cloud-kv.json");
 const TMP_KV_FILE = path.join(os.tmpdir(), "cwms-local-cloud-kv.json");
 
 const memCache: Record<string, unknown> = {};
+let blobsDisabledForProcess = false;
 
 function hasNetlifyBlobsContext(): boolean {
+  if (blobsDisabledForProcess) return false;
   return Boolean(
     process.env.NETLIFY_BLOBS_CONTEXT ||
-      process.env.NETLIFY ||
       (globalThis as any).netlifyBlobsContext
   );
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`Netlify Blobs timeout after ${ms}ms`));
+    }, ms);
+    promise
+      .then((val) => {
+        clearTimeout(timer);
+        resolve(val);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
 function readLocalFileStore(): Record<string, unknown> {
-  for (const filePath of [LOCAL_KV_FILE, TMP_KV_FILE]) {
+  for (const filePath of [TMP_KV_FILE, LOCAL_KV_FILE]) {
     try {
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, "utf8")) || {};
@@ -40,14 +58,18 @@ function writeLocalFileStore(all: Record<string, unknown>) {
 export async function cloudKvGet<T>(key: string, fallback: T): Promise<T> {
   if (hasNetlifyBlobsContext()) {
     try {
-      const store = getStore({ name: STORE_NAME, consistency: "strong" });
-      const val = (await store.get(key, { type: "json" })) as T | null;
+      const store = getStore({ name: STORE_NAME });
+      const val = (await withTimeout(
+        store.get(key, { type: "json" }),
+        1500
+      )) as T | null;
       if (val !== null && val !== undefined) {
         memCache[key] = val;
         return val;
       }
     } catch (err) {
-      console.warn(`Netlify Blobs GET fallback for "${key}":`, err);
+      blobsDisabledForProcess = true;
+      console.warn(`Netlify Blobs GET fast-fallback for "${key}":`, err);
     }
   }
 
@@ -66,17 +88,17 @@ export async function cloudKvGet<T>(key: string, fallback: T): Promise<T> {
 
 export async function cloudKvSet<T>(key: string, value: T): Promise<void> {
   memCache[key] = value;
-
-  if (hasNetlifyBlobsContext()) {
-    try {
-      const store = getStore({ name: STORE_NAME, consistency: "strong" });
-      await store.setJSON(key, value);
-    } catch (err) {
-      console.warn(`Netlify Blobs SET fallback for "${key}":`, err);
-    }
-  }
-
   const localStore = readLocalFileStore();
   localStore[key] = value;
   writeLocalFileStore(localStore);
+
+  if (hasNetlifyBlobsContext()) {
+    try {
+      const store = getStore({ name: STORE_NAME });
+      await withTimeout(store.setJSON(key, value), 1500);
+    } catch (err) {
+      blobsDisabledForProcess = true;
+      console.warn(`Netlify Blobs SET fast-fallback for "${key}":`, err);
+    }
+  }
 }
