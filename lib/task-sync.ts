@@ -1,43 +1,35 @@
-import fs from "fs";
-import os from "os";
-import path from "path";
 import { seedData, seedMembers } from "@/lib/data";
+import { cloudKvGet, cloudKvSet } from "@/lib/cloud-kv";
 
-const SYNC_FILE = path.join(os.tmpdir(), "cwms-tasks-sync-v1.json");
-const MEMBER_SYNC_FILE = path.join(os.tmpdir(), "cwms-members-sync-v1.json");
-
-interface SyncState {
+interface EntitySyncState {
   upserted: Record<string, Record<string, unknown>>;
   deleted: string[];
 }
 
-const globalForSync = globalThis as unknown as { cwmsTaskSync?: SyncState };
+const TASKS_KV_KEY = "tasks-sync-v2";
+const MEMBERS_KV_KEY = "members-sync-v2";
+const PROJECTS_KV_KEY = "projects-sync-v2";
+const ATTENDANCE_KV_KEY = "attendance-sync-v2";
+const SETTINGS_KV_KEY = "workspace-settings-v2";
 
-function loadSyncState(): SyncState {
-  if (globalForSync.cwmsTaskSync) {
-    return globalForSync.cwmsTaskSync;
-  }
-  try {
-    if (fs.existsSync(SYNC_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(SYNC_FILE, "utf8")) as SyncState;
-      globalForSync.cwmsTaskSync = {
-        upserted: parsed.upserted || {},
-        deleted: Array.isArray(parsed.deleted) ? parsed.deleted : [],
-      };
-      return globalForSync.cwmsTaskSync;
-    }
-  } catch {}
-  globalForSync.cwmsTaskSync = { upserted: {}, deleted: [] };
-  return globalForSync.cwmsTaskSync;
+async function loadEntitySync(key: string): Promise<EntitySyncState> {
+  const raw = await cloudKvGet<EntitySyncState>(key, {
+    upserted: {},
+    deleted: [],
+  });
+  return {
+    upserted: raw?.upserted || {},
+    deleted: Array.isArray(raw?.deleted) ? raw.deleted : [],
+  };
 }
 
-function saveSyncState(state: SyncState) {
-  globalForSync.cwmsTaskSync = state;
-  try {
-    fs.writeFileSync(SYNC_FILE, JSON.stringify(state), "utf8");
-  } catch {}
+async function saveEntitySync(key: string, state: EntitySyncState): Promise<void> {
+  await cloudKvSet(key, state);
 }
 
+// ============================================================================
+// 1. TASKS SYNC
+// ============================================================================
 export const PRISMA_TASK_FIELDS = new Set([
   "id",
   "projectId",
@@ -105,7 +97,7 @@ export function sanitizePrismaTaskInput(
       clean.description = "";
     }
     if (typeof clean.projectId !== "string" || !clean.projectId.trim()) {
-      clean.projectId = "1";
+      clean.projectId = "p1";
     }
     if (typeof clean.status !== "string" || !clean.status.trim()) {
       clean.status = "todo";
@@ -117,15 +109,14 @@ export function sanitizePrismaTaskInput(
   return clean;
 }
 
-export function recordSyncedTaskUpsert(task: Record<string, unknown>) {
+export async function recordSyncedTaskUpsert(task: Record<string, unknown>) {
   const id = String(task.id || "");
   if (!id) return;
-  const state = loadSyncState();
+  const state = await loadEntitySync(TASKS_KV_KEY);
   state.upserted[id] = { ...(state.upserted[id] || {}), ...task };
   state.deleted = state.deleted.filter((d) => d !== id);
-  saveSyncState(state);
+  await saveEntitySync(TASKS_KV_KEY, state);
 
-  // Also keep in-memory seedData.tasks in sync
   const idx = seedData.tasks.findIndex((t) => t.id === id);
   if (idx >= 0) {
     seedData.tasks[idx] = { ...seedData.tasks[idx], ...(task as any) };
@@ -134,13 +125,14 @@ export function recordSyncedTaskUpsert(task: Record<string, unknown>) {
   }
 }
 
-export function recordSyncedTaskDelete(id: string) {
-  const state = loadSyncState();
+export async function recordSyncedTaskDelete(id: string) {
+  if (!id) return;
+  const state = await loadEntitySync(TASKS_KV_KEY);
   delete state.upserted[id];
   if (!state.deleted.includes(id)) {
     state.deleted.push(id);
   }
-  saveSyncState(state);
+  await saveEntitySync(TASKS_KV_KEY, state);
 
   const idx = seedData.tasks.findIndex((t) => t.id === id);
   if (idx >= 0) {
@@ -148,10 +140,18 @@ export function recordSyncedTaskDelete(id: string) {
   }
 }
 
-export function mergeTasksWithSyncState<T extends { id: string }>(baseTasks: T[]): T[] {
-  const state = loadSyncState();
+export async function mergeTasksWithSyncState<T extends { id: string }>(
+  baseTasks: T[]
+): Promise<T[]> {
+  const state = await loadEntitySync(TASKS_KV_KEY);
   const deletedSet = new Set(state.deleted);
   const map = new Map<string, T>();
+
+  for (const [id, item] of Object.entries(state.upserted)) {
+    if (!deletedSet.has(id) && item.title) {
+      map.set(id, item as unknown as T);
+    }
+  }
 
   for (const t of baseTasks) {
     if (!deletedSet.has(t.id)) {
@@ -160,24 +160,86 @@ export function mergeTasksWithSyncState<T extends { id: string }>(baseTasks: T[]
     }
   }
 
+  return Array.from(map.values());
+}
+
+// ============================================================================
+// 2. PROJECTS SYNC
+// ============================================================================
+export async function recordSyncedProjectUpsert(project: Record<string, unknown>) {
+  const id = String(project.id || "");
+  if (!id) return;
+  const state = await loadEntitySync(PROJECTS_KV_KEY);
+  state.upserted[id] = { ...(state.upserted[id] || {}), ...project };
+  state.deleted = state.deleted.filter((d) => d !== id);
+  await saveEntitySync(PROJECTS_KV_KEY, state);
+}
+
+export async function recordSyncedProjectDelete(id: string) {
+  if (!id) return;
+  const state = await loadEntitySync(PROJECTS_KV_KEY);
+  delete state.upserted[id];
+  if (!state.deleted.includes(id)) {
+    state.deleted.push(id);
+  }
+  await saveEntitySync(PROJECTS_KV_KEY, state);
+}
+
+export async function mergeProjectsWithSyncState<T extends { id: string }>(
+  baseProjects: T[]
+): Promise<T[]> {
+  const state = await loadEntitySync(PROJECTS_KV_KEY);
+  const deletedSet = new Set(state.deleted);
+  const map = new Map<string, T>();
+
   for (const [id, item] of Object.entries(state.upserted)) {
-    if (!deletedSet.has(id) && !map.has(id)) {
+    if (!deletedSet.has(id) && item.name) {
       map.set(id, item as unknown as T);
+    }
+  }
+
+  for (const p of baseProjects) {
+    if (!deletedSet.has(p.id)) {
+      const patch = state.upserted[p.id];
+      map.set(p.id, patch ? ({ ...p, ...patch } as T) : p);
     }
   }
 
   return Array.from(map.values());
 }
 
-const globalForMemberSync = globalThis as unknown as {
-  cwmsMemberSync?: Record<string, Record<string, unknown>>;
-  cwmsDeletedMembers?: string[];
-  cwmsWorkspaceSettings?: WorkspaceSettings;
-};
+// ============================================================================
+// 3. ATTENDANCE SYNC
+// ============================================================================
+export async function getSyncedAttendance<T extends { id: string }>(
+  dbRecords: T[]
+): Promise<T[]> {
+  const cloudRecords = await cloudKvGet<T[]>(ATTENDANCE_KV_KEY, []);
+  const map = new Map<string, T>();
+  for (const r of dbRecords) map.set(r.id, r);
+  for (const r of cloudRecords) map.set(r.id, r);
+  return Array.from(map.values()).sort(
+    (a: any, b: any) =>
+      new Date(b.clockInAt || 0).getTime() - new Date(a.clockInAt || 0).getTime()
+  );
+}
 
-const MEMBER_DELETED_FILE = path.join(os.tmpdir(), "cwms-members-deleted-v1.json");
-const SETTINGS_SYNC_FILE = path.join(os.tmpdir(), "cwms-settings-sync-v1.json");
+export async function recordSyncedAttendance(record: Record<string, unknown>) {
+  const id = String(record.id || "");
+  if (!id) return;
+  const list = await cloudKvGet<Record<string, unknown>[]>(ATTENDANCE_KV_KEY, []);
+  const idx = list.findIndex((r) => String(r.id) === id);
+  if (idx >= 0) {
+    list[idx] = { ...list[idx], ...record };
+  } else {
+    list.unshift(record);
+  }
+  await cloudKvSet(ATTENDANCE_KV_KEY, list);
+}
 
+// ============================================================================
+// 4. WORKSPACE SETTINGS SYNC
+// ============================================================================
 export interface SbuConfigItem {
   id: string;
   name: string;
@@ -215,7 +277,6 @@ export interface PeakPerformersConfig {
 }
 
 export interface WorkspaceSettings {
-  // 1. Entity name, logo, details
   entityName: string;
   entitySubtitle: string;
   entityTagline: string;
@@ -224,18 +285,13 @@ export interface WorkspaceSettings {
   entityPhone: string;
   entityAddress: string;
   entityWebsite: string;
-  // 2. Color scheme
   colorScheme: string;
   primaryColor: string;
   accentColor: string;
   secondaryColor: string;
-  // 3. SBU list
   sbuList: SbuConfigItem[];
-  // 5. Modules displayed to users
   modules: ModuleConfigItem[];
-  // 6. Leaderboard configuration
   leaderboardConfig: LeaderboardConfig;
-  // 7. Peak Performed Users configuration
   peakPerformersConfig: PeakPerformersConfig;
   updatedAt?: string;
 }
@@ -300,36 +356,30 @@ export const DEFAULT_WORKSPACE_SETTINGS: WorkspaceSettings = {
   },
 };
 
-export function getWorkspaceSettings(): WorkspaceSettings {
-  if (globalForMemberSync.cwmsWorkspaceSettings) {
-    return globalForMemberSync.cwmsWorkspaceSettings;
-  }
-  try {
-    if (fs.existsSync(SETTINGS_SYNC_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(SETTINGS_SYNC_FILE, "utf8"));
-      globalForMemberSync.cwmsWorkspaceSettings = {
-        ...DEFAULT_WORKSPACE_SETTINGS,
-        ...parsed,
-        leaderboardConfig: {
-          ...DEFAULT_WORKSPACE_SETTINGS.leaderboardConfig,
-          ...(parsed.leaderboardConfig || {}),
-        },
-        peakPerformersConfig: {
-          ...DEFAULT_WORKSPACE_SETTINGS.peakPerformersConfig,
-          ...(parsed.peakPerformersConfig || {}),
-        },
-      };
-      return globalForMemberSync.cwmsWorkspaceSettings!;
-    }
-  } catch {}
-  globalForMemberSync.cwmsWorkspaceSettings = { ...DEFAULT_WORKSPACE_SETTINGS };
-  return globalForMemberSync.cwmsWorkspaceSettings;
+export async function getWorkspaceSettings(): Promise<WorkspaceSettings> {
+  const stored = await cloudKvGet<Partial<WorkspaceSettings> | null>(
+    SETTINGS_KV_KEY,
+    null
+  );
+  if (!stored) return { ...DEFAULT_WORKSPACE_SETTINGS };
+  return {
+    ...DEFAULT_WORKSPACE_SETTINGS,
+    ...stored,
+    leaderboardConfig: {
+      ...DEFAULT_WORKSPACE_SETTINGS.leaderboardConfig,
+      ...(stored.leaderboardConfig || {}),
+    },
+    peakPerformersConfig: {
+      ...DEFAULT_WORKSPACE_SETTINGS.peakPerformersConfig,
+      ...(stored.peakPerformersConfig || {}),
+    },
+  };
 }
 
-export function updateWorkspaceSettings(
+export async function updateWorkspaceSettings(
   patch: Partial<WorkspaceSettings>
-): WorkspaceSettings {
-  const current = getWorkspaceSettings();
+): Promise<WorkspaceSettings> {
+  const current = await getWorkspaceSettings();
   const next: WorkspaceSettings = {
     ...current,
     ...patch,
@@ -341,120 +391,17 @@ export function updateWorkspaceSettings(
       : current.peakPerformersConfig,
     updatedAt: new Date().toISOString(),
   };
-  globalForMemberSync.cwmsWorkspaceSettings = next;
-  try {
-    fs.writeFileSync(SETTINGS_SYNC_FILE, JSON.stringify(next), "utf8");
-  } catch {}
+  await cloudKvSet(SETTINGS_KV_KEY, next);
   return next;
 }
 
-function loadMemberSync(): Record<string, Record<string, unknown>> {
-  if (globalForMemberSync.cwmsMemberSync) {
-    return globalForMemberSync.cwmsMemberSync;
-  }
-  try {
-    if (fs.existsSync(MEMBER_SYNC_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(MEMBER_SYNC_FILE, "utf8"));
-      globalForMemberSync.cwmsMemberSync = parsed || {};
-      return globalForMemberSync.cwmsMemberSync!;
-    }
-  } catch {}
-  globalForMemberSync.cwmsMemberSync = {};
-  return globalForMemberSync.cwmsMemberSync;
+// ============================================================================
+// 5. MEMBERS SYNC
+// ============================================================================
+export async function isMemberDeleted(id: string): Promise<boolean> {
+  const state = await loadEntitySync(MEMBERS_KV_KEY);
+  return state.deleted.includes(id);
 }
-
-function loadDeletedMembers(): Set<string> {
-  if (globalForMemberSync.cwmsDeletedMembers) {
-    return new Set(globalForMemberSync.cwmsDeletedMembers);
-  }
-  try {
-    if (fs.existsSync(MEMBER_DELETED_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(MEMBER_DELETED_FILE, "utf8"));
-      if (Array.isArray(parsed)) {
-        globalForMemberSync.cwmsDeletedMembers = parsed;
-        return new Set(parsed);
-      }
-    }
-  } catch {}
-  globalForMemberSync.cwmsDeletedMembers = [];
-  return new Set();
-}
-
-export function recordSyncedMemberUpsert(member: Record<string, unknown>) {
-  const id = String(member.id || "");
-  if (!id) return;
-  const state = loadMemberSync();
-  state[id] = { ...(state[id] || {}), ...member };
-  globalForMemberSync.cwmsMemberSync = state;
-  try {
-    fs.writeFileSync(MEMBER_SYNC_FILE, JSON.stringify(state), "utf8");
-  } catch {}
-
-  const deleted = loadDeletedMembers();
-  if (deleted.has(id)) {
-    deleted.delete(id);
-    globalForMemberSync.cwmsDeletedMembers = Array.from(deleted);
-    try {
-      fs.writeFileSync(
-        MEMBER_DELETED_FILE,
-        JSON.stringify(globalForMemberSync.cwmsDeletedMembers),
-        "utf8"
-      );
-    } catch {}
-  }
-
-  const idx = seedMembers.findIndex((m) => m.id === id);
-  if (idx >= 0) {
-    seedMembers[idx] = { ...seedMembers[idx], ...(member as any) };
-  } else if (member.name && member.email) {
-    seedMembers.push(member as any);
-  }
-}
-
-export function recordSyncedMemberDelete(id: string) {
-  if (!id) return;
-  const state = loadMemberSync();
-  delete state[id];
-  globalForMemberSync.cwmsMemberSync = state;
-  try {
-    fs.writeFileSync(MEMBER_SYNC_FILE, JSON.stringify(state), "utf8");
-  } catch {}
-
-  const deleted = loadDeletedMembers();
-  deleted.add(id);
-  globalForMemberSync.cwmsDeletedMembers = Array.from(deleted);
-  try {
-    fs.writeFileSync(
-      MEMBER_DELETED_FILE,
-      JSON.stringify(globalForMemberSync.cwmsDeletedMembers),
-      "utf8"
-    );
-  } catch {}
-
-  const idx = seedMembers.findIndex((m) => m.id === id);
-  if (idx >= 0) {
-    seedMembers.splice(idx, 1);
-  }
-}
-
-export function isMemberDeleted(id: string): boolean {
-  return loadDeletedMembers().has(id);
-}
-
-export const PRISMA_USER_FIELDS = new Set([
-  "id",
-  "name",
-  "email",
-  "password",
-  "role",
-  "avatar",
-  "department",
-  "title",
-  "phone",
-  "joinDate",
-  "status",
-  "attendanceEnabled",
-]);
 
 export function sanitizeUserForPrisma(raw: Record<string, unknown>) {
   const cleanEmail =
@@ -487,11 +434,42 @@ export function sanitizeUserForPrisma(raw: Record<string, unknown>) {
   };
 }
 
-export function mergeMembersWithSyncState<T extends { id: string }>(
+export async function recordSyncedMemberUpsert(member: Record<string, unknown>) {
+  const id = String(member.id || "");
+  if (!id) return;
+  const state = await loadEntitySync(MEMBERS_KV_KEY);
+  state.upserted[id] = { ...(state.upserted[id] || {}), ...member };
+  state.deleted = state.deleted.filter((d) => d !== id);
+  await saveEntitySync(MEMBERS_KV_KEY, state);
+
+  const idx = seedMembers.findIndex((m) => m.id === id);
+  if (idx >= 0) {
+    seedMembers[idx] = { ...seedMembers[idx], ...(member as any) };
+  } else if (member.name && member.email) {
+    seedMembers.push(member as any);
+  }
+}
+
+export async function recordSyncedMemberDelete(id: string) {
+  if (!id) return;
+  const state = await loadEntitySync(MEMBERS_KV_KEY);
+  delete state.upserted[id];
+  if (!state.deleted.includes(id)) {
+    state.deleted.push(id);
+  }
+  await saveEntitySync(MEMBERS_KV_KEY, state);
+
+  const idx = seedMembers.findIndex((m) => m.id === id);
+  if (idx >= 0) {
+    seedMembers.splice(idx, 1);
+  }
+}
+
+export async function mergeMembersWithSyncState<T extends { id: string }>(
   baseMembers: T[]
-): T[] {
-  const state = loadMemberSync();
-  const deleted = loadDeletedMembers();
+): Promise<T[]> {
+  const state = await loadEntitySync(MEMBERS_KV_KEY);
+  const deleted = new Set(state.deleted);
   const seen = new Set<string>();
   const result: T[] = [];
 
@@ -519,11 +497,15 @@ export function mergeMembersWithSyncState<T extends { id: string }>(
   for (const m of baseMembers) {
     if (deleted.has(m.id)) continue;
     seen.add(m.id);
-    const patch = state[m.id];
-    result.push(normalizeMember((patch ? { ...m, ...patch } : { ...m }) as Record<string, unknown>));
+    const patch = state.upserted[m.id];
+    result.push(
+      normalizeMember(
+        (patch ? { ...m, ...patch } : { ...m }) as Record<string, unknown>
+      )
+    );
   }
 
-  for (const [id, item] of Object.entries(state)) {
+  for (const [id, item] of Object.entries(state.upserted)) {
     if (!deleted.has(id) && !seen.has(id) && item.name && item.email) {
       seen.add(id);
       result.push(normalizeMember({ id, ...item }));
@@ -532,5 +514,3 @@ export function mergeMembersWithSyncState<T extends { id: string }>(
 
   return result;
 }
-
-

@@ -62,12 +62,12 @@ export async function PUT(
           proofs: true,
         },
       });
-      recordSyncedTaskUpsert(task as unknown as Record<string, unknown>);
+      await recordSyncedTaskUpsert(task as unknown as Record<string, unknown>);
       return NextResponse.json(task);
     } catch (dbErr) {
       console.warn("Prisma update fallback on serverless lambda:", dbErr);
       const updated = { id, ...cleanTaskData };
-      recordSyncedTaskUpsert(updated);
+      await recordSyncedTaskUpsert(updated);
       return NextResponse.json(updated);
     }
   } catch (err) {
@@ -81,7 +81,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  recordSyncedTaskDelete(id);
+  await recordSyncedTaskDelete(id);
   try {
     await prisma.task.delete({ where: { id } });
   } catch (err) {

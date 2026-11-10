@@ -72,7 +72,7 @@ interface CRMStore {
   socialPosts: SocialPost[];
   calendarEvents: CalendarEvent[];
   chatMessages: ChatMessage[];
-  load: () => Promise<void>;
+  load: (force?: boolean) => Promise<void>;
   addMember: (member: Omit<TeamMember, "id">) => Promise<void>;
   updateMember: (id: string, updates: Partial<TeamMember>) => Promise<void>;
   deleteMember: (id: string) => Promise<void>;
@@ -124,7 +124,7 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
   load: async (force?: boolean) => {
     const now = Date.now();
-    if (isSyncing || (!force && now - lastSyncTime < 10000)) {
+    if (isSyncing || (!force && now - lastSyncTime < 3000)) {
       return;
     }
     isSyncing = true;
@@ -198,15 +198,20 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
 
       const isSame = (a: any, b: any) => JSON.stringify(a) === JSON.stringify(b);
 
-      // For members, trust the server response (/api/members) so deleted members
-      // are never resurrected on other devices!
+      // Trust authoritative server responses (/api/members, /api/projects, /api/tasks)
+      // so creations, updates, and deletions sync across devices without resurrecting seed items!
       const mergedMembers =
         Array.isArray(membersRes) && membersRes.length > 0
           ? membersRes.filter((item: any) => !deleted.has(item.id))
           : merge(membersRes, cur.members, seedData.members);
-      const mergedProjects = merge(projectsRes, cur.projects, seedData.projects);
+      const mergedProjects =
+        Array.isArray(projectsRes) && projectsRes.length > 0
+          ? projectsRes.filter((item: any) => !deleted.has(item.id))
+          : merge(projectsRes, cur.projects, seedData.projects);
       const mergedMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
-      const rawMergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+      const rawMergedTasks = Array.isArray(tasksRes)
+        ? tasksRes.filter((item: any) => !deleted.has(item.id))
+        : merge(tasksRes, cur.tasks, seedData.tasks);
       // Enforce trainee-only payout policy (reset non-trainee & Ramkumar payouts to 0)
       const mergedTasks = rawMergedTasks.map((t) => {
         const assignee = mergedMembers.find((m) => m.id === t.assigneeId);
@@ -353,7 +358,11 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       saveLocalData(next);
       return next;
     });
-    await fetch("/api/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(project) }).catch(() => {});
+    await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...project, id: newProj.id }),
+    }).catch(() => {});
   },
 
   updateProject: async (id, updates) => {

@@ -242,7 +242,7 @@ export default function AdminSettingsPage() {
       pointsPerOnTime: 5,
       pointsPerUrgent: 5,
       penaltyPerCorrection: 2,
-      manualBonusByUserId: {},
+      manualBonusByUserId: {} as Record<string, number>,
     };
 
     return members

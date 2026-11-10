@@ -36,17 +36,18 @@ export async function authenticate(emailInput: string, password: string): Promis
   const cleanNoDash = clean.replace(/[-_\s]/g, "");
 
   // Match by Employee ID, email, username, or ID from live synced members + seedMembers
-  const liveRoster = mergeMembersWithSyncState(seedMembers);
-  const matchedMember = liveRoster.find(
+  const liveRoster = await mergeMembersWithSyncState(seedMembers);
+  const candidate = liveRoster.find(
     (m) =>
-      !isMemberDeleted(m.id) &&
-      ((m.employeeId && m.employeeId.toLowerCase() === clean) ||
-        (m.employeeId && m.employeeId.toLowerCase().replace(/[-_\s]/g, "") === cleanNoDash) ||
-        m.email.toLowerCase() === clean ||
-        m.id.toLowerCase() === clean ||
-        m.name.toLowerCase() === clean ||
-        m.email.split("@")[0].toLowerCase() === clean)
+      (m.employeeId && m.employeeId.toLowerCase() === clean) ||
+      (m.employeeId && m.employeeId.toLowerCase().replace(/[-_\s]/g, "") === cleanNoDash) ||
+      m.email.toLowerCase() === clean ||
+      m.id.toLowerCase() === clean ||
+      m.name.toLowerCase() === clean ||
+      m.email.split("@")[0].toLowerCase() === clean
   );
+  const matchedMember =
+    candidate && !(await isMemberDeleted(candidate.id)) ? candidate : undefined;
 
   let normalizedEmail = matchedMember ? matchedMember.email.toLowerCase() : clean;
   if (!normalizedEmail.includes("@")) {
@@ -69,7 +70,7 @@ export async function authenticate(emailInput: string, password: string): Promis
         ],
       },
     });
-    if (member && !isMemberDeleted(member.id)) {
+    if (member && !(await isMemberDeleted(member.id))) {
       const normalizedMemberEmail =
         member.email.endsWith("@cwms.local") ||
         member.email.endsWith("@achariya.in") ||
@@ -84,7 +85,7 @@ export async function authenticate(emailInput: string, password: string): Promis
   }
 
   // In-memory / synced fallback
-  if (matchedMember && !isMemberDeleted(matchedMember.id)) {
+  if (matchedMember && !(await isMemberDeleted(matchedMember.id))) {
     return {
       id: matchedMember.id,
       email: matchedMember.email,

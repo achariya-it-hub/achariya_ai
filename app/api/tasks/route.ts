@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     });
 
     if (tasks && tasks.length > 0) {
-      let merged = mergeTasksWithSyncState(tasks);
+      let merged = await mergeTasksWithSyncState(tasks);
       if (projectId) merged = merged.filter((t: any) => t.projectId === projectId);
       if (status) merged = merged.filter((t: any) => t.status === status);
       return NextResponse.json(merged);
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     console.warn("Prisma error fetching tasks on Netlify lambda, falling back to seedData:", err);
   }
 
-  let fallbackTasks = mergeTasksWithSyncState(seedData.tasks);
+  let fallbackTasks = await mergeTasksWithSyncState(seedData.tasks);
   if (projectId) fallbackTasks = fallbackTasks.filter((t) => t.projectId === projectId);
   if (status) fallbackTasks = fallbackTasks.filter((t) => t.status === status);
 
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         proofs: true,
       },
     });
-    recordSyncedTaskUpsert(task as unknown as Record<string, unknown>);
+    await recordSyncedTaskUpsert(task as unknown as Record<string, unknown>);
     return NextResponse.json(task, { status: 201 });
   } catch (err) {
     console.error("Prisma create task error:", err);
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       proofs: [],
       createdAt: new Date().toISOString(),
     };
-    recordSyncedTaskUpsert(fallbackTask);
+    await recordSyncedTaskUpsert(fallbackTask);
     return NextResponse.json(fallbackTask, { status: 201 });
   }
 }

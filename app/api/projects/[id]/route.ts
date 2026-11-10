@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import {
+  recordSyncedProjectDelete,
+  recordSyncedProjectUpsert,
+} from "@/lib/task-sync";
 
 export async function GET(
   request: Request,
@@ -25,9 +29,9 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+  const body = await request.json();
   try {
-    const { id } = await params;
-    const body = await request.json();
     const { memberIds, owner, members, milestones, tasks, createdAt, ...cleanProjectData } = body;
 
     if (memberIds) {
@@ -49,10 +53,13 @@ export async function PUT(
         tasks: { select: { id: true, status: true, assigneeId: true } },
       },
     });
+    await recordSyncedProjectUpsert({ ...project, ...(memberIds ? { memberIds } : {}) });
     return NextResponse.json(project);
   } catch (err) {
-    console.error("Prisma update project error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.warn("Prisma update project fallback on serverless:", err);
+    const updated = { id, ...body };
+    await recordSyncedProjectUpsert(updated);
+    return NextResponse.json(updated);
   }
 }
 
@@ -61,6 +68,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.project.delete({ where: { id } });
+  await recordSyncedProjectDelete(id);
+  try {
+    await prisma.project.delete({ where: { id } });
+  } catch {}
   return NextResponse.json({ message: "Project deleted" });
 }

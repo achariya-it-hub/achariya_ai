@@ -25,13 +25,13 @@ export async function GET() {
     });
 
     if (members && members.length > 0) {
-      return NextResponse.json(mergeMembersWithSyncState(members));
+      return NextResponse.json(await mergeMembersWithSyncState(members));
     }
   } catch (err) {
     console.warn("Prisma error fetching members on Netlify lambda, falling back to seedMembers:", err);
   }
 
-  return NextResponse.json(mergeMembersWithSyncState(seedMembers));
+  return NextResponse.json(await mergeMembersWithSyncState(seedMembers));
 }
 
 export async function POST(request: Request) {
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       employeeId,
       ...(typeof body.password === "string" ? { password: body.password } : {}),
     };
-    recordSyncedMemberUpsert(enriched as unknown as Record<string, unknown>);
+    await recordSyncedMemberUpsert(enriched as unknown as Record<string, unknown>);
     return NextResponse.json(enriched, { status: 201 });
   } catch (err) {
     console.warn("Prisma member create fallback on serverless:", err);
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       id: targetId,
       employeeId,
     };
-    recordSyncedMemberUpsert(fallbackMember);
+    await recordSyncedMemberUpsert(fallbackMember);
     return NextResponse.json(fallbackMember, { status: 201 });
   }
 }

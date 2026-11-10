@@ -12,7 +12,7 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  const syncedList = mergeMembersWithSyncState(seedMembers);
+  const syncedList = await mergeMembersWithSyncState(seedMembers);
   const syncedMember = syncedList.find(
     (m) => m.id === user.id || m.email.toLowerCase() === user.email.toLowerCase()
   );
@@ -73,7 +73,7 @@ export async function PUT(request: Request) {
     console.warn("Prisma user profile update fallback on serverless:", err);
   }
 
-  recordSyncedMemberUpsert(updatedRecord);
+  await recordSyncedMemberUpsert(updatedRecord);
 
   const nextJwtUser = {
     id: targetId,

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
+import { recordSyncedMemberUpsert } from "@/lib/task-sync";
 
 export async function POST(request: Request) {
   try {
@@ -33,11 +34,14 @@ export async function POST(request: Request) {
       }
     }
 
-    // Update password in database
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { password: newPassword.trim() },
-    });
+    // Update password in database and cloud sync
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { password: newPassword.trim() },
+      });
+    } catch {}
+    await recordSyncedMemberUpsert({ id: user.id, password: newPassword.trim() });
 
     return NextResponse.json({
       success: true,

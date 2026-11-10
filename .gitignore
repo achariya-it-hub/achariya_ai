@@ -12,3 +12,4 @@ hostinger-deploy
 dev.db
 dist-electron
 tsconfig.tsbuildinfo
+.cwms-local-cloud-kv.json

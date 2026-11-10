@@ -48,12 +48,12 @@ export async function PUT(
       where: { id },
       data: cleanData as any,
     });
-    recordSyncedMemberUpsert({ id, ...cleanData });
+    await recordSyncedMemberUpsert({ id, ...cleanData });
     return NextResponse.json(user);
   } catch (err) {
     console.warn("Prisma member update fallback on serverless:", err);
     const updated = { id, ...cleanData };
-    recordSyncedMemberUpsert(updated);
+    await recordSyncedMemberUpsert(updated);
     return NextResponse.json(updated);
   }
 }
@@ -63,7 +63,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  recordSyncedMemberDelete(id);
+  await recordSyncedMemberDelete(id);
 
   try {
     await prisma.task.updateMany({

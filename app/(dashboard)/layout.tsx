@@ -22,13 +22,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (user) {
-      useCRMStore.getState().load();
+      useCRMStore.getState().load(true);
 
       const onFocus = () => {
-        useCRMStore.getState().load();
+        useCRMStore.getState().load(true);
       };
+      const interval = setInterval(() => {
+        if (document.visibilityState === "visible") {
+          useCRMStore.getState().load();
+        }
+      }, 8000);
+
       window.addEventListener("focus", onFocus);
-      return () => window.removeEventListener("focus", onFocus);
+      document.addEventListener("visibilitychange", onFocus);
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("focus", onFocus);
+        document.removeEventListener("visibilitychange", onFocus);
+      };
     }
   }, [user]);
 

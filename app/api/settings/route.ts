@@ -8,7 +8,7 @@ import {
 
 export async function GET() {
   try {
-    const settings = getWorkspaceSettings();
+    const settings = await getWorkspaceSettings();
     return NextResponse.json(settings);
   } catch {
     return NextResponse.json(DEFAULT_WORKSPACE_SETTINGS);
@@ -21,10 +21,10 @@ export async function PUT(request: Request) {
       resetToDefault?: boolean;
     };
     if (body.resetToDefault) {
-      const reset = updateWorkspaceSettings(DEFAULT_WORKSPACE_SETTINGS);
+      const reset = await updateWorkspaceSettings(DEFAULT_WORKSPACE_SETTINGS);
       return NextResponse.json(reset);
     }
-    const updated = updateWorkspaceSettings(body);
+    const updated = await updateWorkspaceSettings(body);
     return NextResponse.json(updated);
   } catch (err) {
     console.error("Failed to update workspace settings:", err);

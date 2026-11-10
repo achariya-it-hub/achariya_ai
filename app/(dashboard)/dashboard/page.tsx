@@ -756,7 +756,7 @@ export default function DashboardPage() {
       {/* PEAK PERFORMED USERS SPOTLIGHT & USER LEADERBOARD */}
       {(wsSettings?.peakPerformersConfig?.showBannerOnDashboard !== false ||
         wsSettings?.leaderboardConfig?.showOnDashboard !== false) &&
-        employeeAnalytics.list.length > 0 && (
+        employeeAnalytics.allRows.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             {/* Peak Performed Users Podium */}
             {wsSettings?.peakPerformersConfig?.showBannerOnDashboard !== false && (
@@ -782,38 +782,44 @@ export default function DashboardPage() {
                         wsSettings?.peakPerformersConfig?.featuredUserIds || [];
                       const peakList =
                         featuredIds.length > 0
-                          ? employeeAnalytics.list.filter((e) =>
+                          ? employeeAnalytics.allRows.filter((e) =>
                               featuredIds.includes(e.id)
                             )
-                          : employeeAnalytics.list.slice(0, 3);
-                      return peakList.map((emp, idx) => (
-                        <div
-                          key={emp.id}
-                          className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-3.5 flex items-center justify-between gap-3"
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm">
-                              {initials(emp.name)}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <p className="text-sm font-extrabold text-white truncate">
-                                  {emp.name}
-                                </p>
-                                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                          : employeeAnalytics.allRows.slice(0, 3);
+                      return peakList.map((emp, idx) => {
+                        const rate =
+                          emp.total > 0
+                            ? Math.round((emp.completed / emp.total) * 100)
+                            : 0;
+                        return (
+                          <div
+                            key={emp.id}
+                            className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-3.5 flex items-center justify-between gap-3"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                                {initials(emp.name)}
                               </div>
-                              <p className="text-[11px] text-white/70 truncate">
-                                {wsSettings?.peakPerformersConfig
-                                  ?.spotlightNotes?.[emp.id] ||
-                                  `${emp.completed} tasks completed · ${emp.rate}% velocity`}
-                              </p>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-sm font-extrabold text-white truncate">
+                                    {emp.name}
+                                  </p>
+                                  <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                                </div>
+                                <p className="text-[11px] text-white/70 truncate">
+                                  {wsSettings?.peakPerformersConfig
+                                    ?.spotlightNotes?.[emp.id] ||
+                                    `${emp.completed} tasks completed · ${rate}% velocity`}
+                                </p>
+                              </div>
                             </div>
+                            <span className="rounded-xl bg-amber-400/20 border border-amber-300/30 px-2.5 py-1 text-[11px] font-extrabold text-amber-300 shrink-0">
+                              #{idx + 1} Peak
+                            </span>
                           </div>
-                          <span className="rounded-xl bg-amber-400/20 border border-amber-300/30 px-2.5 py-1 text-[11px] font-extrabold text-amber-300 shrink-0">
-                            #{idx + 1} Peak
-                          </span>
-                        </div>
-                      ));
+                        );
+                      });
                     })()}
                   </div>
                 </div>
@@ -861,15 +867,20 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    {employeeAnalytics.list.slice(0, 5).map((emp, idx) => {
+                    {employeeAnalytics.allRows.slice(0, 5).map((emp, idx) => {
                       const ptsCfg = wsSettings?.leaderboardConfig || {};
                       const bonus = Number(
                         ptsCfg.manualBonusByUserId?.[emp.id] || 0
                       );
+                      const rate =
+                        emp.total > 0
+                          ? Math.round((emp.completed / emp.total) * 100)
+                          : 0;
                       const score =
                         emp.completed * (ptsCfg.pointsPerCompleted || 10) +
-                        emp.onTime * (ptsCfg.pointsPerOnTime || 5) +
+                        emp.completed * (ptsCfg.pointsPerOnTime || 5) +
                         bonus;
+                      const memberInfo = members.find((m) => m.id === emp.id);
                       return (
                         <div
                           key={emp.id}
@@ -894,8 +905,8 @@ export default function DashboardPage() {
                                 {emp.name}
                               </p>
                               <p className="text-[10px] text-slate-500 truncate">
-                                {emp.department} · {emp.completed}/{emp.total}{" "}
-                                tasks done ({emp.rate}%)
+                                {memberInfo?.department || emp.role} · {emp.completed}/{emp.total}{" "}
+                                tasks done ({rate}%)
                               </p>
                             </div>
                           </div>
