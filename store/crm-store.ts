@@ -4,9 +4,9 @@ import { create } from "zustand";
 import { Project, Milestone, Task, Meeting, Activity, TeamMember, AttendanceRecord, TaskProof, SocialPost, CalendarEvent, ChatMessage } from "@/types";
 import { seedData } from "@/lib/data";
 
-const STORAGE_KEY = "achariya_crm_store_v3";
+const STORAGE_KEY = "achariya_crm_store_v4_clean";
 
-const DELETED_KEY = "achariya_crm_deleted_ids";
+const DELETED_KEY = "achariya_crm_deleted_ids_v4";
 
 function getDeletedIds(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -53,6 +53,8 @@ function saveLocalData(data: {
 function getLocalData() {
   if (typeof window === "undefined") return null;
   try {
+    localStorage.removeItem("achariya_crm_store_v3");
+    localStorage.removeItem("achariya_crm_deleted_ids");
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
@@ -105,6 +107,7 @@ interface CRMStore {
   toggleSocialPostProcessed: (id: string, isProcessed: boolean) => Promise<void>;
   sendChatMessage: (msg: { senderId: string; receiverId: string; content: string; fileUrl?: string; fileName?: string }) => Promise<ChatMessage>;
   loadChatMessages: (userId?: string, peerId?: string) => Promise<void>;
+  resetAllAppData: () => Promise<void>;
 }
 
 let isSyncing = false;
@@ -906,6 +909,38 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
     } catch (err) {
       console.warn("Error loading chat messages:", err);
     }
+  },
+
+  resetAllAppData: async () => {
+    try {
+      await fetch("/api/tasks", { method: "DELETE" });
+    } catch (err) {
+      console.warn("Error calling DELETE /api/tasks:", err);
+    }
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(DELETED_KEY);
+        localStorage.removeItem("achariya_crm_store_v3");
+        localStorage.removeItem("achariya_crm_deleted_ids");
+      } catch {}
+    }
+    set((s) => {
+      const next = {
+        ...s,
+        projects: s.projects.map((p) => ({ ...p, progress: 0 })),
+        milestones: [],
+        tasks: [],
+        meetings: [],
+        activities: [],
+        attendance: [],
+        socialPosts: [],
+        calendarEvents: [],
+        chatMessages: [],
+      };
+      saveLocalData(next as any);
+      return next;
+    });
   },
 }));
 

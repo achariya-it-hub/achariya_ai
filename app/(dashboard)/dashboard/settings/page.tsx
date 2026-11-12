@@ -146,6 +146,7 @@ export default function AdminSettingsPage() {
   const addMember = useCRMStore((s) => s.addMember);
   const updateMember = useCRMStore((s) => s.updateMember);
   const deleteMember = useCRMStore((s) => s.deleteMember);
+  const resetAllAppData = useCRMStore((s) => s.resetAllAppData);
 
   const [activeTab, setActiveTab] = useState<
     "entity" | "colors" | "sbu" | "users" | "modules" | "leaderboard" | "peak"
@@ -230,6 +231,26 @@ export default function AdminSettingsPage() {
       showNotice("ok", "Restored default Digiventures workspace settings.");
     } catch {
       showNotice("err", "Could not reset settings");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleClearAllTasks = async () => {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "Clear ALL tasks and reset operational app data to zero for all users? (Users, SBUs, and Settings will be preserved.)"
+      )
+    ) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await resetAllAppData();
+      showNotice("ok", "All tasks cleared! Workspace is now reset to zero tasks for all users.");
+    } catch {
+      showNotice("err", "Failed to clear tasks");
     } finally {
       setSaving(false);
     }
@@ -433,6 +454,15 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleClearAllTasks}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-500/25 hover:bg-rose-500/40 border border-rose-300/30 px-4 py-2.5 text-xs font-bold text-white transition-all cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4 text-rose-200" />
+              <span>Clear All Tasks (0)</span>
+            </button>
             <button
               type="button"
               onClick={resetDefaults}

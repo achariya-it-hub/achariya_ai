@@ -197,11 +197,13 @@ class Api {
 
   static Future<List<Task>> tasks() async {
     List<Task> remote = [];
+    bool fetchedFromServer = false;
     try {
       final res = await http
           .get(Uri.parse('$_baseUrl/api/tasks'), headers: _headers())
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
+        fetchedFromServer = true;
         final list = jsonDecode(res.body) as List;
         remote = list.map((e) {
           final map = Map<String, dynamic>.from(e as Map<String, dynamic>);
@@ -214,7 +216,7 @@ class Api {
       }
     } catch (_) {}
 
-    if (remote.isEmpty) {
+    if (!fetchedFromServer && remote.isEmpty) {
       remote = _seedTasks.map((t) {
         if (_localTaskPatches.containsKey(t.id)) {
           final merged = _taskToMap(t)..addAll(_localTaskPatches[t.id]!);
@@ -230,6 +232,23 @@ class Api {
       ...remote,
     ];
     return combined;
+  }
+
+  static Future<void> clearAllTasks() async {
+    _localCreatedTasks.clear();
+    _localTaskPatches.clear();
+    final mirror = _mirrorUrl;
+    if (mirror != null) {
+      http
+          .delete(Uri.parse('$mirror/api/tasks'), headers: _headers())
+          .timeout(const Duration(seconds: 5))
+          .ignore();
+    }
+    try {
+      await http
+          .delete(Uri.parse('$_baseUrl/api/tasks'), headers: _headers())
+          .timeout(const Duration(seconds: 10));
+    } catch (_) {}
   }
 
   static Future<Task> createTask(Map<String, dynamic> payload) async {
@@ -749,143 +768,33 @@ class Api {
 
   static const List<Project> _seedProjects = [
     Project(
-      id: '1',
-      name: 'Achariya Admissions 2026',
-      description: 'Integrated digital and print creative workflow for Achariya institutions',
+      id: 'p1',
+      name: 'Book Preparation Work',
+      description: 'Complete book preparation including content creation, editing, formatting and review.',
       status: 'active',
-      progress: 75,
-      business: 'Achariya',
-      memberIds: ['1', '2', '3', '4', '5'],
+      progress: 0,
+      business: 'MD Sir Projects',
+      memberIds: ['u1', 'u9'],
     ),
     Project(
-      id: '2',
-      name: 'Q School Brand Launch',
-      description: 'Social media creatives, reels, and posters for Q School',
+      id: 'p2',
+      name: 'Video Work',
+      description: 'Scheduled video production, editing, and task assignments for team members and trainees.',
       status: 'active',
-      progress: 62,
-      business: 'Q School',
-      memberIds: ['2', '3', '4'],
+      progress: 0,
+      business: 'MD Sir Projects',
+      memberIds: ['u1', 'u2', 'u3', 'u6', 'u7', 'u8', 'u9'],
     ),
     Project(
-      id: '3',
-      name: 'MIWAY & WOW Festive Campaign',
-      description: 'Multi-SBU festive banners and reels',
+      id: 'p3',
+      name: 'App Development',
+      description: 'Mobile and web application development.',
       status: 'active',
-      progress: 80,
+      progress: 0,
       business: 'Miway',
-      memberIds: ['1', '3', '5'],
+      memberIds: ['u2', 'u6'],
     ),
   ];
 
-  static const List<Task> _seedTasks = [
-    Task(
-      id: '52',
-      taskCode: 'CWMS-2601',
-      title: 'Aklavya New Saram Parent Testimonial Shooting - Video 2',
-      description: 'Shoot & edit parent testimonial reel with subtitles and Achariya branding.',
-      status: 'in-progress',
-      workflowState: 'in-progress',
-      priority: 'high',
-      projectId: '1',
-      assigneeId: '5',
-      assignedByName: 'Bala',
-      sbu: 'Achariya',
-      marketingType: 'Digital Marketing',
-      creativeType: 'Reel',
-      platform: 'Meta',
-      workloadPercent: 50,
-      estimatedHours: 3.75,
-      actualHours: 1.5,
-      dueDate: '2026-11-12',
-      dueTime: '05:30 PM',
-    ),
-    Task(
-      id: '51',
-      taskCode: 'CWMS-2600',
-      title: 'Title and Description for Q-School Poster',
-      description: 'Prepare copy and creative layout for Q-School admission campaign.',
-      status: 'review',
-      workflowState: 'awaiting-approval',
-      priority: 'high',
-      projectId: '2',
-      assigneeId: '4',
-      assignedByName: 'Athiyaman',
-      sbu: 'Q School',
-      marketingType: 'Digital Marketing',
-      creativeType: 'Presentation Content',
-      platform: 'Meta',
-      workloadPercent: 30,
-      estimatedHours: 2.25,
-      actualHours: 2.0,
-      dueDate: '2026-11-10',
-      dueTime: '05:30 PM',
-      finalOutputLink: 'https://drive.google.com/drive/folders/qschool-poster-final',
-    ),
-    Task(
-      id: '50',
-      taskCode: 'CWMS-2599',
-      title: 'Shambala ASM Villupuram Banner - 1 No',
-      description: 'Print-ready flex banner design for ASM Villupuram campus.',
-      status: 'in-progress',
-      workflowState: 'in-progress',
-      priority: 'urgent',
-      projectId: '1',
-      assigneeId: '3',
-      assignedByName: 'Bala',
-      sbu: 'Achariya',
-      marketingType: 'Direct Marketing',
-      creativeType: 'Banner',
-      platform: 'Offline',
-      workloadPercent: 25,
-      estimatedHours: 1.9,
-      actualHours: 1.1,
-      dueDate: '2026-11-08',
-      dueTime: '02:30 PM',
-    ),
-    Task(
-      id: '49',
-      taskCode: 'CWMS-2598',
-      title: 'Diwali Special Day Posters (Achariya, Miway, WOW) - 3 Nos',
-      description: 'Festive social media creative set across 3 SBUs.',
-      status: 'done',
-      workflowState: 'completed',
-      priority: 'high',
-      projectId: '3',
-      assigneeId: '3',
-      assignedByName: 'Athiyaman',
-      sbu: 'WOW',
-      marketingType: 'Digital Marketing',
-      creativeType: 'Social Media Creative',
-      platform: 'Meta',
-      workloadPercent: 60,
-      estimatedHours: 4.5,
-      actualHours: 4.0,
-      dueDate: '2026-11-06',
-      dueTime: '05:30 PM',
-      completedAt: '2026-11-06T16:20:00Z',
-      finalOutputLink: 'https://drive.google.com/drive/folders/diwali-posters-3sbu',
-    ),
-    Task(
-      id: '48',
-      taskCode: 'CWMS-2597',
-      title: 'WIN Real Estate Site Walkthrough Motion Graphics',
-      description: 'Animated plot highlights and location callouts for WIN Real Estate.',
-      status: 'in-progress',
-      workflowState: 'correction-required',
-      priority: 'high',
-      projectId: '3',
-      assigneeId: '5',
-      assignedByName: 'Bala',
-      sbu: 'WIN Real Estate',
-      marketingType: 'Digital Marketing',
-      creativeType: 'Motion Graphics',
-      platform: 'YouTube',
-      workloadPercent: 60,
-      estimatedHours: 4.5,
-      actualHours: 3.8,
-      dueDate: '2026-11-11',
-      dueTime: '05:30 PM',
-      reviewFeedback: 'Please update the contact number plate on the outro frame.',
-    ),
-  ];
+  static const List<Task> _seedTasks = [];
 }

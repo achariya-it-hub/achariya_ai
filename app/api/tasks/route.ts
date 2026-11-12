@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { seedData } from "@/lib/data";
 import { getUser } from "@/lib/auth";
 import {
+  clearAllSyncedTasksAndData,
   mergeTasksWithSyncState,
   recordSyncedTaskUpsert,
   sanitizePrismaTaskInput,
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
       },
     });
 
-    if (tasks && tasks.length > 0) {
+    if (Array.isArray(tasks)) {
       let merged = await mergeTasksWithSyncState(tasks);
       if (projectId) merged = merged.filter((t: any) => t.projectId === projectId);
       if (status) merged = merged.filter((t: any) => t.status === status);
@@ -44,6 +45,32 @@ export async function GET(request: Request) {
   if (status) fallbackTasks = fallbackTasks.filter((t) => t.status === status);
 
   return NextResponse.json(fallbackTasks);
+}
+
+export async function DELETE() {
+  try {
+    await prisma.taskProof.deleteMany();
+    await prisma.task.deleteMany();
+    await prisma.activity.deleteMany();
+    await prisma.milestone.deleteMany();
+    await prisma.meetingAttendee.deleteMany();
+    await prisma.meeting.deleteMany();
+    await prisma.attendance.deleteMany();
+    await prisma.socialPost.deleteMany();
+    await prisma.calendarEvent.deleteMany();
+    await prisma.chatMessage.deleteMany();
+    await prisma.project.updateMany({ data: { progress: 0 } });
+  } catch (err) {
+    console.warn("Prisma error clearing tasks/operational data:", err);
+  }
+
+  await clearAllSyncedTasksAndData();
+  return NextResponse.json({
+    ok: true,
+    cleared: true,
+    tasksCount: 0,
+    message: "All tasks and operational history have been cleared to zero.",
+  });
 }
 
 export async function POST(request: Request) {

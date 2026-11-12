@@ -6,10 +6,10 @@ interface EntitySyncState {
   deleted: string[];
 }
 
-const TASKS_KV_KEY = "tasks-sync-v2";
+const TASKS_KV_KEY = "tasks-sync-v3-clean";
 const MEMBERS_KV_KEY = "members-sync-v2";
-const PROJECTS_KV_KEY = "projects-sync-v2";
-const ATTENDANCE_KV_KEY = "attendance-sync-v2";
+const PROJECTS_KV_KEY = "projects-sync-v3-clean";
+const ATTENDANCE_KV_KEY = "attendance-sync-v3-clean";
 const SETTINGS_KV_KEY = "workspace-settings-v2";
 
 async function loadEntitySync(key: string): Promise<EntitySyncState> {
@@ -161,6 +161,19 @@ export async function mergeTasksWithSyncState<T extends { id: string }>(
   }
 
   return Array.from(map.values());
+}
+
+export async function clearAllSyncedTasksAndData() {
+  await saveEntitySync(TASKS_KV_KEY, { upserted: {}, deleted: [] });
+  await cloudKvSet(ATTENDANCE_KV_KEY, []);
+  seedData.tasks = [];
+  seedData.milestones = [];
+  seedData.meetings = [];
+  seedData.activities = [];
+  seedData.attendance = [];
+  seedData.calendarEvents = [];
+  seedData.socialPosts = [];
+  seedData.chatMessages = [];
 }
 
 // ============================================================================
