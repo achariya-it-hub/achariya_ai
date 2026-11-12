@@ -163,8 +163,21 @@ export async function mergeTasksWithSyncState<T extends { id: string }>(
   return Array.from(map.values());
 }
 
+export async function getDeletedTaskIds(): Promise<string[]> {
+  const state = await loadEntitySync(TASKS_KV_KEY);
+  return state.deleted;
+}
+
 export async function clearAllSyncedTasksAndData() {
-  await saveEntitySync(TASKS_KV_KEY, { upserted: {}, deleted: [] });
+  const prev = await loadEntitySync(TASKS_KV_KEY);
+  const allPrevIds = Array.from(
+    new Set([
+      ...prev.deleted,
+      ...Object.keys(prev.upserted),
+      ...seedData.tasks.map((t) => t.id),
+    ])
+  );
+  await saveEntitySync(TASKS_KV_KEY, { upserted: {}, deleted: allPrevIds });
   await cloudKvSet(ATTENDANCE_KV_KEY, []);
   seedData.tasks = [];
   seedData.milestones = [];

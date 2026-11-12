@@ -7,14 +7,19 @@ import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function resolveSqliteUrl(): string {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
-  const localDbPath = path.join(process.cwd(), "dev.db");
   const isServerless =
     Boolean(process.env.NETLIFY) ||
     Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
     Boolean(process.env.VERCEL);
+
+  if (
+    process.env.DATABASE_URL &&
+    (!isServerless || !process.env.DATABASE_URL.startsWith("file:"))
+  ) {
+    return process.env.DATABASE_URL;
+  }
+
+  const localDbPath = path.join(process.cwd(), "dev.db");
 
   if (isServerless) {
     const tmpDbPath = path.join(os.tmpdir(), "cwms-dev.db");

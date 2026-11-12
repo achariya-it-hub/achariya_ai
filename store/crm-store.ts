@@ -152,18 +152,35 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
     }
 
     try {
+      let serverDeletedTaskIds: string[] = [];
       const [membersRes, projectsRes, milestonesRes, tasksRes, meetingsRes, activitiesRes, attendanceRes, calendarRes, socialRes, chatRes] = await Promise.all([
-        fetch("/api/members").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/projects").then((r) => r.ok ? r.json() : null).then((projects) => (Array.isArray(projects) ? projects.map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] })) : null)).catch(() => null),
-        fetch("/api/milestones").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/tasks").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/meetings").then((r) => r.ok ? r.json() : null).then((meetings) => (Array.isArray(meetings) ? meetings.map((m: any) => ({ ...m, attendeeIds: m.attendees?.map((a: any) => a.userId) || m.attendeeIds || [] })) : null)).catch(() => null),
-        fetch("/api/activities").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/attendance").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/calendar").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/social").then((r) => r.ok ? r.json() : null).catch(() => null),
-        fetch("/api/chat").then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/members", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/projects", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((projects) => (Array.isArray(projects) ? projects.map((p: any) => ({ ...p, memberIds: p.members?.map((m: any) => m.userId) || p.memberIds || [] })) : null)).catch(() => null),
+        fetch("/api/milestones", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/tasks", { cache: "no-store" })
+          .then(async (r) => {
+            if (!r.ok) return null;
+            const delHeader = r.headers.get("x-deleted-task-ids");
+            if (delHeader) {
+              serverDeletedTaskIds = delHeader.split(",").map((s) => s.trim()).filter(Boolean);
+            }
+            return r.json();
+          })
+          .catch(() => null),
+        fetch("/api/meetings", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((meetings) => (Array.isArray(meetings) ? meetings.map((m: any) => ({ ...m, attendeeIds: m.attendees?.map((a: any) => a.userId) || m.attendeeIds || [] })) : null)).catch(() => null),
+        fetch("/api/activities", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/attendance", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/calendar", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/social", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
+        fetch("/api/chat", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).catch(() => null),
       ]);
+
+      for (const delId of serverDeletedTaskIds) {
+        if (!deleted.has(delId)) {
+          deleted.add(delId);
+          addDeletedId(delId);
+        }
+      }
 
       const cur = get();
 
@@ -212,9 +229,22 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
           ? projectsRes.filter((item: any) => !deleted.has(item.id))
           : merge(projectsRes, cur.projects, seedData.projects);
       const mergedMilestones = merge(milestonesRes, cur.milestones, seedData.milestones);
-      const rawMergedTasks = Array.isArray(tasksRes)
-        ? tasksRes.filter((item: any) => !deleted.has(item.id))
-        : merge(tasksRes, cur.tasks, seedData.tasks);
+      const rawMergedTasks = merge(tasksRes, cur.tasks, seedData.tasks);
+
+      // If any local task in cur.tasks wasn't in tasksRes yet, re-push it in the background
+      // so serverless instances & other devices stay 100% in sync.
+      if (Array.isArray(tasksRes)) {
+        const serverTaskIdSet = new Set(tasksRes.map((t: any) => t.id));
+        for (const localTask of cur.tasks) {
+          if (!deleted.has(localTask.id) && !serverTaskIdSet.has(localTask.id)) {
+            fetch("/api/tasks", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(localTask),
+            }).catch(() => {});
+          }
+        }
+      }
       // Enforce trainee-only payout policy (reset non-trainee & Ramkumar payouts to 0)
       const mergedTasks = rawMergedTasks.map((t) => {
         const assignee = mergedMembers.find((m) => m.id === t.assigneeId);
@@ -427,16 +457,35 @@ export const useCRMStore = create<CRMStore>()((set, get) => ({
       proofs: [],
       createdAt: new Date().toISOString(),
     };
+    lastSyncTime = Date.now();
     set((s) => {
       const next = { ...s, tasks: [newTask, ...s.tasks] };
       saveLocalData(next);
       return next;
     });
-    await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...task, id: newTask.id }),
-    }).catch(() => {});
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newTask }),
+      });
+      lastSyncTime = Date.now();
+      if (res.ok) {
+        const saved = await res.json();
+        if (saved && saved.id) {
+          set((s) => {
+            const next = {
+              ...s,
+              tasks: s.tasks.map((t) =>
+                t.id === newTask.id ? { ...t, ...saved, id: newTask.id } : t
+              ),
+            };
+            saveLocalData(next);
+            return next;
+          });
+        }
+      }
+    } catch {}
   },
 
   updateTask: async (id, updates) => {

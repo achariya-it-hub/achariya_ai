@@ -8,13 +8,15 @@ const LOCAL_KV_FILE = path.join(process.cwd(), ".cwms-local-cloud-kv.json");
 const TMP_KV_FILE = path.join(os.tmpdir(), "cwms-local-cloud-kv.json");
 
 const memCache: Record<string, unknown> = {};
-let blobsDisabledForProcess = false;
 
-function hasNetlifyBlobsContext(): boolean {
-  if (blobsDisabledForProcess) return false;
+function isServerlessRuntime(): boolean {
   return Boolean(
-    process.env.NETLIFY_BLOBS_CONTEXT ||
-      (globalThis as any).netlifyBlobsContext
+    process.env.NETLIFY ||
+      process.env.NETLIFY_LOCAL ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.NETLIFY_BLOBS_CONTEXT ||
+      (globalThis as any).netlifyBlobsContext ||
+      (globalThis as any)[Symbol.for("nf.als.env")]
   );
 }
 
@@ -56,20 +58,22 @@ function writeLocalFileStore(all: Record<string, unknown>) {
 }
 
 export async function cloudKvGet<T>(key: string, fallback: T): Promise<T> {
-  if (hasNetlifyBlobsContext()) {
+  if (isServerlessRuntime()) {
     try {
-      const store = getStore({ name: STORE_NAME });
+      const store = getStore({ name: STORE_NAME, consistency: "strong" });
       const val = (await withTimeout(
-        store.get(key, { type: "json" }),
-        1500
+        store.get(key, { type: "json", consistency: "strong" }),
+        2500
       )) as T | null;
       if (val !== null && val !== undefined) {
         memCache[key] = val;
+        const localStore = readLocalFileStore();
+        localStore[key] = val;
+        writeLocalFileStore(localStore);
         return val;
       }
     } catch (err) {
-      blobsDisabledForProcess = true;
-      console.warn(`Netlify Blobs GET fast-fallback for "${key}":`, err);
+      console.warn(`Netlify Blobs GET fallback for "${key}":`, err);
     }
   }
 
@@ -92,13 +96,12 @@ export async function cloudKvSet<T>(key: string, value: T): Promise<void> {
   localStore[key] = value;
   writeLocalFileStore(localStore);
 
-  if (hasNetlifyBlobsContext()) {
+  if (isServerlessRuntime()) {
     try {
-      const store = getStore({ name: STORE_NAME });
-      await withTimeout(store.setJSON(key, value), 1500);
+      const store = getStore({ name: STORE_NAME, consistency: "strong" });
+      await withTimeout(store.setJSON(key, value), 2500);
     } catch (err) {
-      blobsDisabledForProcess = true;
-      console.warn(`Netlify Blobs SET fast-fallback for "${key}":`, err);
+      console.warn(`Netlify Blobs SET fallback for "${key}":`, err);
     }
   }
 }

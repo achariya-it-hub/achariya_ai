@@ -4,6 +4,7 @@ import { seedData } from "@/lib/data";
 import { getUser } from "@/lib/auth";
 import {
   clearAllSyncedTasksAndData,
+  getDeletedTaskIds,
   mergeTasksWithSyncState,
   recordSyncedTaskUpsert,
   sanitizePrismaTaskInput,
@@ -13,6 +14,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const projectId = searchParams.get("projectId");
   const status = searchParams.get("status");
+  const deletedIds = await getDeletedTaskIds();
+  const headers = {
+    "x-deleted-task-ids": deletedIds.join(","),
+    "Cache-Control": "no-store, max-age=0",
+  };
 
   try {
     const where: Record<string, unknown> = {};
@@ -34,7 +40,7 @@ export async function GET(request: Request) {
       let merged = await mergeTasksWithSyncState(tasks);
       if (projectId) merged = merged.filter((t: any) => t.projectId === projectId);
       if (status) merged = merged.filter((t: any) => t.status === status);
-      return NextResponse.json(merged);
+      return NextResponse.json(merged, { headers });
     }
   } catch (err) {
     console.warn("Prisma error fetching tasks on Netlify lambda, falling back to seedData:", err);
@@ -44,7 +50,7 @@ export async function GET(request: Request) {
   if (projectId) fallbackTasks = fallbackTasks.filter((t) => t.projectId === projectId);
   if (status) fallbackTasks = fallbackTasks.filter((t) => t.status === status);
 
-  return NextResponse.json(fallbackTasks);
+  return NextResponse.json(fallbackTasks, { headers });
 }
 
 export async function DELETE() {
@@ -105,8 +111,16 @@ export async function POST(request: Request) {
       }
     }
 
-    const task = await prisma.task.create({
-      data: cleanTaskData as any,
+    const taskId =
+      typeof cleanTaskData.id === "string" && cleanTaskData.id.trim()
+        ? cleanTaskData.id.trim()
+        : `task-${Date.now()}`;
+    const { id: _ignoreId, ...updateFields } = cleanTaskData;
+
+    const task = await prisma.task.upsert({
+      where: { id: taskId },
+      update: updateFields as any,
+      create: { ...cleanTaskData, id: taskId } as any,
       include: {
         project: true,
         assignee: { select: { id: true, name: true, email: true, avatar: true } },
