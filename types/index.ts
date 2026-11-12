@@ -56,7 +56,20 @@ export interface Subtask {
 
 export type PayoutStatus = "pending" | "approved" | "paid";
 
-export type CreativeType =
+export type KnownCreativeType =
+  | "social-media-content"
+  | "video-content-scripts"
+  | "advertising-campaign-content"
+  | "website-digital-content"
+  | "corporate-business-content"
+  | "educational-academic-content"
+  | "sales-lead-conversion-content"
+  | "design-creative-content"
+  | "events-communication"
+  | "ecommerce-product-content"
+  | "research-strategic-content"
+  | "ai-technology-content"
+  | "proof-reading"
   | "poster"
   | "reel"
   | "video"
@@ -73,6 +86,8 @@ export type CreativeType =
   | "social-creative"
   | "landing-page"
   | "reel-script";
+
+export type CreativeType = KnownCreativeType | (string & {});
 
 export type TaskStage =
   | "created"

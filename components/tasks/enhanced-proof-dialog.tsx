@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Task, Project, TeamMember, Subtask, CreativePlatform, CreativeType } from "@/types";
-import { PlatformBadge, CreativeTypeBadge, ACMSLifecycleStepper } from "./acms-creative-badges";
+import { PlatformBadge, CreativeTypeBadge, ACMSLifecycleStepper, creativeTypeMeta } from "./acms-creative-badges";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCRMStore } from "@/store/crm-store";
 import { formatDate } from "@/lib/utils";
@@ -232,17 +232,35 @@ export function EnhancedProofDialog({ task, onClose, isAdmin, isElevated }: Enha
                   </SelectContent>
                 </Select>
 
-                <Select value={creativeType || ""} onValueChange={(v) => setCreativeType((v as CreativeType) || undefined)}>
-                  <SelectTrigger className="h-7 text-[10px] w-24 bg-white border-slate-200">
-                    <SelectValue placeholder="Format" />
+                <Select
+                  value={creativeType || ""}
+                  onValueChange={(v) => {
+                    if (v === "__custom__") {
+                      const custom = window.prompt(
+                        "Enter custom creative type:",
+                        creativeType && !creativeTypeMeta[creativeType] ? creativeType : ""
+                      );
+                      if (custom && custom.trim()) {
+                        setCreativeType(custom.trim());
+                      }
+                      return;
+                    }
+                    setCreativeType((v as CreativeType) || undefined);
+                  }}
+                >
+                  <SelectTrigger className="h-7 text-[10px] w-36 bg-white border-slate-200">
+                    <SelectValue placeholder="Creative Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="reel">Reel</SelectItem>
-                    <SelectItem value="poster">Poster</SelectItem>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="carousel">Carousel</SelectItem>
-                    <SelectItem value="article">Article</SelectItem>
-                    <SelectItem value="banner">Banner</SelectItem>
+                    {creativeType && !creativeTypeMeta[creativeType] && (
+                      <SelectItem value={creativeType}>{creativeType} (Custom)</SelectItem>
+                    )}
+                    {Object.entries(creativeTypeMeta).map(([k, m]) => (
+                      <SelectItem key={k} value={k}>
+                        {m.label}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__custom__">+ Custom Creative...</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

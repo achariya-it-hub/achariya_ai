@@ -14,6 +14,7 @@ import {
 } from "@/types";
 import {
   creativeTypeMeta,
+  getCreativeTypeMeta,
   OFFICE_DAY_HOURS,
 } from "@/components/tasks/acms-creative-badges";
 import { SBU_OPTIONS } from "@/lib/task-workflow";
@@ -106,6 +107,7 @@ export function NewTaskForm({
   const [marketingType, setMarketingType] =
     useState<string>("Digital Marketing");
   const [creativeType, setCreativeType] = useState<CreativeType | "">("");
+  const [customCreativeType, setCustomCreativeType] = useState<string>("");
   const [platform, setPlatform] = useState<CreativePlatform | "">("");
   const [priority, setPriority] = useState<Priority>("medium");
   const [completionDate, setCompletionDate] = useState("");
@@ -121,8 +123,13 @@ export function NewTaskForm({
     return [...SBU_OPTIONS];
   }, []);
 
-  const selectedCreativeMeta = creativeType
-    ? creativeTypeMeta[creativeType]
+  const resolvedCreativeType =
+    creativeType === "__custom__"
+      ? customCreativeType.trim() || "Custom Creative"
+      : creativeType;
+
+  const selectedCreativeMeta = resolvedCreativeType
+    ? getCreativeTypeMeta(resolvedCreativeType)
     : undefined;
 
   const templateWorkloadPct = selectedCreativeMeta?.defaultWorkloadPct ?? 0;
@@ -171,6 +178,10 @@ export function NewTaskForm({
       toast.error("Please enter a task name.");
       return;
     }
+    if (creativeType === "__custom__" && !customCreativeType.trim()) {
+      toast.error("Please enter a custom creative type name.");
+      return;
+    }
     if (!completionDate) {
       toast.error("Please select an estimated completion date.");
       return;
@@ -217,7 +228,10 @@ export function NewTaskForm({
         dueTime: completionTime || "17:30",
         payout: isAdmin && isTraineeSelected ? Number(payout) || 0 : 0,
         marketingType: marketingType || "Digital Marketing",
-        creativeType: (creativeType as CreativeType) || undefined,
+        creativeType:
+          creativeType === "__custom__"
+            ? (customCreativeType.trim() as CreativeType)
+            : (creativeType as CreativeType) || undefined,
         platform: (platform as CreativePlatform) || undefined,
         sbu: sbu || undefined,
         assetCode: cwmsCode,
@@ -396,9 +410,24 @@ export function NewTaskForm({
                   {meta.label} ({meta.defaultWorkloadPct}% workload)
                 </option>
               ))}
+              <option value="__custom__" className="text-indigo-700 font-bold">
+                + Custom Creative (Type your own...)
+              </option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           </div>
+
+          {creativeType === "__custom__" && (
+            <div className="pt-1.5">
+              <Input
+                value={customCreativeType}
+                onChange={(e) => setCustomCreativeType(e.target.value)}
+                placeholder="Type custom creative (e.g. Podcast Script, WhatsApp Broadcast, Book Proofing)..."
+                autoFocus
+                className={inputClassName}
+              />
+            </div>
+          )}
         </div>
       </div>
 

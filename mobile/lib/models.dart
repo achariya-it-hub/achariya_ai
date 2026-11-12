@@ -32,7 +32,22 @@ class CreativeTypeInfo {
   const CreativeTypeInfo(this.name, this.defaultWorkloadPercent, this.defaultHours);
 }
 
+const String kCustomCreativeOption = '+ Custom Creative (Type your own)';
+
 const List<CreativeTypeInfo> kCreativeTypes = [
+  CreativeTypeInfo('Social Media Content', 30, 2.25),
+  CreativeTypeInfo('Video Content & Scripts', 50, 3.75),
+  CreativeTypeInfo('Advertising & Campaign Content', 60, 4.5),
+  CreativeTypeInfo('Website & Digital Content', 50, 3.75),
+  CreativeTypeInfo('Corporate & Business Content', 40, 3.0),
+  CreativeTypeInfo('Educational & Academic Content', 45, 3.4),
+  CreativeTypeInfo('Sales & Lead Conversion Content', 40, 3.0),
+  CreativeTypeInfo('Design & Creative Content', 40, 3.0),
+  CreativeTypeInfo('Events & Communication', 35, 2.6),
+  CreativeTypeInfo('E-commerce & Product Content', 35, 2.6),
+  CreativeTypeInfo('Research & Strategic Content', 50, 3.75),
+  CreativeTypeInfo('AI & Technology Content', 45, 3.4),
+  CreativeTypeInfo('Proof Reading', 20, 1.5),
   CreativeTypeInfo('Reel', 50, 3.75),
   CreativeTypeInfo('Full Day Shooting', 100, 7.5),
   CreativeTypeInfo('Half Day Shooting', 50, 3.75),
@@ -44,6 +59,7 @@ const List<CreativeTypeInfo> kCreativeTypes = [
   CreativeTypeInfo('Motion Graphics', 60, 4.5),
   CreativeTypeInfo('Presentation Content', 30, 2.25),
   CreativeTypeInfo('Logo / Branding', 80, 6.0),
+  CreativeTypeInfo(kCustomCreativeOption, 30, 2.25),
 ];
 
 class TaskStageInfo {

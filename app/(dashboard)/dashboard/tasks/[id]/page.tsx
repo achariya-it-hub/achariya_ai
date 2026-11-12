@@ -1384,7 +1384,30 @@ export default function TaskDetailPage({
                   <select
                     value={task.creativeType || ""}
                     onChange={(e) => {
-                      const ct = (e.target.value as CreativeType) || undefined;
+                      const val = e.target.value;
+                      if (val === "__custom__") {
+                        const custom = window.prompt(
+                          "Enter custom creative type:",
+                          task.creativeType && !creativeTypeMeta[task.creativeType]
+                            ? task.creativeType
+                            : ""
+                        );
+                        if (!custom || !custom.trim()) return;
+                        const ct = custom.trim();
+                        const pct = 30;
+                        const estHrs =
+                          Math.round((pct / 100) * OFFICE_DAY_HOURS * 100) / 100;
+                        handleFieldUpdate(
+                          {
+                            creativeType: ct,
+                            workloadPercent: pct,
+                            estimatedHours: estHrs,
+                          },
+                          `Changed creative type to ${ct}`
+                        );
+                        return;
+                      }
+                      const ct = (val as CreativeType) || undefined;
                       const pct = ct ? creativeTypeMeta[ct]?.defaultWorkloadPct : undefined;
                       const estHrs =
                         pct !== undefined
@@ -1402,6 +1425,11 @@ export default function TaskDetailPage({
                     className="w-full h-8 appearance-none rounded-lg border border-slate-200 bg-white px-2.5 pr-7 text-xs font-medium text-slate-800 outline-none focus:border-indigo-500"
                   >
                     <option value="">—</option>
+                    {task.creativeType && !creativeTypeMeta[task.creativeType] && (
+                      <option value={task.creativeType}>
+                        {task.creativeType} (Custom)
+                      </option>
+                    )}
                     {(
                       Object.entries(creativeTypeMeta) as [
                         CreativeType,
@@ -1412,6 +1440,7 @@ export default function TaskDetailPage({
                         {m.label}
                       </option>
                     ))}
+                    <option value="__custom__">+ Custom Creative (Type in...)</option>
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                 </div>

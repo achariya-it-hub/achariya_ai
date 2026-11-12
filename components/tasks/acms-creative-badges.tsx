@@ -92,9 +92,87 @@ export const platformMeta: Record<
 };
 
 export const creativeTypeMeta: Record<
-  CreativeType,
+  string,
   { label: string; bg: string; icon: React.ReactNode; defaultWorkloadPct: number }
 > = {
+  "social-media-content": {
+    label: "1. Social Media Content",
+    bg: "bg-pink-100 text-pink-800",
+    icon: <Share2 className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 30,
+  },
+  "video-content-scripts": {
+    label: "2. Video Content & Scripts",
+    bg: "bg-purple-100 text-purple-800",
+    icon: <Film className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  "advertising-campaign-content": {
+    label: "3. Advertising & Campaign Content",
+    bg: "bg-indigo-100 text-indigo-800",
+    icon: <Award className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 60,
+  },
+  "website-digital-content": {
+    label: "4. Website & Digital Content",
+    bg: "bg-sky-100 text-sky-800",
+    icon: <Globe className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  "corporate-business-content": {
+    label: "5. Corporate & Business Content",
+    bg: "bg-slate-100 text-slate-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 40,
+  },
+  "educational-academic-content": {
+    label: "6. Educational & Academic Content",
+    bg: "bg-emerald-100 text-emerald-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 45,
+  },
+  "sales-lead-conversion-content": {
+    label: "7. Sales & Lead Conversion Content",
+    bg: "bg-amber-100 text-amber-800",
+    icon: <Sparkles className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 40,
+  },
+  "design-creative-content": {
+    label: "8. Design & Creative Content",
+    bg: "bg-fuchsia-100 text-fuchsia-800",
+    icon: <ImageIcon className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 40,
+  },
+  "events-communication": {
+    label: "9. Events & Communication",
+    bg: "bg-rose-100 text-rose-800",
+    icon: <Camera className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 35,
+  },
+  "ecommerce-product-content": {
+    label: "10. E-commerce & Product Content",
+    bg: "bg-orange-100 text-orange-800",
+    icon: <Layers className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 35,
+  },
+  "research-strategic-content": {
+    label: "11. Research & Strategic Content",
+    bg: "bg-cyan-100 text-cyan-800",
+    icon: <FileText className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 50,
+  },
+  "ai-technology-content": {
+    label: "12. AI & Technology Content",
+    bg: "bg-violet-100 text-violet-800",
+    icon: <Sparkles className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 45,
+  },
+  "proof-reading": {
+    label: "13. Proof Reading",
+    bg: "bg-teal-100 text-teal-800",
+    icon: <CheckCircle2 className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 20,
+  },
   poster: {
     label: "Poster / Graphic",
     bg: "bg-emerald-100 text-emerald-800",
@@ -193,6 +271,17 @@ export const creativeTypeMeta: Record<
   },
 };
 
+export function getCreativeTypeMeta(type?: string) {
+  if (!type) return undefined;
+  if (creativeTypeMeta[type]) return creativeTypeMeta[type];
+  return {
+    label: type,
+    bg: "bg-indigo-100 text-indigo-800",
+    icon: <Sparkles className="h-3 w-3 mr-1" />,
+    defaultWorkloadPct: 30,
+  };
+}
+
 export function PlatformBadge({ platform }: { platform?: CreativePlatform }) {
   if (!platform) return null;
   const meta = platformMeta[platform] || platformMeta.website;
@@ -208,11 +297,11 @@ export function PlatformBadge({ platform }: { platform?: CreativePlatform }) {
 
 export function CreativeTypeBadge({ type }: { type?: CreativeType }) {
   if (!type) return null;
-  const meta = creativeTypeMeta[type] || creativeTypeMeta.poster;
+  const meta = getCreativeTypeMeta(type) || creativeTypeMeta.poster;
   return (
     <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full ${meta.bg}`}>
       {meta.icon}
-      <span>{meta.label}</span>
+      <span>{meta.label.replace(/^\d+\.\s*/, "")}</span>
     </span>
   );
 }

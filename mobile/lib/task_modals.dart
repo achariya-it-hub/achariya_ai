@@ -52,6 +52,7 @@ class _NewTaskSheetState extends State<_NewTaskSheet> {
   final _driveLinkCtrl = TextEditingController();
   final _remarksCtrl = TextEditingController();
   final _payoutCtrl = TextEditingController(text: '0');
+  final _customCreativeCtrl = TextEditingController();
 
   late String _assigneeId;
   String _sbu = kSbuOptions.first;
@@ -97,12 +98,22 @@ class _NewTaskSheetState extends State<_NewTaskSheet> {
       );
       return;
     }
+    if (_creativeType == kCustomCreativeOption &&
+        _customCreativeCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your custom creative type.')),
+      );
+      return;
+    }
     setState(() => _saving = true);
     try {
       final projectId = widget.projects.isNotEmpty ? widget.projects.first.id : '1';
       final isTrainee = _selectedMember?.isTrainee ?? false;
       final dateStr =
           '${_dueDate.year}-${_dueDate.month.toString().padLeft(2, '0')}-${_dueDate.day.toString().padLeft(2, '0')}';
+      final finalCreativeType = _creativeType == kCustomCreativeOption
+          ? _customCreativeCtrl.text.trim()
+          : _creativeType;
 
       await Api.createTask({
         'title': _titleCtrl.text.trim(),
@@ -115,7 +126,7 @@ class _NewTaskSheetState extends State<_NewTaskSheet> {
         'assignedByName': widget.currentUser.name,
         'sbu': _sbu,
         'marketingType': _marketingType,
-        'creativeType': _creativeType,
+        'creativeType': finalCreativeType,
         'platform': _platform,
         'dueDate': dateStr,
         'dueTime': _dueTime,
@@ -350,6 +361,17 @@ class _NewTaskSheetState extends State<_NewTaskSheet> {
                           ),
                         ],
                       ),
+                      if (_creativeType == kCustomCreativeOption) ...[
+                        const SizedBox(height: 12),
+                        _fieldLabel('Custom Creative Type *'),
+                        TextField(
+                          controller: _customCreativeCtrl,
+                          decoration: fieldDecoration(
+                            'Type custom creative (e.g. Podcast Script, WhatsApp Copy)...',
+                            icon: Icons.edit_note_rounded,
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       Row(
                         children: [
